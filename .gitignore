@@ -1,0 +1,15 @@
+# Maven byggefiler
+/target/
+*.class
+
+# IDE-filer
+.idea/
+*.iml
+.vscode/
+
+# Operativsystemfiler
+.DS_Store
+Thumbs.db
+
+# Loggfiler
+*.log
