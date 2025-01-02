@@ -1,5 +1,7 @@
 package com.martin.dayplanner.view;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -8,6 +10,9 @@ import javafx.stage.Stage;
 import com.martin.dayplanner.model.Task;
 import com.martin.dayplanner.model.TaskStatus;
 
+import javafx.util.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
 public class TaskView {
@@ -23,8 +28,22 @@ public class TaskView {
     private ListView<String> pendingTasksListView;
     private ListView<String> completedTasksListView;
 
+    private Label dateLabel;
+    private Label timeLabel;
+
     public TaskView(ViewableDayPlanner planner) {
         this.planner = planner;
+
+        // Klokke og dato
+        dateLabel = new Label();
+        timeLabel = new Label();
+        updateDateTime();
+
+        // Oppdater dato og tid hvert sekund
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.seconds(1), e -> updateDateTime()));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
 
         taskInput = new TextField();
         taskInput.setPromptText("Enter task name");
@@ -101,11 +120,17 @@ public class TaskView {
                         .collect(Collectors.toList()));
     }
 
+    private void updateDateTime() {
+        LocalDateTime now = LocalDateTime.now();
+        dateLabel.setText("Date: " + now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        timeLabel.setText("Time: " + now.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+    }
+
     // GUI-oppsett
     public void display(Stage stage) {
         VBox layout = new VBox(10);
         layout.getChildren().addAll(
-                taskInput, addTaskButton, removeTaskButton, startTaskButton, completeTaskButton,
+                dateLabel, timeLabel, taskInput, addTaskButton, removeTaskButton, startTaskButton, completeTaskButton,
                 new Label("New Tasks"), newTasksListView,
                 new Label("Pending Tasks"), pendingTasksListView,
                 new Label("Completed Tasks"), completedTasksListView);
