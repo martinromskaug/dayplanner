@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.martin.dayplanner.controller.ControllableDayPlanner;
+import com.martin.dayplanner.model.task.Task;
+import com.martin.dayplanner.model.task.TaskStatus;
 import com.martin.dayplanner.view.ViewableDayPlanner;
 
 public class Planner implements ControllableDayPlanner, ViewableDayPlanner {

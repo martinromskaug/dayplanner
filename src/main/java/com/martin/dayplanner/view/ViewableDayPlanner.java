@@ -2,8 +2,8 @@ package com.martin.dayplanner.view;
 
 import java.util.List;
 
-import com.martin.dayplanner.model.Task;
-import com.martin.dayplanner.model.TaskStatus;
+import com.martin.dayplanner.model.task.Task;
+import com.martin.dayplanner.model.task.TaskStatus;
 
 public interface ViewableDayPlanner {
 

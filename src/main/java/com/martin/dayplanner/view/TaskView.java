@@ -9,8 +9,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import com.martin.dayplanner.model.Task;
-import com.martin.dayplanner.model.TaskStatus;
+import com.martin.dayplanner.model.task.Task;
+import com.martin.dayplanner.model.task.TaskStatus;
 
 import javafx.util.Duration;
 import java.time.LocalDateTime;
