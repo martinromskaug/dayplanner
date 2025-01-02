@@ -4,6 +4,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -126,16 +128,33 @@ public class TaskView {
         timeLabel.setText("Time: " + now.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
     }
 
-    // GUI-oppsett
     public void display(Stage stage) {
-        VBox layout = new VBox(10);
-        layout.getChildren().addAll(
-                dateLabel, timeLabel, taskInput, addTaskButton, removeTaskButton, startTaskButton, completeTaskButton,
-                new Label("New Tasks"), newTasksListView,
-                new Label("Pending Tasks"), pendingTasksListView,
-                new Label("Completed Tasks"), completedTasksListView);
+        // Toppseksjon (tittel + dato/tid)
+        Label titleLabel = new Label("Day Planner");
+        titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        Scene scene = new Scene(layout, 400, 600);
+        VBox topSection = new VBox(5, titleLabel, dateLabel, timeLabel);
+        topSection.setStyle("-fx-alignment: center; -fx-padding: 10px;");
+
+        // Oppgavelister
+        Label newTasksLabel = new Label("New Tasks");
+        Label pendingTasksLabel = new Label("Pending Tasks");
+        Label completedTasksLabel = new Label("Completed Tasks");
+
+        VBox newTasksColumn = new VBox(5, newTasksLabel, newTasksListView);
+        VBox pendingTasksColumn = new VBox(5, pendingTasksLabel, pendingTasksListView);
+        VBox completedTasksColumn = new VBox(5, completedTasksLabel, completedTasksListView);
+
+        HBox taskColumns = new HBox(10, newTasksColumn, pendingTasksColumn, completedTasksColumn);
+        taskColumns.setStyle("-fx-padding: 10px;");
+
+        // Hovedlayout
+        BorderPane root = new BorderPane();
+        root.setTop(topSection);
+        root.setCenter(taskColumns);
+
+        // Scene og vindu
+        Scene scene = new Scene(root, 600, 400);
         stage.setScene(scene);
         stage.setTitle("Day Planner");
         stage.show();
