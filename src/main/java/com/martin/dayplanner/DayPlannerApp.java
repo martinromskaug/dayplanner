@@ -11,10 +11,10 @@ public class DayPlannerApp extends Application {
     @Override
     public void start(Stage stage) {
         Planner planner = new Planner();
-        TaskController taskController = new TaskController(planner);
-        TaskView taskView = new TaskView(taskController);
+        TaskView view = new TaskView(planner);
+        new TaskController(planner, view);
 
-        taskView.display(stage);
+        view.display(stage);
     }
 
     public static void main(String[] args) {

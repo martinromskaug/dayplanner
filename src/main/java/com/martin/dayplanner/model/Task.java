@@ -10,7 +10,7 @@ public class Task {
         this.isCompleted = false;
     }
 
-    public Object getName() {
+    public String getName() {
         return name;
     }
 

@@ -6,5 +6,5 @@ public interface ControllableDayPlanner {
 
     public boolean addTask(Task task);
 
-    public boolean removeTask(String taskName);
+    public boolean removeTask(String taskToRemove);
 }

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.martin.dayplanner.controller.ControllableDayPlanner;
-import com.martin.dayplanner.view.ViewableDailyPlanner;
+import com.martin.dayplanner.view.ViewableDayPlanner;
 
-public class Planner implements ControllableDayPlanner, ViewableDailyPlanner {
+public class Planner implements ControllableDayPlanner, ViewableDayPlanner {
 
     private List<Task> tasks = new ArrayList<>();
 
@@ -27,9 +27,9 @@ public class Planner implements ControllableDayPlanner, ViewableDailyPlanner {
                 .filter(task -> task.getName().equals(taskName))
                 .findFirst()
                 .orElse(null);
-
         if (taskToRemove != null) {
-            return tasks.remove(taskToRemove);
+            tasks.remove(taskToRemove);
+            return true;
         }
         return false;
     }

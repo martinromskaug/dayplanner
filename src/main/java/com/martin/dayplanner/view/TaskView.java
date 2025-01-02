@@ -4,43 +4,54 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import com.martin.dayplanner.controller.TaskController;
+
+import java.util.stream.Collectors;
 
 public class TaskView {
 
-    private TaskController taskController;
+    private ViewableDayPlanner planner;
+    private TextField taskInput;
+    private Button addTaskButton;
+    private Button removeTaskButton;
+    private ListView<String> taskListView;
 
-    public TaskView(TaskController taskController) {
-        this.taskController = taskController;
+    public TaskView(ViewableDayPlanner planner) {
+        this.planner = planner;
+
+        taskInput = new TextField();
+        taskInput.setPromptText("Enter task name");
+
+        addTaskButton = new Button("Add Task");
+        taskListView = new ListView<>();
+        removeTaskButton = new Button("Remove Selected Task");
+
+        updateTaskList();
+    }
+
+    public TextField getTaskInput() {
+        return taskInput;
+    }
+
+    public Button getAddTaskButton() {
+        return addTaskButton;
+    }
+
+    public ListView<String> getTaskListView() {
+        return taskListView;
+    }
+
+    public Button getRemoveTaskButton() {
+        return removeTaskButton;
+    }
+
+    public void updateTaskList() {
+        taskListView.getItems().clear();
+        taskListView.getItems().addAll(
+                planner.getTasks().stream().map(task -> task.getName()).collect(Collectors.toList()));
     }
 
     public void display(Stage stage) {
         VBox layout = new VBox(10);
-
-        TextField taskInput = new TextField();
-        taskInput.setPromptText("Enter task name");
-
-        Button addTaskButton = new Button("Add Task");
-        ListView<String> taskListView = new ListView<>();
-        Button removeTaskButton = new Button("Remove Selected Task");
-
-        // Add task
-        addTaskButton.setOnAction(e -> {
-            String taskName = taskInput.getText();
-            if (taskController.addTask(taskName)) {
-                taskListView.getItems().add(taskName);
-                taskInput.clear();
-            }
-        });
-
-        // Remove task
-        removeTaskButton.setOnAction(e -> {
-            String selectedTask = taskListView.getSelectionModel().getSelectedItem();
-            if (selectedTask != null && taskController.removeTask(selectedTask)) {
-                taskListView.getItems().remove(selectedTask);
-            }
-        });
-
         layout.getChildren().addAll(taskInput, addTaskButton, taskListView, removeTaskButton);
 
         Scene scene = new Scene(layout, 400, 300);
