@@ -9,11 +9,11 @@ import com.martin.dayplanner.model.task.Task;
 import com.martin.dayplanner.model.task.TaskStatus;
 import com.martin.dayplanner.view.ViewableDayPlanner;
 
-public class Planner implements ControllableDayPlanner, ViewableDayPlanner {
+public class AppModel implements ControllableDayPlanner, ViewableDayPlanner {
 
     private List<Task> allTasks;
 
-    public Planner() {
+    public AppModel() {
         this.allTasks = new ArrayList<>();
     }
 
@@ -29,13 +29,11 @@ public class Planner implements ControllableDayPlanner, ViewableDayPlanner {
     }
 
     @Override
-    public boolean removeTask(Task taskToRemove) {
-        Task taskFound = allTasks.stream()
-                .filter(task -> task.getName().equals(taskToRemove.getName()))
-                .findFirst()
-                .orElse(null);
-        if (taskFound != null) {
-            allTasks.remove(taskFound);
+    public boolean removeTask(String taskName) {
+
+        Task selectedTask = findTaskByName(taskName);
+        if (selectedTask != null) {
+            allTasks.remove(selectedTask);
             return true;
         }
         return false;
@@ -48,26 +46,23 @@ public class Planner implements ControllableDayPlanner, ViewableDayPlanner {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public boolean updateTaskStatus(Task selectedTask, TaskStatus selectedStatus) {
-        Task task = allTasks.stream()
-                .filter(t -> t.equals(selectedTask))
-                .findFirst()
-                .orElse(null);
-
-        if (task != null) {
-            task.setStatus(selectedStatus);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public Task findTaskByName(String selectedTaskName) {
+    private Task findTaskByName(String selectedTaskName) {
         return allTasks.stream()
                 .filter(task -> task.getName().equals(selectedTaskName))
                 .findFirst()
                 .orElse(null);
+    }
+
+    @Override
+    public boolean editTask(String taskName) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'editTask'");
+    }
+
+    @Override
+    public boolean completeTaskStep(String taskName) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'completeTaskStep'");
     }
 
 }

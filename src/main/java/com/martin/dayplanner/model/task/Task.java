@@ -35,12 +35,24 @@ public class Task {
         return priority;
     }
 
+    public void setPriority(TaskPriority priority) {
+        this.priority = priority;
+    }
+
     public LocalDate getDueDate() {
         return dueDate;
     }
 
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
     public LocalTime getDueTime() {
         return dueTime;
+    }
+
+    public void setDueTime(LocalTime dueTime) {
+        this.dueTime = dueTime;
     }
 
 }

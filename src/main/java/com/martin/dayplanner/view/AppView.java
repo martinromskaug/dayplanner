@@ -17,14 +17,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
-public class TaskView {
+public class AppView {
 
     private ViewableDayPlanner planner;
     private TextField taskInput;
+
     private Button addTaskButton;
     private Button removeTaskButton;
-    private Button completeTaskButton;
-    private Button startTaskButton;
+    private Button editTaskButton;
 
     private ListView<String> newTasksListView;
     private ListView<String> pendingTasksListView;
@@ -33,7 +33,7 @@ public class TaskView {
     private Label dateLabel;
     private Label timeLabel;
 
-    public TaskView(ViewableDayPlanner planner) {
+    public AppView(ViewableDayPlanner planner) {
         this.planner = planner;
 
         // Klokke og dato
@@ -52,8 +52,7 @@ public class TaskView {
 
         addTaskButton = new Button("Add Task");
         removeTaskButton = new Button("Remove Selected Task");
-        completeTaskButton = new Button("Complete Selected Task");
-        startTaskButton = new Button("Start Selected Task");
+        editTaskButton = new Button("Edit Selected Task");
 
         newTasksListView = new ListView<>();
         pendingTasksListView = new ListView<>();
@@ -77,12 +76,8 @@ public class TaskView {
         return removeTaskButton;
     }
 
-    public Button getCompleteTaskButton() {
-        return completeTaskButton;
-    }
-
-    public Button getStartTaskButton() { // Ny metode
-        return startTaskButton;
+    public Button getEditTaskButton() {
+        return editTaskButton;
     }
 
     public ListView<String> getNewTasksListView() {
@@ -148,15 +143,23 @@ public class TaskView {
         HBox taskColumns = new HBox(10, newTasksColumn, pendingTasksColumn, completedTasksColumn);
         taskColumns.setStyle("-fx-padding: 10px;");
 
+        HBox buttonColumns = new HBox(5, removeTaskButton, editTaskButton, addTaskButton);
+        buttonColumns.setStyle("-fx-alignment: center-right; -fx-padding: 10px;");
+
         // Hovedlayout
         BorderPane root = new BorderPane();
         root.setTop(topSection);
         root.setCenter(taskColumns);
+        root.setBottom(buttonColumns);
 
         // Scene og vindu
         Scene scene = new Scene(root, 600, 400);
         stage.setScene(scene);
         stage.setTitle("Day Planner");
         stage.show();
+    }
+
+    public Stage getStage() {
+        return null;
     }
 }
