@@ -4,6 +4,9 @@ import com.martin.dayplanner.model.task.Task;
 import com.martin.dayplanner.view.AppView;
 import com.martin.dayplanner.view.popups.CreateTaskPopup;
 
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+
 public class AppController {
 
     private ControllableDayPlanner model;
@@ -16,6 +19,7 @@ public class AppController {
     }
 
     private void setupListeners() {
+        // Lytter for "Add Task"-knappen
         view.getAddTaskButton().setOnAction(e -> {
             CreateTaskPopup popup = new CreateTaskPopup();
             popup.setTaskCreationListener((name, dueDate, dueTime, priority) -> {
@@ -30,6 +34,40 @@ public class AppController {
             });
             popup.showPopup();
         });
+
+        // Legg til lyttere for alle listene
+        for (ListView<String> taskList : view.getAllTaskLists()) {
+            setupListSelectionListener(taskList, view.getRemoveTaskButton(), view.getEditTaskButton());
+        }
+
+        // Logikk for "Remove Task"-knappen
+        view.getRemoveTaskButton().setOnAction(e -> {
+            for (ListView<String> taskList : view.getAllTaskLists()) {
+                String selectedTaskName = taskList.getSelectionModel().getSelectedItem();
+                if (selectedTaskName != null) {
+                    model.removeTask(selectedTaskName);
+                    view.updateAllTaskLists();
+                }
+            }
+        });
+    }
+
+    private void setupListSelectionListener(ListView<String> listView, Button removeButton, Button editButton) {
+        // Kombinert lytter for både valg og fokus
+        listView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            updateButtonVisibility(listView, removeButton, editButton);
+        });
+
+        listView.focusedProperty().addListener((obs, oldFocus, newFocus) -> {
+            updateButtonVisibility(listView, removeButton, editButton);
+        });
+    }
+
+    // Metode for å oppdatere knappens synlighet
+    private void updateButtonVisibility(ListView<String> listView, Button removeButton, Button editButton) {
+        boolean taskSelected = listView.getSelectionModel().getSelectedItem() != null;
+        editButton.setVisible(taskSelected);
+        removeButton.setVisible(taskSelected);
     }
 
 }

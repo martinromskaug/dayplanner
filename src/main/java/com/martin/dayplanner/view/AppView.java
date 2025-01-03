@@ -11,6 +11,8 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import com.martin.dayplanner.model.task.Task;
 import com.martin.dayplanner.model.task.TaskStatus;
@@ -38,7 +40,9 @@ public class AppView {
         timeLabel = new Label();
         addTaskButton = new Button("Add Task");
         removeTaskButton = new Button("Remove Selected Task");
+        removeTaskButton.setVisible(false);
         editTaskButton = new Button("Edit Selected Task");
+        editTaskButton.setVisible(false);
         newTasksListView = new ListView<>();
         pendingTasksListView = new ListView<>();
         completedTasksListView = new ListView<>();
@@ -65,6 +69,14 @@ public class AppView {
         updateTaskList(newTasksListView, TaskStatus.NEW);
         updateTaskList(pendingTasksListView, TaskStatus.PENDING);
         updateTaskList(completedTasksListView, TaskStatus.COMPLETED);
+    }
+
+    public List<ListView<String>> getAllTaskLists() {
+        List<ListView<String>> allTaskLists = new ArrayList<>();
+        allTaskLists.add(newTasksListView);
+        allTaskLists.add(pendingTasksListView);
+        allTaskLists.add(completedTasksListView);
+        return allTaskLists;
     }
 
     private void updateTaskList(ListView<String> listView, TaskStatus status) {

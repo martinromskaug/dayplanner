@@ -15,6 +15,7 @@ public class AppModel implements ControllableDayPlanner, ViewableDayPlanner {
 
     public AppModel() {
         this.allTasks = new ArrayList<>();
+        allTasks.add(new Task("Ringe Kasper"));
     }
 
     @Override
