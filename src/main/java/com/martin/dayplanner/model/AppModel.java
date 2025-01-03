@@ -47,7 +47,8 @@ public class AppModel implements ControllableDayPlanner, ViewableDayPlanner {
                 .collect(Collectors.toList());
     }
 
-    private Task findTaskByName(String selectedTaskName) {
+    @Override
+    public Task findTaskByName(String selectedTaskName) {
         return allTasks.stream()
                 .filter(task -> task.getName().equals(selectedTaskName))
                 .findFirst()

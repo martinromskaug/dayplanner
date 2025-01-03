@@ -1,7 +1,6 @@
 package com.martin.dayplanner.controller;
 
 import com.martin.dayplanner.model.task.Task;
-import com.martin.dayplanner.model.task.TaskStatus;
 
 public interface ControllableDayPlanner {
 
@@ -36,4 +35,6 @@ public interface ControllableDayPlanner {
      * @return true if moved
      */
     public boolean completeTaskStep(String taskName);
+
+    public Task findTaskByName(String taskName);
 }

@@ -3,6 +3,7 @@ package com.martin.dayplanner.controller;
 import com.martin.dayplanner.model.task.Task;
 import com.martin.dayplanner.view.AppView;
 import com.martin.dayplanner.view.popups.CreateTaskPopup;
+import com.martin.dayplanner.view.popups.EditTaskPopup;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -50,6 +51,28 @@ public class AppController {
                 }
             }
         });
+
+        view.getEditTaskButton().setOnAction(e -> {
+            for (ListView<String> taskList : view.getAllTaskLists()) {
+                String selectedTaskName = taskList.getSelectionModel().getSelectedItem();
+                if (selectedTaskName != null) {
+                    Task taskToEdit = model.findTaskByName(selectedTaskName);
+                    if (taskToEdit != null) {
+                        EditTaskPopup popup = new EditTaskPopup();
+                        popup.setTaskEditListener((task, newName, newDueDate, newDueTime, newPriority) -> {
+                            task.setName(newName);
+                            task.setDueDate(newDueDate);
+                            task.setDueTime(newDueTime);
+                            task.setPriority(newPriority);
+                            view.updateAllTaskLists();
+                        });
+                        popup.showPopup(taskToEdit);
+                        break;
+                    }
+                }
+            }
+        });
+
     }
 
     private void setupListSelectionListener(ListView<String> listView, Button removeButton, Button editButton) {
