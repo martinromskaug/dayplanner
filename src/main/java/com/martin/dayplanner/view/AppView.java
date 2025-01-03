@@ -106,8 +106,8 @@ public class AppView {
 
         // Oppgavelister
         HBox taskColumns = new HBox(10,
-                createTaskColumn("New Tasks", newTasksListView),
-                createTaskColumn("Pending Tasks", pendingTasksListView),
+                createTaskColumn("All Tasks", newTasksListView),
+                createTaskColumn("To-Do", pendingTasksListView),
                 createTaskColumn("Completed Tasks", completedTasksListView));
         taskColumns.setStyle("-fx-padding: 10px;");
 

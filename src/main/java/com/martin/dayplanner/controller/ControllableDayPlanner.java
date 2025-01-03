@@ -1,6 +1,7 @@
 package com.martin.dayplanner.controller;
 
 import com.martin.dayplanner.model.task.Task;
+import com.martin.dayplanner.model.task.TaskStatus;
 
 public interface ControllableDayPlanner {
 
@@ -13,14 +14,6 @@ public interface ControllableDayPlanner {
     public boolean addTask(Task task);
 
     /**
-     * Edit a task in the planner
-     * 
-     * @param taskName the name of the task to edit
-     * @return true if edited
-     */
-    public boolean editTask(String taskName);
-
-    /**
      * Remove a task from the planner
      * 
      * @param taskName the name of the task to move
@@ -28,13 +21,7 @@ public interface ControllableDayPlanner {
      */
     public boolean removeTask(String taskName);
 
-    /**
-     * Move a task to the next task status in the planner
-     * 
-     * @param taskName the task to move
-     * @return true if moved
-     */
-    public boolean completeTaskStep(String taskName);
-
     public Task findTaskByName(String taskName);
+
+    public boolean updateTaskStatus(String taskName, TaskStatus targetStatus);
 }

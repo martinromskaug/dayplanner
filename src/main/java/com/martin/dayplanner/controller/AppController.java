@@ -1,12 +1,16 @@
 package com.martin.dayplanner.controller;
 
 import com.martin.dayplanner.model.task.Task;
+import com.martin.dayplanner.model.task.TaskStatus;
 import com.martin.dayplanner.view.AppView;
 import com.martin.dayplanner.view.popups.CreateTaskPopup;
 import com.martin.dayplanner.view.popups.EditTaskPopup;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 
 public class AppController {
 
@@ -73,6 +77,15 @@ public class AppController {
             }
         });
 
+        // Legg til lyttere for drag-and-drop mellom listene
+        for (ListView<String> sourceList : view.getAllTaskLists()) {
+            for (ListView<String> targetList : view.getAllTaskLists()) {
+                if (sourceList != targetList) {
+                    setupDragAndDrop(sourceList, targetList);
+                }
+            }
+        }
+
     }
 
     private void setupListSelectionListener(ListView<String> listView, Button removeButton, Button editButton) {
@@ -91,6 +104,62 @@ public class AppController {
         boolean taskSelected = listView.getSelectionModel().getSelectedItem() != null;
         editButton.setVisible(taskSelected);
         removeButton.setVisible(taskSelected);
+    }
+
+    private void setupDragAndDrop(ListView<String> sourceList, ListView<String> targetList) {
+        // Når en oppgave dras fra sourceList
+        sourceList.setOnDragDetected(event -> {
+            String selectedTaskName = sourceList.getSelectionModel().getSelectedItem();
+            if (selectedTaskName != null) {
+                Dragboard dragboard = sourceList.startDragAndDrop(TransferMode.MOVE);
+                ClipboardContent content = new ClipboardContent();
+                content.putString(selectedTaskName);
+                dragboard.setContent(content);
+                event.consume();
+            }
+        });
+
+        // Når oppgaven slippes i targetList
+        targetList.setOnDragOver(event -> {
+            if (event.getGestureSource() != targetList && event.getDragboard().hasString()) {
+                event.acceptTransferModes(TransferMode.MOVE);
+            }
+            event.consume();
+        });
+
+        targetList.setOnDragDropped(event -> {
+            Dragboard dragboard = event.getDragboard();
+            if (dragboard.hasString()) {
+                String taskName = dragboard.getString();
+
+                // Finn statusen til targetList ved hjelp av modellen
+                TaskStatus targetStatus = getStatusFromListView(targetList);
+
+                if (targetStatus != null && model.updateTaskStatus(taskName, targetStatus)) {
+                    view.updateAllTaskLists();
+                }
+                event.setDropCompleted(true);
+            } else {
+                event.setDropCompleted(false);
+            }
+            event.consume();
+        });
+
+        // Når drag operasjonen er ferdig
+        sourceList.setOnDragDone(event -> {
+            event.consume();
+        });
+    }
+
+    private TaskStatus getStatusFromListView(ListView<String> listView) {
+        int index = view.getAllTaskLists().indexOf(listView);
+        if (index == 0)
+            return TaskStatus.NEW;
+        if (index == 1)
+            return TaskStatus.PENDING;
+        if (index == 2)
+            return TaskStatus.COMPLETED;
+        return null;
     }
 
 }
