@@ -8,64 +8,70 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
-import com.martin.dayplanner.model.task.Task;
-import com.martin.dayplanner.model.task.TaskStatus;
-
 import javafx.util.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
+import com.martin.dayplanner.model.task.Task;
+import com.martin.dayplanner.model.task.TaskStatus;
 
 public class AppView {
 
-    private ViewableDayPlanner planner;
-    private TextField taskInput;
+    private final ViewableDayPlanner planner;
 
-    private Button addTaskButton;
-    private Button removeTaskButton;
-    private Button editTaskButton;
+    private final Button addTaskButton;
+    private final Button removeTaskButton;
+    private final Button editTaskButton;
 
-    private ListView<String> newTasksListView;
-    private ListView<String> pendingTasksListView;
-    private ListView<String> completedTasksListView;
+    private final ListView<String> newTasksListView;
+    private final ListView<String> pendingTasksListView;
+    private final ListView<String> completedTasksListView;
 
-    private Label dateLabel;
-    private Label timeLabel;
+    private final Label dateLabel;
+    private final Label timeLabel;
 
     public AppView(ViewableDayPlanner planner) {
         this.planner = planner;
 
-        // Klokke og dato
+        // Initialiser GUI-komponenter
         dateLabel = new Label();
         timeLabel = new Label();
-        updateDateTime();
-
-        // Oppdater dato og tid hvert sekund
-        Timeline timeline = new Timeline(
-                new KeyFrame(Duration.seconds(1), e -> updateDateTime()));
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
-
-        taskInput = new TextField();
-        taskInput.setPromptText("Enter task name");
-
         addTaskButton = new Button("Add Task");
         removeTaskButton = new Button("Remove Selected Task");
         editTaskButton = new Button("Edit Selected Task");
-
         newTasksListView = new ListView<>();
         pendingTasksListView = new ListView<>();
         completedTasksListView = new ListView<>();
 
-        updateNewTasksList();
-        updatePendingTasksList();
-        updateCompletedTasksList();
+        // Oppsett av komponenter
+        setupDateTime();
+        updateAllTaskLists();
     }
 
-    // Getters for buttons
-    public TextField getTaskInput() {
-        return taskInput;
+    private void setupDateTime() {
+        updateDateTime();
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> updateDateTime()));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+    }
+
+    private void updateDateTime() {
+        LocalDateTime now = LocalDateTime.now();
+        dateLabel.setText("Date: " + now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        timeLabel.setText("Time: " + now.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+    }
+
+    public void updateAllTaskLists() {
+        updateTaskList(newTasksListView, TaskStatus.NEW);
+        updateTaskList(pendingTasksListView, TaskStatus.PENDING);
+        updateTaskList(completedTasksListView, TaskStatus.COMPLETED);
+    }
+
+    private void updateTaskList(ListView<String> listView, TaskStatus status) {
+        listView.getItems().setAll(
+                planner.getTasksByStatus(status).stream()
+                        .map(Task::getName)
+                        .collect(Collectors.toList()));
     }
 
     public Button getAddTaskButton() {
@@ -80,69 +86,20 @@ public class AppView {
         return editTaskButton;
     }
 
-    public ListView<String> getNewTasksListView() {
-        return newTasksListView;
-    }
-
-    public ListView<String> getPendingTasksListView() {
-        return pendingTasksListView;
-    }
-
-    public ListView<String> getCompletedTasksListView() {
-        return completedTasksListView;
-    }
-
-    // Oppdateringsmetoder for listene
-    public void updateNewTasksList() {
-        newTasksListView.getItems().clear();
-        newTasksListView.getItems().addAll(
-                planner.getTasksByStatus(TaskStatus.NEW).stream()
-                        .map(Task::getName)
-                        .collect(Collectors.toList()));
-    }
-
-    public void updatePendingTasksList() {
-        pendingTasksListView.getItems().clear();
-        pendingTasksListView.getItems().addAll(
-                planner.getTasksByStatus(TaskStatus.PENDING).stream()
-                        .map(Task::getName)
-                        .collect(Collectors.toList()));
-    }
-
-    public void updateCompletedTasksList() {
-        completedTasksListView.getItems().clear();
-        completedTasksListView.getItems().addAll(
-                planner.getTasksByStatus(TaskStatus.COMPLETED).stream()
-                        .map(Task::getName)
-                        .collect(Collectors.toList()));
-    }
-
-    private void updateDateTime() {
-        LocalDateTime now = LocalDateTime.now();
-        dateLabel.setText("Date: " + now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        timeLabel.setText("Time: " + now.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-    }
-
+    // GUI-oppsett
     public void display(Stage stage) {
-        // Toppseksjon (tittel + dato/tid)
-        Label titleLabel = new Label("Day Planner");
-        titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
-
-        VBox topSection = new VBox(5, titleLabel, dateLabel, timeLabel);
+        // Toppseksjon
+        VBox topSection = new VBox(5, createTitleLabel(), dateLabel, timeLabel);
         topSection.setStyle("-fx-alignment: center; -fx-padding: 10px;");
 
         // Oppgavelister
-        Label newTasksLabel = new Label("New Tasks");
-        Label pendingTasksLabel = new Label("Pending Tasks");
-        Label completedTasksLabel = new Label("Completed Tasks");
-
-        VBox newTasksColumn = new VBox(5, newTasksLabel, newTasksListView);
-        VBox pendingTasksColumn = new VBox(5, pendingTasksLabel, pendingTasksListView);
-        VBox completedTasksColumn = new VBox(5, completedTasksLabel, completedTasksListView);
-
-        HBox taskColumns = new HBox(10, newTasksColumn, pendingTasksColumn, completedTasksColumn);
+        HBox taskColumns = new HBox(10,
+                createTaskColumn("New Tasks", newTasksListView),
+                createTaskColumn("Pending Tasks", pendingTasksListView),
+                createTaskColumn("Completed Tasks", completedTasksListView));
         taskColumns.setStyle("-fx-padding: 10px;");
 
+        // Knappeseksjon
         HBox buttonColumns = new HBox(5, removeTaskButton, editTaskButton, addTaskButton);
         buttonColumns.setStyle("-fx-alignment: center-right; -fx-padding: 10px;");
 
@@ -153,13 +110,19 @@ public class AppView {
         root.setBottom(buttonColumns);
 
         // Scene og vindu
-        Scene scene = new Scene(root, 600, 400);
-        stage.setScene(scene);
+        stage.setScene(new Scene(root, 600, 400));
         stage.setTitle("Day Planner");
         stage.show();
     }
 
-    public Stage getStage() {
-        return null;
+    private Label createTitleLabel() {
+        Label titleLabel = new Label("Day Planner");
+        titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+        return titleLabel;
+    }
+
+    private VBox createTaskColumn(String title, ListView<String> listView) {
+        Label label = new Label(title);
+        return new VBox(5, label, listView);
     }
 }

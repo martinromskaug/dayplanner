@@ -9,71 +9,84 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class CreateTaskPopup {
 
-    private TextField taskNameField;
-    private ComboBox<TaskPriority> priorityBox;
-    private DatePicker dueDatePicker;
-    private Button saveButton;
-    private Stage popupStage;
+    public interface TaskCreationListener {
+        void onTaskCreated(String name, LocalDate dueDate, LocalTime dueTime, TaskPriority priority);
+    }
 
-    public CreateTaskPopup(Stage ownerStage) {
-        popupStage = new Stage();
-        popupStage.initModality(Modality.WINDOW_MODAL);
-        popupStage.initOwner(ownerStage);
+    private TaskCreationListener listener;
 
-        GridPane layout = new GridPane();
-        layout.setPadding(new Insets(10));
-        layout.setVgap(10);
-        layout.setHgap(10);
+    public void setTaskCreationListener(TaskCreationListener listener) {
+        this.listener = listener;
+    }
 
-        taskNameField = new TextField();
-        taskNameField.setPromptText("Task Name");
+    public void showPopup() {
+        Stage popupStage = new Stage();
+        popupStage.setTitle("Add New Task");
 
-        priorityBox = new ComboBox<>();
-        priorityBox.getItems().addAll(TaskPriority.values()); // Bruker TaskPriority enum
-        priorityBox.setPromptText("Select Priority");
+        // Layout
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(10));
+        grid.setHgap(10);
+        grid.setVgap(10);
 
-        dueDatePicker = new DatePicker();
-        dueDatePicker.setPromptText("Due Date");
+        // Input fields
+        Label nameLabel = new Label("Task Name:");
+        TextField nameInput = new TextField();
 
-        saveButton = new Button("Save");
+        Label dateLabel = new Label("Due Date:");
+        DatePicker datePicker = new DatePicker();
 
-        layout.add(new Label("Task Name:"), 0, 0);
-        layout.add(taskNameField, 1, 0);
-        layout.add(new Label("Priority:"), 0, 1);
-        layout.add(priorityBox, 1, 1);
-        layout.add(new Label("Due Date:"), 0, 2);
-        layout.add(dueDatePicker, 1, 2);
-        layout.add(saveButton, 1, 3);
+        Label timeLabel = new Label("Due Time:");
+        TextField timeInput = new TextField();
+        timeInput.setPromptText("HH:mm");
 
-        Scene scene = new Scene(layout);
+        Label priorityLabel = new Label("Priority:");
+        ComboBox<TaskPriority> priorityBox = new ComboBox<>();
+        priorityBox.getItems().addAll(TaskPriority.values());
+        priorityBox.setValue(TaskPriority.LOW);
+
+        // Buttons
+        Button addButton = new Button("Add");
+        Button cancelButton = new Button("Cancel");
+
+        // Button actions
+        addButton.setOnAction(e -> {
+            String name = nameInput.getText();
+            LocalDate dueDate = datePicker.getValue();
+            LocalTime dueTime = null;
+            if (!timeInput.getText().isEmpty()) {
+                dueTime = LocalTime.parse(timeInput.getText());
+            }
+            TaskPriority priority = priorityBox.getValue();
+
+            if (listener != null && !name.isEmpty()) {
+                listener.onTaskCreated(name, dueDate, dueTime, priority);
+            }
+            popupStage.close();
+        });
+
+        cancelButton.setOnAction(e -> popupStage.close());
+
+        // Add elements to grid
+        grid.add(nameLabel, 0, 0);
+        grid.add(nameInput, 1, 0);
+        grid.add(dateLabel, 0, 1);
+        grid.add(datePicker, 1, 1);
+        grid.add(timeLabel, 0, 2);
+        grid.add(timeInput, 1, 2);
+        grid.add(priorityLabel, 0, 3);
+        grid.add(priorityBox, 1, 3);
+        grid.add(addButton, 0, 4);
+        grid.add(cancelButton, 1, 4);
+
+        // Set up Scene and Stage
+        Scene scene = new Scene(grid, 400, 300);
         popupStage.setScene(scene);
-        popupStage.setTitle("Create New Task");
-    }
-
-    public void show() {
-        popupStage.show();
-    }
-
-    public void close() {
-        popupStage.close();
-    }
-
-    public TextField getTaskNameField() {
-        return taskNameField;
-    }
-
-    public ComboBox<TaskPriority> getPriorityBox() {
-        return priorityBox;
-    }
-
-    public DatePicker getDueDatePicker() {
-        return dueDatePicker;
-    }
-
-    public Button getSaveButton() {
-        return saveButton;
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.showAndWait();
     }
 }
