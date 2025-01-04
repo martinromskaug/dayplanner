@@ -59,12 +59,6 @@ public class AppView {
         timeline.play();
     }
 
-    private void updateDateTime() {
-        LocalDateTime now = LocalDateTime.now();
-        dateLabel.setText("Date: " + now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        timeLabel.setText("Time: " + now.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-    }
-
     public void updateAllTaskLists() {
         updateTaskList(newTasksListView, TaskStatus.NEW);
         updateTaskList(pendingTasksListView, TaskStatus.PENDING);
@@ -98,22 +92,40 @@ public class AppView {
         return editTaskButton;
     }
 
-    // GUI-oppsett
     public void display(Stage stage) {
-        // Toppseksjon
-        VBox topSection = new VBox(5, createTitleLabel(), dateLabel, timeLabel);
-        topSection.setStyle("-fx-alignment: center; -fx-padding: 10px;");
+        // Tittelseksjon (venstre halvdel)
+        Label titleLabel = new Label("Day Planner");
+        titleLabel.getStyleClass().add("title-label"); // Bruk CSS-klassen
+
+        VBox titleBox = new VBox(titleLabel);
+        titleBox.getStyleClass().add("title-box"); // Bruk CSS-klassen
+
+        // Datoseksjon (høyre halvdel)
+        dateLabel.getStyleClass().add("date-label"); // Bruk CSS-klassen
+        timeLabel.getStyleClass().add("time-label"); // Bruk CSS-klassen
+
+        VBox dateTimeBox = new VBox(5, dateLabel, timeLabel);
+        dateTimeBox.getStyleClass().add("date-time-box"); // Bruk CSS-klassen
+
+        // Kombiner toppseksjonen (venstre og høyre halvdel)
+        HBox topSection = new HBox(titleBox, dateTimeBox);
+        topSection.getStyleClass().add("top-section"); // Bruk CSS-klassen
 
         // Oppgavelister
-        HBox taskColumns = new HBox(10,
-                createTaskColumn("All Tasks", newTasksListView),
-                createTaskColumn("To-Do", pendingTasksListView),
-                createTaskColumn("Completed Tasks", completedTasksListView));
-        taskColumns.setStyle("-fx-padding: 10px;");
+        VBox allTasksColumn = createTaskColumn("All Tasks", newTasksListView);
+        VBox todoColumn = createTaskColumn("To-Do", pendingTasksListView);
+        VBox completedColumn = createTaskColumn("Completed Tasks", completedTasksListView);
+
+        HBox taskColumns = new HBox(20, allTasksColumn, todoColumn, completedColumn); // Bruk CSS spacing
+        taskColumns.getStyleClass().add("task-columns"); // Bruk CSS-klassen
 
         // Knappeseksjon
-        HBox buttonColumns = new HBox(5, removeTaskButton, editTaskButton, addTaskButton);
-        buttonColumns.setStyle("-fx-alignment: center-right; -fx-padding: 10px;");
+        addTaskButton.getStyleClass().add("button"); // Bruk CSS-knapp
+        removeTaskButton.getStyleClass().add("button");
+        editTaskButton.getStyleClass().add("button");
+
+        HBox buttonColumns = new HBox(10, removeTaskButton, editTaskButton, addTaskButton); // Bruk CSS spacing
+        buttonColumns.getStyleClass().add("button-columns"); // Bruk CSS-klassen
 
         // Hovedlayout
         BorderPane root = new BorderPane();
@@ -121,20 +133,24 @@ public class AppView {
         root.setCenter(taskColumns);
         root.setBottom(buttonColumns);
 
-        // Scene og vindu
-        Scene scene = new Scene(root, 600, 400);
-        scene.getStylesheets()
-                .add(getClass().getResource("/styles.css").toExternalForm());
+        // Legg til CSS
+        Scene scene = new Scene(root, 800, 600); // Oppdatert vindustørrelse for bedre estetikk
+        scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
 
+        // Sett opp scenen og vis den
         stage.setScene(scene);
         stage.setTitle("Day Planner");
         stage.show();
     }
 
-    private Label createTitleLabel() {
-        Label titleLabel = new Label("Day Planner");
-        titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
-        return titleLabel;
+    private void updateDateTime() {
+        LocalDateTime now = LocalDateTime.now();
+        // Format: "Jan 31" for dato og "14:59" for klokkeslett
+        String formattedDate = now.format(DateTimeFormatter.ofPattern("MMM dd"));
+        String formattedTime = now.format(DateTimeFormatter.ofPattern("HH:mm"));
+
+        dateLabel.setText(formattedDate);
+        timeLabel.setText(formattedTime);
     }
 
     private VBox createTaskColumn(String title, ListView<String> listView) {
