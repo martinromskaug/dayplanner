@@ -1,0 +1,39 @@
+/* Generelle stiler */
+.root {
+    -fx-font-family: "Arial, Helvetica, sans-serif";
+}
+
+/* Knappestiler */
+.button {
+    -fx-background-color: linear-gradient(to bottom, #4CAF50, #2E7D32);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px;
+    -fx-padding: 5 10 5 10;
+}
+
+.button:hover {
+    -fx-background-color: #45A049;
+}
+
+/* ListView-stil */
+.list-view {
+    -fx-background-color: #FAFAFA;
+    -fx-border-color: #BDBDBD;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+}
+
+/* Labels */
+.label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+/* Klokke og dato */
+.date-time-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #555;
+}

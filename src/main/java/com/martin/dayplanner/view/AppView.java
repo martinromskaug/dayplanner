@@ -122,7 +122,11 @@ public class AppView {
         root.setBottom(buttonColumns);
 
         // Scene og vindu
-        stage.setScene(new Scene(root, 600, 400));
+        Scene scene = new Scene(root, 600, 400);
+        scene.getStylesheets()
+                .add(getClass().getResource("/styles.css").toExternalForm());
+
+        stage.setScene(scene);
         stage.setTitle("Day Planner");
         stage.show();
     }
