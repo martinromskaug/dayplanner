@@ -176,6 +176,9 @@ public class AppView {
         Label label = new Label(title);
         return new VBox(5, label, listView);
     }
+
+    public void showError(String string) {
+    }
 }
 
 class Spacer extends Region {

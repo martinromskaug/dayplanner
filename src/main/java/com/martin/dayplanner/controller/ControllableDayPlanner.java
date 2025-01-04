@@ -1,6 +1,10 @@
 package com.martin.dayplanner.controller;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import com.martin.dayplanner.model.task.Task;
+import com.martin.dayplanner.model.task.TaskPriority;
 import com.martin.dayplanner.model.task.TaskStatus;
 
 /**
@@ -11,12 +15,16 @@ public interface ControllableDayPlanner {
 
     /**
      * Add a task to the planner.
+     * 
+     * @param priority
+     * @param dueTime
+     * @param dueDate
      *
-     * @param task the task to add
+     * @param task     the task to add
      * @return true if the task was successfully added, false if a task with the
      *         same name already exists.
      */
-    boolean addTask(Task task);
+    boolean addTask(String taskName, LocalDate dueDate, LocalTime dueTime, TaskPriority priority);
 
     /**
      * Remove a task from the planner.
@@ -44,4 +52,6 @@ public interface ControllableDayPlanner {
      *         not found or the status update failed.
      */
     boolean updateTaskStatus(String taskName, TaskStatus targetStatus);
+
+    void editTask(Task task, String newName, LocalDate newDueDate, LocalTime newDueTime, TaskPriority newPriority);
 }
