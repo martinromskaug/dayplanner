@@ -6,13 +6,11 @@ import javafx.scene.control.ListView;
 
 public class AppController {
 
-    private ControllableDayPlanner model;
     private AppView view;
     private TaskActionHandler actionHandler;
     private TaskDragAndDropHandler dragAndDropHandler;
 
     public AppController(ControllableDayPlanner model, AppView view) {
-        this.model = model;
         this.view = view;
         this.actionHandler = new TaskActionHandler(model, view);
         this.dragAndDropHandler = new TaskDragAndDropHandler(model, view);

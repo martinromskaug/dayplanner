@@ -19,11 +19,7 @@ public class TaskActionHandler {
     public void handleAddTask() {
         CreateTaskPopup popup = new CreateTaskPopup();
         popup.setTaskCreationListener((name, dueDate, dueTime, priority) -> {
-            Task newTask = new Task(name);
-            newTask.setDueDate(dueDate);
-            newTask.setDueTime(dueTime);
-            newTask.setPriority(priority);
-            if (model.addTask(newTask)) {
+            if (model.addTask(name, dueDate, dueTime, priority)) {
                 view.updateAllTaskLists();
             }
         });
@@ -48,10 +44,7 @@ public class TaskActionHandler {
                 if (taskToEdit != null) {
                     EditTaskPopup popup = new EditTaskPopup();
                     popup.setTaskEditListener((task, newName, newDueDate, newDueTime, newPriority) -> {
-                        task.setName(newName);
-                        task.setDueDate(newDueDate);
-                        task.setDueTime(newDueTime);
-                        task.setPriority(newPriority);
+                        model.editTask(task, newName, newDueDate, newDueTime, newPriority);
                         view.updateAllTaskLists();
                     });
                     popup.showPopup(taskToEdit);

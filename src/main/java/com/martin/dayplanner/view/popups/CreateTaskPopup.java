@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 
 public class CreateTaskPopup {
 
@@ -47,23 +48,37 @@ public class CreateTaskPopup {
         Label priorityLabel = new Label("Priority:");
         ComboBox<TaskPriority> priorityBox = new ComboBox<>();
         priorityBox.getItems().addAll(TaskPriority.values());
-        priorityBox.setValue(TaskPriority.LOW);
 
         // Buttons
         Button addButton = new Button("Add");
         Button cancelButton = new Button("Cancel");
+        Label errorLabel = new Label();
+        errorLabel.setStyle("-fx-text-fill: red;");
 
         // Button actions
         addButton.setOnAction(e -> {
-            String name = nameInput.getText();
+            String name = nameInput.getText().trim();
+
+            // Validate name
+            if (name.isEmpty()) {
+                errorLabel.setText("Task name is required.");
+                return;
+            }
+
             LocalDate dueDate = datePicker.getValue();
             LocalTime dueTime = null;
-            if (!timeInput.getText().isEmpty()) {
-                dueTime = LocalTime.parse(timeInput.getText());
-            }
             TaskPriority priority = priorityBox.getValue();
 
-            if (listener != null && !name.isEmpty()) {
+            try {
+                if (!timeInput.getText().isEmpty()) {
+                    dueTime = LocalTime.parse(timeInput.getText());
+                }
+            } catch (DateTimeParseException ex) {
+                errorLabel.setText("Invalid time format. Use HH:mm.");
+                return;
+            }
+
+            if (listener != null) {
                 listener.onTaskCreated(name, dueDate, dueTime, priority);
             }
             popupStage.close();
@@ -82,6 +97,7 @@ public class CreateTaskPopup {
         grid.add(priorityBox, 1, 3);
         grid.add(addButton, 0, 4);
         grid.add(cancelButton, 1, 4);
+        grid.add(errorLabel, 0, 5, 2, 1);
 
         // Set up Scene and Stage
         Scene scene = new Scene(grid, 400, 300);

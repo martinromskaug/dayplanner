@@ -3,9 +3,12 @@ package com.martin.dayplanner.model;
 import com.martin.dayplanner.controller.ControllableDayPlanner;
 import com.martin.dayplanner.model.storage.StorageHandler;
 import com.martin.dayplanner.model.task.Task;
+import com.martin.dayplanner.model.task.TaskPriority;
 import com.martin.dayplanner.model.task.TaskStatus;
 import com.martin.dayplanner.view.ViewableDayPlanner;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,10 +42,18 @@ public class AppModel implements ControllableDayPlanner, ViewableDayPlanner {
     }
 
     @Override
-    public boolean addTask(Task task) {
-        if (!allTasks.contains(task)) {
-            allTasks.add(task);
-            tasksByStatus.get(task.getStatus()).add(task);
+    public boolean addTask(String taskName, LocalDate dueDate, LocalTime dueTime, TaskPriority priority) {
+        if (taskName == null || taskName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Task name cannot be null or empty");
+        }
+        Task newTask = new Task(taskName);
+        newTask.setDueDate(dueDate);
+        newTask.setDueTime(dueTime);
+        newTask.setPriority(priority);
+
+        if (!allTasks.contains(newTask)) {
+            allTasks.add(newTask);
+            tasksByStatus.get(newTask.getStatus()).add(newTask);
             saveTasks();
             return true;
         }
@@ -89,5 +100,16 @@ public class AppModel implements ControllableDayPlanner, ViewableDayPlanner {
 
     private void saveTasks() {
         storageHandler.saveTasks(allTasks);
+    }
+
+    @Override
+    public void editTask(Task task, String newName, LocalDate newDueDate, LocalTime newDueTime,
+            TaskPriority newPriority) {
+        task.setName(newName);
+        task.setDueDate(newDueDate);
+        task.setDueTime(newDueTime);
+        task.setPriority(newPriority);
+
+        saveTasks();
     }
 }
