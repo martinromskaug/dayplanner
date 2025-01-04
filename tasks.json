@@ -1,1 +1,1 @@
-[{"name":"Ringe Kasper","status":"PENDING","priority":"LOW","dueDate":"2025-01-04","dueTime":"13:10:00"},{"name":"hei julenissen","status":"COMPLETED","priority":"HIGH","dueDate":"2025-01-25","dueTime":"22:15:00"}]
+[{"name":"Gjøre Appen finere","status":"NEW","priority":"MODERATE"},{"name":"Integrere sortering av priority","status":"NEW","priority":"HIGH"},{"name":"Rydde i koden","status":"NEW","priority":"MODERATE"},{"name":"Lage mulighet for flere planners","status":"NEW","priority":"HIGH"}]
