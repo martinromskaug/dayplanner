@@ -17,15 +17,31 @@
     -fx-padding: 20px 0; /* Gir luft rundt tittelen */
 }
 
-/* Dato og klokkeslett */
-.date-label, .time-label {
+/* Dato, år og klokke */
+.date-label {
     -fx-font-size: 16px;
     -fx-text-fill: #636e72; /* Mykere grå farge */
-    -fx-alignment: center-right;
+}
+
+.year-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #636e72; /* Mykere grå farge */
+}
+
+.time-label {
+    -fx-font-size: 32px; /* Klokken er større enn dato og år */
+    -fx-font-weight: bold;
+    -fx-text-fill: #2d3436; /* Mørk grå for kontrast */
+}
+
+.date-year-box {
+    -fx-alignment: center-left; /* Justering for dato og år */
+    -fx-spacing: 5px; /* Litt avstand mellom dato og år */
 }
 
 .date-time-box {
-    -fx-alignment: center-right;
+    -fx-alignment: center-right; /* Plasserer klokken til høyre */
+    -fx-spacing: 20px; /* Avstand mellom dato-år og klokke */
     -fx-padding: 10px 20px; /* Gir luft til høyre */
 }
 
