@@ -1,7 +1,7 @@
 package com.martin.dayplanner.controller;
 
 import com.martin.dayplanner.model.task.Task;
-import com.martin.dayplanner.view.AppView;
+import com.martin.dayplanner.view.PlannerView;
 import com.martin.dayplanner.view.popups.CreateTaskPopup;
 import com.martin.dayplanner.view.popups.EditTaskPopup;
 
@@ -9,9 +9,9 @@ import javafx.scene.control.ListView;
 
 public class TaskActionHandler {
     private ControllableDayPlanner model;
-    private AppView view;
+    private PlannerView view;
 
-    public TaskActionHandler(ControllableDayPlanner model, AppView view) {
+    public TaskActionHandler(ControllableDayPlanner model, PlannerView view) {
         this.model = model;
         this.view = view;
     }
