@@ -16,7 +16,7 @@ public class AppView {
         this.plannerView = new PlannerView(model.getPlannerModel());
 
         // Sett HomeScreenView som standardvisning
-        setCenterHomeScreen();
+        setCenterView(plannerView);
     }
 
     public HomeScreenView getHomeScreenView() {
@@ -27,12 +27,8 @@ public class AppView {
         return plannerView;
     }
 
-    public void setCenterHomeScreen() {
-        root.setCenter(homeScreenView.getLayout());
-    }
-
-    public void setCenterPlanner() {
-        root.setCenter(plannerView.getLayout());
+    public void setCenterView(Viewable view) {
+        root.setCenter(view.getLayout());
     }
 
     public void display(Stage stage) {

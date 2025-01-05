@@ -8,10 +8,13 @@ import com.martin.dayplanner.view.ViewableHomeScreen;
 
 public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
 
+    private AppModel appModel;
     private final List<Planner> planners;
 
-    public HomeScreen() {
+    public HomeScreen(AppModel appModel) {
+        this.appModel = appModel;
         this.planners = new ArrayList<>();
+        planners.add(new Planner("INF115", appModel));
     }
 
     @Override
@@ -27,7 +30,7 @@ public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
         if (findPlannerByName(plannerName) != null) {
             throw new IllegalArgumentException("A planner with this name already exists");
         }
-        planners.add(new Planner(plannerName));
+        planners.add(new Planner(plannerName, appModel));
     }
 
     @Override
@@ -47,6 +50,6 @@ public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
 
     @Override
     public void openPlanner(String selectedPlanName) {
-        System.out.println("not implemented");
+        appModel.openPlanner(selectedPlanName);
     }
 }

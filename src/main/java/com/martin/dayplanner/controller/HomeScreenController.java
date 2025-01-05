@@ -1,16 +1,17 @@
 package com.martin.dayplanner.controller;
 
-import com.martin.dayplanner.controller.ControllableHomeScreen;
 import com.martin.dayplanner.view.HomeScreenView;
 
 public class HomeScreenController {
 
     private ControllableHomeScreen model;
     private HomeScreenView view;
+    private AppController appController;
 
-    public HomeScreenController(ControllableHomeScreen model, HomeScreenView view) {
+    public HomeScreenController(ControllableHomeScreen model, HomeScreenView view, AppController appController) {
         this.model = model;
         this.view = view;
+        this.appController = appController;
 
         // Koble knappene til deres respektive handlinger
         setupEventHandlers();
@@ -37,6 +38,7 @@ public class HomeScreenController {
         if (selectedPlanName != null) {
             // Naviger til valgt plan
             model.openPlanner(selectedPlanName); // Åpner den valgte planen
+            appController.updateActiveView();
         } else {
             System.out.println("No plan selected.");
         }

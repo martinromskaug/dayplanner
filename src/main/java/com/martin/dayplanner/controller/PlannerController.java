@@ -6,12 +6,16 @@ import javafx.scene.control.ListView;
 
 public class PlannerController {
 
+    private ControllableDayPlanner model;
     private PlannerView view;
+    private AppController appController;
     private TaskActionHandler actionHandler;
     private TaskDragAndDropHandler dragAndDropHandler;
 
-    public PlannerController(ControllableDayPlanner model, PlannerView view) {
+    public PlannerController(ControllableDayPlanner model, PlannerView view, AppController appController) {
+        this.model = model;
         this.view = view;
+        this.appController = appController;
         this.actionHandler = new TaskActionHandler(model, view);
         this.dragAndDropHandler = new TaskDragAndDropHandler(model, view);
         setupListeners();
@@ -28,5 +32,11 @@ public class PlannerController {
         view.getEditTaskButton().setOnAction(e -> actionHandler.handleEditTask());
 
         dragAndDropHandler.setupDragAndDropListeners();
+
+        view.getGoToMenuButton().setOnAction(e -> {
+            model.goToMenu();
+            appController.updateActiveView();
+        });
     }
+
 }

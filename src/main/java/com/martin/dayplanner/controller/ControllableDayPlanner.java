@@ -54,4 +54,6 @@ public interface ControllableDayPlanner {
     boolean updateTaskStatus(String taskName, TaskStatus targetStatus);
 
     void editTask(Task task, String newName, LocalDate newDueDate, LocalTime newDueTime, TaskPriority newPriority);
+
+    void goToMenu();
 }

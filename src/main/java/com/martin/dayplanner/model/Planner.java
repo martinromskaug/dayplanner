@@ -17,11 +17,13 @@ import java.util.Map;
 public class Planner implements ControllableDayPlanner, ViewableDayPlanner {
 
     private String plannerName;
+    private AppModel appModel;
     private final Map<TaskStatus, List<Task>> tasksByStatus;
     private final List<Task> allTasks;
     private final StorageHandler storageHandler;
 
-    public Planner(String plannerName) {
+    public Planner(String plannerName, AppModel appModel) {
+        this.appModel = appModel;
         this.plannerName = plannerName;
         this.tasksByStatus = new HashMap<>();
         this.allTasks = new ArrayList<>();
@@ -121,5 +123,10 @@ public class Planner implements ControllableDayPlanner, ViewableDayPlanner {
         task.setPriority(newPriority);
 
         saveTasks();
+    }
+
+    @Override
+    public void goToMenu() {
+        appModel.goToMenu();
     }
 }

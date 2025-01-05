@@ -12,7 +12,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
-public class HomeScreenView {
+public class HomeScreenView implements Viewable {
 
     private final ViewableHomeScreen model;
     private final Button createNewPlanButton;
@@ -68,7 +68,7 @@ public class HomeScreenView {
                         .collect(Collectors.toList()));
     }
 
-    // Eksponerer root layout
+    @Override
     public BorderPane getLayout() {
         return root;
     }

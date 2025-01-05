@@ -19,13 +19,14 @@ import java.util.stream.Collectors;
 import com.martin.dayplanner.model.task.Task;
 import com.martin.dayplanner.model.task.TaskStatus;
 
-public class PlannerView {
+public class PlannerView implements Viewable {
 
     private final ViewableDayPlanner planner;
 
     private final Button addTaskButton;
     private final Button removeTaskButton;
     private final Button editTaskButton;
+    private final Button goToMenuButton;
 
     private final ListView<String> newTasksListView;
     private final ListView<String> pendingTasksListView;
@@ -46,6 +47,7 @@ public class PlannerView {
         removeTaskButton.setVisible(false);
         editTaskButton = new Button("Edit Selected Task");
         editTaskButton.setVisible(false);
+        goToMenuButton = new Button("Go To Menu");
         newTasksListView = new ListView<>();
         pendingTasksListView = new ListView<>();
         completedTasksListView = new ListView<>();
@@ -80,6 +82,7 @@ public class PlannerView {
         root.setBottom(buttonColumns);
     }
 
+    @Override
     public BorderPane getLayout() {
         return root;
     }
@@ -106,7 +109,7 @@ public class PlannerView {
     }
 
     private HBox createButtonSection() {
-        return new HBox(10, removeTaskButton, editTaskButton, addTaskButton);
+        return new HBox(10, goToMenuButton, removeTaskButton, editTaskButton, addTaskButton);
     }
 
     private VBox createTaskColumn(String title, ListView<String> listView) {
@@ -144,6 +147,10 @@ public class PlannerView {
 
     public Button getEditTaskButton() {
         return editTaskButton;
+    }
+
+    public Button getGoToMenuButton() {
+        return goToMenuButton;
     }
 
     public List<ListView<String>> getAllTaskLists() {
