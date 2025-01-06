@@ -1,6 +1,5 @@
 package com.martin.dayplanner.controller;
 
-import com.martin.dayplanner.model.AppModel;
 import com.martin.dayplanner.model.HomeScreen;
 import com.martin.dayplanner.model.Planner;
 import com.martin.dayplanner.view.AppView;
@@ -16,12 +15,13 @@ public class AppController {
         this.model = model;
         this.view = view;
 
-        // Initialiser kontrollere for hver skjerm
-        this.homeScreenController = new HomeScreenController(model.getHomeScreenModel(), view.getHomeScreenView(),
+        // Initialiser kontrollere
+        homeScreenController = new HomeScreenController(
+                model.getHomeScreenModel(),
+                view.getHomeScreenView(),
                 this);
-        this.plannerController = new PlannerController(model.getPlannerModel(), view.getPlannerView(), this);
 
-        // Sett den første visningen (HomeScreen)
+        // Sett initial visning
         updateActiveView();
     }
 
@@ -29,11 +29,22 @@ public class AppController {
         // Finn den aktive modellen
         Object activeModel = model.getActiveModel();
 
-        // Oppdater visningen basert på hvilken modell som er aktiv
         if (activeModel instanceof HomeScreen) {
             view.setCenterView(view.getHomeScreenView());
         } else if (activeModel instanceof Planner) {
+            // Oppdater PlannerView med ny modell
+            Planner activePlanner = (Planner) activeModel;
+            view.updatePlannerView(activePlanner);
+
+            // Opprett PlannerController kun når PlannerView er oppdatert
+            if (plannerController == null || !plannerController.isManaging(activePlanner)) {
+                plannerController = new PlannerController(
+                        activePlanner,
+                        view.getPlannerView(),
+                        this);
+            }
             view.setCenterView(view.getPlannerView());
         }
     }
+
 }

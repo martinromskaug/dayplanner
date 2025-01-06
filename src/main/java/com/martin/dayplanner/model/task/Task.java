@@ -5,26 +5,32 @@ import java.time.LocalTime;
 
 public class Task {
 
-    private String name;
+    private String taskName;
+    private String plannerName;
     private TaskStatus status;
     private TaskPriority priority;
     private LocalDate dueDate;
     private LocalTime dueTime;
 
-    public Task(String name) {
-        this.name = name;
+    public Task(String taskName, String plannerName) {
+        this.taskName = taskName;
+        this.plannerName = plannerName;
         this.status = TaskStatus.NEW;
         this.priority = null;
         this.dueDate = null;
         this.dueTime = null;
     }
 
-    public String getName() {
-        return name;
+    public String getTaskName() {
+        return taskName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
+
+    public String getPlannerName() {
+        return plannerName;
     }
 
     public TaskStatus getStatus() {

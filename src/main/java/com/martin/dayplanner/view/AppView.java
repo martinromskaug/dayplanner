@@ -8,15 +8,16 @@ public class AppView {
 
     private final BorderPane root;
     private final HomeScreenView homeScreenView;
-    private final PlannerView plannerView;
+    private PlannerView plannerView; // Kan være null til det settes
 
     public AppView(ViewableAppModel model) {
         this.root = new BorderPane();
         this.homeScreenView = new HomeScreenView(model.getHomeScreenModel());
-        this.plannerView = new PlannerView(model.getPlannerModel());
+
+        updatePlannerView(model.getPlannerModel());
 
         // Sett HomeScreenView som standardvisning
-        setCenterView(plannerView);
+        setCenterView(homeScreenView);
     }
 
     public HomeScreenView getHomeScreenView() {
@@ -25,6 +26,14 @@ public class AppView {
 
     public PlannerView getPlannerView() {
         return plannerView;
+    }
+
+    public void updatePlannerView(ViewableDayPlanner plannerModel) {
+        if (plannerModel != null) {
+            this.plannerView = new PlannerView(plannerModel);
+        } else {
+            System.out.println("Planner model is null, cannot update PlannerView.");
+        }
     }
 
     public void setCenterView(Viewable view) {

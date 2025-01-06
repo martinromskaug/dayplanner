@@ -30,7 +30,7 @@ public class Planner implements ControllableDayPlanner, ViewableDayPlanner {
         this.storageHandler = new StorageHandler();
 
         // Initialiser oppgaver fra lagring
-        List<Task> loadedTasks = storageHandler.loadTasks();
+        List<Task> loadedTasks = storageHandler.loadTasksForPlanner(this.plannerName);
         for (TaskStatus status : TaskStatus.values()) {
             tasksByStatus.put(status, new ArrayList<>());
         }
@@ -58,7 +58,7 @@ public class Planner implements ControllableDayPlanner, ViewableDayPlanner {
         if (taskName == null || taskName.trim().isEmpty()) {
             throw new IllegalArgumentException("Task name cannot be null or empty");
         }
-        Task newTask = new Task(taskName);
+        Task newTask = new Task(taskName, this.plannerName);
         newTask.setDueDate(dueDate);
         newTask.setDueTime(dueTime);
         newTask.setPriority(priority);
@@ -92,7 +92,7 @@ public class Planner implements ControllableDayPlanner, ViewableDayPlanner {
     @Override
     public Task findTaskByName(String selectedTaskName) {
         return allTasks.stream()
-                .filter(task -> task.getName().equals(selectedTaskName))
+                .filter(task -> task.getTaskName().equals(selectedTaskName))
                 .findFirst()
                 .orElse(null);
     }
@@ -117,7 +117,7 @@ public class Planner implements ControllableDayPlanner, ViewableDayPlanner {
     @Override
     public void editTask(Task task, String newName, LocalDate newDueDate, LocalTime newDueTime,
             TaskPriority newPriority) {
-        task.setName(newName);
+        task.setTaskName(newName);
         task.setDueDate(newDueDate);
         task.setDueTime(newDueTime);
         task.setPriority(newPriority);

@@ -14,6 +14,7 @@ public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
     public HomeScreen(AppModel appModel) {
         this.appModel = appModel;
         this.planners = new ArrayList<>();
+        planners.add(new Planner("Day Planner App", appModel));
         planners.add(new Planner("INF115", appModel));
     }
 
@@ -51,5 +52,9 @@ public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
     @Override
     public void openPlanner(String selectedPlanName) {
         appModel.openPlanner(selectedPlanName);
+    }
+
+    public Planner getPlannerModel() {
+        return null;
     }
 }

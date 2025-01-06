@@ -1,5 +1,6 @@
 package com.martin.dayplanner.controller;
 
+import com.martin.dayplanner.model.Planner;
 import com.martin.dayplanner.view.PlannerView;
 
 import javafx.scene.control.ListView;
@@ -37,6 +38,10 @@ public class PlannerController {
             model.goToMenu();
             appController.updateActiveView();
         });
+    }
+
+    public boolean isManaging(ControllableDayPlanner planner) {
+        return this.model.equals(planner);
     }
 
 }

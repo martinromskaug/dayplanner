@@ -38,7 +38,7 @@ public class EditTaskPopup {
 
         // Input fields pre-filled with task data
         Label nameLabel = new Label("Task Name:");
-        TextField nameInput = new TextField(task.getName());
+        TextField nameInput = new TextField(task.getTaskName());
 
         Label dateLabel = new Label("Due Date (optional):");
         DatePicker datePicker = new DatePicker(task.getDueDate());

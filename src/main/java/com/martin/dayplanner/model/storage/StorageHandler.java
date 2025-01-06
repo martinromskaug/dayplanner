@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class StorageHandler {
 
@@ -32,6 +33,13 @@ public class StorageHandler {
             saveTasks(new ArrayList<>()); // Opprett filen hvis den mangler
             return new ArrayList<>();
         }
+    }
+
+    public List<Task> loadTasksForPlanner(String plannerName) {
+        List<Task> allTasks = loadTasks();
+        return allTasks.stream()
+                .filter(task -> plannerName.equals(task.getPlannerName()))
+                .collect(Collectors.toList());
     }
 
     public void saveTasks(List<Task> tasks) {

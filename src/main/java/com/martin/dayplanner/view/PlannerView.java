@@ -126,7 +126,7 @@ public class PlannerView implements Viewable {
     private void updateTaskList(ListView<String> listView, TaskStatus status) {
         listView.getItems().setAll(
                 planner.getTasksByStatus(status).stream()
-                        .map(Task::getName)
+                        .map(Task::getTaskName)
                         .collect(Collectors.toList()));
     }
 
