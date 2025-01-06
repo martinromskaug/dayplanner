@@ -1,11 +1,11 @@
-package com.martin.dayplanner.view;
+package com.martin.dayplanner.view.planner;
 
 import java.util.List;
 
 import com.martin.dayplanner.model.task.Task;
 import com.martin.dayplanner.model.task.TaskStatus;
 
-public interface ViewableDayPlanner {
+public interface ViewablePlanner {
 
     public List<Task> getAllTasks();
 

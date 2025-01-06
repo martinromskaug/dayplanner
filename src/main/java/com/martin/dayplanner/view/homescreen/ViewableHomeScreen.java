@@ -1,4 +1,4 @@
-package com.martin.dayplanner.view;
+package com.martin.dayplanner.view.homescreen;
 
 import java.util.List;
 

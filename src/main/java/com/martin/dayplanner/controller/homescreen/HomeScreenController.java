@@ -1,6 +1,7 @@
-package com.martin.dayplanner.controller;
+package com.martin.dayplanner.controller.homescreen;
 
-import com.martin.dayplanner.view.HomeScreenView;
+import com.martin.dayplanner.controller.AppController;
+import com.martin.dayplanner.view.homescreen.HomeScreenView;
 
 public class HomeScreenController {
 

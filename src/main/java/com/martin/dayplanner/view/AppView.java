@@ -1,5 +1,9 @@
 package com.martin.dayplanner.view;
 
+import com.martin.dayplanner.view.homescreen.HomeScreenView;
+import com.martin.dayplanner.view.planner.PlannerView;
+import com.martin.dayplanner.view.planner.ViewablePlanner;
+
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -26,7 +30,7 @@ public class AppView {
         return plannerView;
     }
 
-    public void updatePlannerView(ViewableDayPlanner plannerModel) {
+    public void updatePlannerView(ViewablePlanner plannerModel) {
         if (plannerModel != null) {
             if (plannerView == null || !plannerView.getPlannerName().equals(plannerModel.getPlannerName())) {
                 this.plannerView = new PlannerView(plannerModel);

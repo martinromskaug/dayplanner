@@ -1,7 +1,8 @@
-package com.martin.dayplanner.view;
+package com.martin.dayplanner.view.homescreen;
 
 import java.util.stream.Collectors;
 import com.martin.dayplanner.model.Planner;
+import com.martin.dayplanner.view.Viewable;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;

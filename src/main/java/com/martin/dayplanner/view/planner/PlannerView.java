@@ -1,4 +1,4 @@
-package com.martin.dayplanner.view;
+package com.martin.dayplanner.view.planner;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -18,10 +18,11 @@ import java.util.stream.Collectors;
 
 import com.martin.dayplanner.model.task.Task;
 import com.martin.dayplanner.model.task.TaskStatus;
+import com.martin.dayplanner.view.Viewable;
 
 public class PlannerView implements Viewable {
 
-    private final ViewableDayPlanner planner;
+    private final ViewablePlanner planner;
 
     private final Button addTaskButton;
     private final Button removeTaskButton;
@@ -36,7 +37,7 @@ public class PlannerView implements Viewable {
     private final Label timeLabel;
     private final BorderPane root;
 
-    public PlannerView(ViewableDayPlanner planner) {
+    public PlannerView(ViewablePlanner planner) {
         this.planner = planner;
 
         // Initialiser GUI-komponenter

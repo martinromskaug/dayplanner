@@ -1,11 +1,11 @@
 package com.martin.dayplanner.model;
 
-import com.martin.dayplanner.controller.ControllableDayPlanner;
+import com.martin.dayplanner.controller.planner.ControllablePlanner;
 import com.martin.dayplanner.model.storage.StorageHandler;
 import com.martin.dayplanner.model.task.Task;
 import com.martin.dayplanner.model.task.TaskPriority;
 import com.martin.dayplanner.model.task.TaskStatus;
-import com.martin.dayplanner.view.ViewableDayPlanner;
+import com.martin.dayplanner.view.planner.ViewablePlanner;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Planner implements ControllableDayPlanner, ViewableDayPlanner {
+public class Planner implements ControllablePlanner, ViewablePlanner {
 
     private String plannerName;
     private AppModel appModel;

@@ -3,9 +3,9 @@ package com.martin.dayplanner.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.martin.dayplanner.controller.ControllableHomeScreen;
+import com.martin.dayplanner.controller.homescreen.ControllableHomeScreen;
 import com.martin.dayplanner.model.storage.StorageHandler;
-import com.martin.dayplanner.view.ViewableHomeScreen;
+import com.martin.dayplanner.view.homescreen.ViewableHomeScreen;
 
 public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
 

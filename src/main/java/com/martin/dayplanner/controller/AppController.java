@@ -1,5 +1,7 @@
 package com.martin.dayplanner.controller;
 
+import com.martin.dayplanner.controller.homescreen.HomeScreenController;
+import com.martin.dayplanner.controller.planner.PlannerController;
 import com.martin.dayplanner.model.HomeScreen;
 import com.martin.dayplanner.model.Planner;
 import com.martin.dayplanner.view.AppView;

@@ -1,7 +1,7 @@
-package com.martin.dayplanner.controller;
+package com.martin.dayplanner.controller.planner;
 
 import com.martin.dayplanner.model.task.TaskStatus;
-import com.martin.dayplanner.view.PlannerView;
+import com.martin.dayplanner.view.planner.PlannerView;
 
 import javafx.scene.control.ListView;
 import javafx.scene.input.ClipboardContent;
@@ -9,10 +9,10 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 
 public class TaskDragAndDropHandler {
-    private ControllableDayPlanner model;
+    private ControllablePlanner model;
     private PlannerView view;
 
-    public TaskDragAndDropHandler(ControllableDayPlanner model, PlannerView view) {
+    public TaskDragAndDropHandler(ControllablePlanner model, PlannerView view) {
         this.model = model;
         this.view = view;
     }

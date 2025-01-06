@@ -1,4 +1,4 @@
-package com.martin.dayplanner.controller;
+package com.martin.dayplanner.controller.homescreen;
 
 public interface ControllableHomeScreen {
 

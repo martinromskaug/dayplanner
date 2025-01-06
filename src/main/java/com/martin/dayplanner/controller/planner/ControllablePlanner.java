@@ -1,4 +1,4 @@
-package com.martin.dayplanner.controller;
+package com.martin.dayplanner.controller.planner;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -11,7 +11,7 @@ import com.martin.dayplanner.model.task.TaskStatus;
  * Interface for controlling a DayPlanner.
  * Provides methods for adding, removing, and updating tasks.
  */
-public interface ControllableDayPlanner {
+public interface ControllablePlanner {
 
     /**
      * Add a task to the planner.

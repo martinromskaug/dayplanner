@@ -1,18 +1,19 @@
-package com.martin.dayplanner.controller;
+package com.martin.dayplanner.controller.planner;
 
-import com.martin.dayplanner.view.PlannerView;
+import com.martin.dayplanner.controller.AppController;
+import com.martin.dayplanner.view.planner.PlannerView;
 
 import javafx.scene.control.ListView;
 
 public class PlannerController {
 
-    private ControllableDayPlanner model;
+    private ControllablePlanner model;
     private PlannerView view;
     private AppController appController;
     private TaskActionHandler actionHandler;
     private TaskDragAndDropHandler dragAndDropHandler;
 
-    public PlannerController(ControllableDayPlanner model, PlannerView view, AppController appController) {
+    public PlannerController(ControllablePlanner model, PlannerView view, AppController appController) {
         this.model = model;
         this.view = view;
         this.appController = appController;
@@ -39,7 +40,7 @@ public class PlannerController {
         });
     }
 
-    public boolean isManaging(ControllableDayPlanner planner) {
+    public boolean isManaging(ControllablePlanner planner) {
         return this.model.equals(planner);
     }
 

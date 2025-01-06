@@ -1,4 +1,4 @@
-package com.martin.dayplanner.view.popups;
+package com.martin.dayplanner.view.planner.popups;
 
 import com.martin.dayplanner.model.task.TaskPriority;
 import javafx.geometry.Insets;
