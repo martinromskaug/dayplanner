@@ -59,6 +59,10 @@ public class PlannerView implements Viewable {
         setupLayout();
     }
 
+    public String getPlannerName() {
+        return planner.getPlannerName();
+    }
+
     private void setupDateTime() {
         updateDateTime();
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> updateDateTime()));
@@ -88,7 +92,7 @@ public class PlannerView implements Viewable {
     }
 
     private HBox createTopSection() {
-        Label titleLabel = new Label("Day Planner");
+        Label titleLabel = new Label(planner.getPlannerName());
         titleLabel.getStyleClass().add("title-label");
 
         Region spacer = new Region();

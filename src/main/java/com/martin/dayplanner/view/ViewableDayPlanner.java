@@ -10,4 +10,6 @@ public interface ViewableDayPlanner {
     public List<Task> getAllTasks();
 
     public List<Task> getTasksByStatus(TaskStatus status);
+
+    public String getPlannerName();
 }

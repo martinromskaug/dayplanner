@@ -14,8 +14,6 @@ public class AppView {
         this.root = new BorderPane();
         this.homeScreenView = new HomeScreenView(model.getHomeScreenModel());
 
-        updatePlannerView(model.getPlannerModel());
-
         // Sett HomeScreenView som standardvisning
         setCenterView(homeScreenView);
     }
@@ -30,14 +28,22 @@ public class AppView {
 
     public void updatePlannerView(ViewableDayPlanner plannerModel) {
         if (plannerModel != null) {
-            this.plannerView = new PlannerView(plannerModel);
+            if (plannerView == null || !plannerView.getPlannerName().equals(plannerModel.getPlannerName())) {
+                this.plannerView = new PlannerView(plannerModel);
+                System.out.println("PlannerView updated with new model: " + plannerModel.getPlannerName());
+            }
         } else {
-            System.out.println("Planner model is null, cannot update PlannerView.");
+            this.plannerView = null; // Sett til null hvis modellen er null
+            System.out.println("Planner model is null, PlannerView reset.");
         }
     }
 
     public void setCenterView(Viewable view) {
-        root.setCenter(view.getLayout());
+        if (view != null) {
+            root.setCenter(view.getLayout());
+        } else {
+            System.out.println("View is null, cannot set center view.");
+        }
     }
 
     public void display(Stage stage) {

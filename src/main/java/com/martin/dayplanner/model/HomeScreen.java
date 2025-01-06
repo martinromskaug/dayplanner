@@ -4,18 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.martin.dayplanner.controller.ControllableHomeScreen;
+import com.martin.dayplanner.model.storage.StorageHandler;
 import com.martin.dayplanner.view.ViewableHomeScreen;
 
 public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
 
     private AppModel appModel;
-    private final List<Planner> planners;
+    private List<Planner> planners;
+    private final StorageHandler storageHandler;
 
     public HomeScreen(AppModel appModel) {
         this.appModel = appModel;
+        this.storageHandler = new StorageHandler();
         this.planners = new ArrayList<>();
-        planners.add(new Planner("Day Planner App", appModel));
-        planners.add(new Planner("INF115", appModel));
+
+        List<String> plannerNames = storageHandler.loadPlannerNames();
+        for (String name : plannerNames) {
+            planners.add(new Planner(name, appModel));
+        }
     }
 
     @Override
@@ -32,6 +38,8 @@ public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
             throw new IllegalArgumentException("A planner with this name already exists");
         }
         planners.add(new Planner(plannerName, appModel));
+        savePlannerNames();
+
     }
 
     @Override
@@ -39,7 +47,16 @@ public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
         Planner planner = findPlannerByName(plannerName);
         if (planner != null) {
             planners.remove(planner);
+            savePlannerNames();
         }
+    }
+
+    private void savePlannerNames() {
+        List<String> plannerNames = new ArrayList<>();
+        for (Planner planner : planners) {
+            plannerNames.add(planner.getPlannerName());
+        }
+        storageHandler.savePlannerNames(plannerNames);
     }
 
     public Planner findPlannerByName(String plannerName) {

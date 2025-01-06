@@ -8,14 +8,14 @@ public class AppController {
 
     private final ControllableAppModel model;
     private final AppView view;
-    private HomeScreenController homeScreenController;
-    private PlannerController plannerController;
+    private final HomeScreenController homeScreenController; // Holdes som én instans
+    private PlannerController plannerController; // Oppdateres kun ved behov
 
     public AppController(ControllableAppModel model, AppView view) {
         this.model = model;
         this.view = view;
 
-        // Initialiser kontrollere
+        // Initialiser HomeScreenController én gang
         homeScreenController = new HomeScreenController(
                 model.getHomeScreenModel(),
                 view.getHomeScreenView(),
@@ -26,24 +26,31 @@ public class AppController {
     }
 
     public void updateActiveView() {
-        // Finn den aktive modellen
         Object activeModel = model.getActiveModel();
 
         if (activeModel instanceof HomeScreen) {
             view.setCenterView(view.getHomeScreenView());
         } else if (activeModel instanceof Planner) {
-            // Oppdater PlannerView med ny modell
             Planner activePlanner = (Planner) activeModel;
+
+            // Oppdater PlannerView
             view.updatePlannerView(activePlanner);
 
-            // Opprett PlannerController kun når PlannerView er oppdatert
+            // Opprett PlannerController hvis PlannerView ikke er null
             if (plannerController == null || !plannerController.isManaging(activePlanner)) {
-                plannerController = new PlannerController(
-                        activePlanner,
-                        view.getPlannerView(),
-                        this);
+                if (view.getPlannerView() != null) {
+                    plannerController = new PlannerController(
+                            activePlanner,
+                            view.getPlannerView(),
+                            this);
+                } else {
+                    System.out.println("PlannerView is null, cannot create PlannerController.");
+                }
             }
+
             view.setCenterView(view.getPlannerView());
+        } else {
+            System.out.println("Unknown or null active model.");
         }
     }
 

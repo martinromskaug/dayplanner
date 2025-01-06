@@ -40,6 +40,7 @@ public class Planner implements ControllableDayPlanner, ViewableDayPlanner {
         }
     }
 
+    @Override
     public String getPlannerName() {
         return plannerName;
     }

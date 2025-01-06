@@ -3,6 +3,7 @@ package com.martin.dayplanner.model.storage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.martin.dayplanner.model.Planner;
 import com.martin.dayplanner.model.task.Task;
 
 import java.io.FileReader;
@@ -17,10 +18,11 @@ import java.util.stream.Collectors;
 
 public class StorageHandler {
 
-    private static final String FILE_PATH = "tasks.json";
+    private static final String TASKS_FILE_PATH = "tasks.json";
+    private static final String PLANNERS_FILE_PATH = "planners.json";
 
     public List<Task> loadTasks() {
-        try (FileReader reader = new FileReader(FILE_PATH)) {
+        try (FileReader reader = new FileReader(TASKS_FILE_PATH)) {
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
                     .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
@@ -43,7 +45,7 @@ public class StorageHandler {
     }
 
     public void saveTasks(List<Task> tasks) {
-        try (FileWriter writer = new FileWriter(FILE_PATH)) {
+        try (FileWriter writer = new FileWriter(TASKS_FILE_PATH)) {
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
                     .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
@@ -54,4 +56,25 @@ public class StorageHandler {
         }
     }
 
+    public List<String> loadPlannerNames() {
+        try (FileReader reader = new FileReader(PLANNERS_FILE_PATH)) {
+            Gson gson = new Gson();
+            Type listType = new TypeToken<List<String>>() {
+            }.getType();
+            List<String> plannerNames = gson.fromJson(reader, listType);
+            return plannerNames != null ? plannerNames : new ArrayList<>();
+        } catch (IOException e) {
+            System.err.println("Error loading planner names: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    public void savePlannerNames(List<String> plannerNames) {
+        try (FileWriter writer = new FileWriter(PLANNERS_FILE_PATH)) {
+            Gson gson = new Gson();
+            gson.toJson(plannerNames, writer);
+        } catch (IOException e) {
+            System.err.println("Error saving planner names: " + e.getMessage());
+        }
+    }
 }
