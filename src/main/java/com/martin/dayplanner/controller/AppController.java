@@ -10,7 +10,6 @@ public class AppController {
 
     private final ControllableAppModel model;
     private final AppView view;
-    private final HomeScreenController homeScreenController; // Holdes som én instans
     private PlannerController plannerController; // Oppdateres kun ved behov
 
     public AppController(ControllableAppModel model, AppView view) {
@@ -18,10 +17,7 @@ public class AppController {
         this.view = view;
 
         // Initialiser HomeScreenController én gang
-        homeScreenController = new HomeScreenController(
-                model.getHomeScreenModel(),
-                view.getHomeScreenView(),
-                this);
+        new HomeScreenController(model.getHomeScreenModel(), view.getHomeScreenView(), this);
 
         // Sett initial visning
         updateActiveView();

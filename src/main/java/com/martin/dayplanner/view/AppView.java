@@ -51,7 +51,7 @@ public class AppView {
     }
 
     public void display(Stage stage) {
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, 800, 700);
         scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
 
         stage.setScene(scene);

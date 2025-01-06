@@ -24,6 +24,20 @@ public class HomeScreenController {
 
         // Naviger til valgt plan når "Go to Plan"-knappen trykkes
         view.getGoToPlanButton().setOnAction(e -> goToSelectedPlan());
+
+        view.getRemovePlanButton().setOnAction(e -> removeSelectedPlan());
+    }
+
+    private void removeSelectedPlan() {
+        String selectedPlanName = view.getPlansListView().getSelectionModel().getSelectedItem();
+
+        if (selectedPlanName != null) {
+            // Naviger til valgt plan
+            model.removePlanner(selectedPlanName);
+            view.updatePlannerList();
+        } else {
+            System.out.println("No plan selected.");
+        }
     }
 
     private void createNewPlan() {

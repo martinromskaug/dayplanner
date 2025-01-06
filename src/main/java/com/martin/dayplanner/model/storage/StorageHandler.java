@@ -3,7 +3,6 @@ package com.martin.dayplanner.model.storage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.martin.dayplanner.model.Planner;
 import com.martin.dayplanner.model.task.Task;
 
 import java.io.FileReader;

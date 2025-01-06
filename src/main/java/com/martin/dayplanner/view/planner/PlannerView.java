@@ -2,12 +2,10 @@ package com.martin.dayplanner.view.planner;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.util.Duration;
 
 import java.time.LocalDateTime;
@@ -60,10 +58,6 @@ public class PlannerView implements Viewable {
         setupLayout();
     }
 
-    public String getPlannerName() {
-        return planner.getPlannerName();
-    }
-
     private void setupDateTime() {
         updateDateTime();
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> updateDateTime()));
@@ -72,11 +66,11 @@ public class PlannerView implements Viewable {
     }
 
     private void setupLayout() {
-        // Tittelseksjon
+        // Toppseksjon
         HBox topSection = createTopSection();
 
         // Oppgavelister
-        HBox taskColumns = createTaskColumns();
+        GridPane taskColumns = createTaskColumns();
 
         // Knappeseksjon
         HBox buttonColumns = createButtonSection();
@@ -93,33 +87,75 @@ public class PlannerView implements Viewable {
     }
 
     private HBox createTopSection() {
+        // Tittel
         Label titleLabel = new Label(planner.getPlannerName());
         titleLabel.getStyleClass().add("title-label");
 
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
+        // Dato og klokke
+        Label dateLabel = new Label(LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMM dd")));
+        dateLabel.getStyleClass().add("date-label");
 
-        VBox dateTimeBox = new VBox(10, dateLabel, timeLabel);
+        Label yearLabel = new Label(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy")));
+        yearLabel.getStyleClass().add("year-label");
+
+        VBox dateBox = new VBox(2, dateLabel, yearLabel);
+        dateBox.setAlignment(Pos.CENTER_LEFT);
+
+        Label timeLabel = new Label(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+        timeLabel.getStyleClass().add("clock-label");
+
+        HBox dateTimeBox = new HBox(10, dateBox, timeLabel);
+        dateTimeBox.setAlignment(Pos.CENTER_RIGHT);
         dateTimeBox.getStyleClass().add("date-time-box");
 
-        return new HBox(titleLabel, spacer, dateTimeBox);
+        // Toppseksjon med tittel og dato/klokke
+        HBox topBox = new HBox(titleLabel, dateTimeBox);
+        topBox.setAlignment(Pos.CENTER);
+        topBox.setPadding(new Insets(20, 20, 20, 20));
+        HBox.setHgrow(dateTimeBox, Priority.ALWAYS);
+
+        return topBox;
     }
 
-    private HBox createTaskColumns() {
+    private GridPane createTaskColumns() {
+        GridPane taskGrid = new GridPane();
+        taskGrid.setPadding(new Insets(20, 20, 20, 20));
+        taskGrid.setHgap(5);
+        taskGrid.setVgap(20);
+        taskGrid.getStyleClass().add("task-grid");
+
         VBox newTasks = createTaskColumn("New Tasks", newTasksListView);
         VBox pendingTasks = createTaskColumn("Pending Tasks", pendingTasksListView);
         VBox completedTasks = createTaskColumn("Completed Tasks", completedTasksListView);
 
-        return new HBox(20, newTasks, pendingTasks, completedTasks);
-    }
+        taskGrid.add(newTasks, 0, 0);
+        taskGrid.add(pendingTasks, 1, 0);
+        taskGrid.add(completedTasks, 2, 0);
 
-    private HBox createButtonSection() {
-        return new HBox(10, goToMenuButton, removeTaskButton, editTaskButton, addTaskButton);
+        return taskGrid;
     }
 
     private VBox createTaskColumn(String title, ListView<String> listView) {
-        Label label = new Label(title);
-        return new VBox(5, label, listView);
+        Label columnLabel = new Label(title);
+        columnLabel.getStyleClass().add("section-label");
+
+        VBox listBox = new VBox(listView);
+        listBox.getStyleClass().add("plans-box"); // Legg til samme stil som i HomeScreenView
+
+        VBox columnBox = new VBox(10, columnLabel, listBox);
+        columnBox.setAlignment(Pos.TOP_CENTER);
+        columnBox.getStyleClass().add("task-column");
+        columnBox.setPadding(new Insets(10));
+        return columnBox;
+    }
+
+    private HBox createButtonSection() {
+        HBox buttonRow = new HBox(10, goToMenuButton, removeTaskButton, editTaskButton, addTaskButton);
+        buttonRow.setAlignment(Pos.CENTER);
+        buttonRow.setPadding(new Insets(10, 20, 20, 20));
+        buttonRow.getStyleClass().add("button-row");
+
+        return buttonRow;
     }
 
     public void updateAllTaskLists() {
@@ -164,5 +200,9 @@ public class PlannerView implements Viewable {
         allTaskLists.add(pendingTasksListView);
         allTaskLists.add(completedTasksListView);
         return allTaskLists;
+    }
+
+    public String getPlannerName() {
+        return planner.getPlannerName();
     }
 }

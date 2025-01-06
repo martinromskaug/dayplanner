@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.martin.dayplanner.controller.homescreen.ControllableHomeScreen;
 import com.martin.dayplanner.model.storage.StorageHandler;
+import com.martin.dayplanner.model.task.Task;
 import com.martin.dayplanner.view.homescreen.ViewableHomeScreen;
 
 public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
@@ -46,7 +47,14 @@ public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
     public void removePlanner(String plannerName) {
         Planner planner = findPlannerByName(plannerName);
         if (planner != null) {
+            // Fjern alle oppgaver relatert til denne planleggeren
+            List<Task> tasks = planner.getAllTasks();
+            tasks.forEach(task -> planner.removeTask(task.getTaskName()));
+
+            // Fjern selve planleggeren
             planners.remove(planner);
+
+            // Oppdater lagringen
             savePlannerNames();
         }
     }
