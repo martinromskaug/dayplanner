@@ -3,7 +3,6 @@ package com.martin.dayplanner.view.views.homescreen;
 import com.martin.dayplanner.view.views.BaseView;
 import com.martin.dayplanner.model.Planner;
 import com.martin.dayplanner.model.task.Task;
-import com.martin.dayplanner.model.task.TaskStatus;
 import com.martin.dayplanner.view.Viewable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -37,6 +36,7 @@ public class HomeScreenView extends BaseView implements Viewable {
 
         root = new BorderPane();
         updatePlannerList();
+        updateActiveTaskList();
         setupLayout();
     }
 
@@ -74,6 +74,13 @@ public class HomeScreenView extends BaseView implements Viewable {
         plansListView.getItems().setAll(
                 model.getPlanners().stream()
                         .map(Planner::getPlannerName)
+                        .toList());
+    }
+
+    public void updateActiveTaskList() {
+        activeTasksListView.getItems().setAll(
+                model.getActiveTasks().stream()
+                        .map(Task::getTaskName)
                         .toList());
     }
 

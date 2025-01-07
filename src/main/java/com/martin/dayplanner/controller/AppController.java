@@ -10,6 +10,7 @@ public class AppController {
 
     private final ControllableAppModel model;
     private final AppView view;
+    private HomeScreenController homeScreenController;
     private PlannerController plannerController; // Oppdateres kun ved behov
 
     public AppController(ControllableAppModel model, AppView view) {
@@ -17,7 +18,8 @@ public class AppController {
         this.view = view;
 
         // Initialiser HomeScreenController én gang
-        new HomeScreenController(model.getHomeScreenModel(), view.getHomeScreenView(), this);
+        this.homeScreenController = new HomeScreenController(model.getHomeScreenModel(), view.getHomeScreenView(),
+                this);
 
         // Sett initial visning
         updateActiveView();
@@ -28,6 +30,7 @@ public class AppController {
 
         if (activeModel instanceof HomeScreen) {
             view.setCenterView(view.getHomeScreenView());
+            homeScreenController.updateHomeScreen();
         } else if (activeModel instanceof Planner) {
             Planner activePlanner = (Planner) activeModel;
 

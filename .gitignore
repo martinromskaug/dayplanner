@@ -15,4 +15,4 @@ Thumbs.db
 *.log
 
 # Spesifikke filer
-planners.json
+data/planners.json

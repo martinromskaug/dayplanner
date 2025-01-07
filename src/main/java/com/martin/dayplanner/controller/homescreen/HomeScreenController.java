@@ -71,4 +71,8 @@ public class HomeScreenController {
         }
     }
 
+    public void updateHomeScreen() {
+        view.updateActiveTaskList();
+    }
+
 }

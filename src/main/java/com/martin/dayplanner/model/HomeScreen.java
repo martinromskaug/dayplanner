@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.martin.dayplanner.controller.homescreen.ControllableHomeScreen;
 import com.martin.dayplanner.model.storage.StorageHandler;
+import com.martin.dayplanner.model.task.Task;
+import com.martin.dayplanner.model.task.TaskStatus;
 import com.martin.dayplanner.view.views.homescreen.ViewableHomeScreen;
 
 public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
@@ -59,4 +61,22 @@ public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
     public void openPlanner(String selectedPlanName) {
         appModel.openPlanner(selectedPlanName);
     }
+
+    @Override
+    public List<Task> getActiveTasks() {
+        List<Task> activeTasks = new ArrayList<>();
+        List<String> plannerNames = storageHandler.getAllPlannerNames();
+
+        for (String plannerName : plannerNames) {
+            List<Task> tasksForPlanner = storageHandler.getTasksForPlanner(plannerName);
+            for (Task task : tasksForPlanner) {
+                if (task.getStatus() == TaskStatus.ACTIVE) {
+                    activeTasks.add(task);
+                }
+            }
+        }
+
+        return activeTasks;
+    }
+
 }
