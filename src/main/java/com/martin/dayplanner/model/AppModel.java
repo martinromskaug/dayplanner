@@ -1,16 +1,19 @@
 package com.martin.dayplanner.model;
 
 import com.martin.dayplanner.controller.ControllableAppModel;
+import com.martin.dayplanner.model.storage.StorageHandler;
 import com.martin.dayplanner.view.ViewableAppModel;
 
 public class AppModel implements ViewableAppModel, ControllableAppModel {
 
+    private final StorageHandler storageHandler;
     private final HomeScreen homeScreenModel;
     private Object activeModel;
     private String activePlanner;
 
     public AppModel() {
-        this.homeScreenModel = new HomeScreen(this);
+        this.storageHandler = new StorageHandler();
+        this.homeScreenModel = new HomeScreen(this, storageHandler);
         this.activeModel = homeScreenModel;
         this.activePlanner = null;
     }
@@ -21,7 +24,6 @@ public class AppModel implements ViewableAppModel, ControllableAppModel {
     }
 
     public void openPlanner(String plannerName) {
-        // Hvis du vil støtte åpning av ulike planleggere basert på navn
         Planner selectedPlanner = homeScreenModel.findPlannerByName(plannerName);
         if (selectedPlanner != null) {
             activeModel = selectedPlanner;

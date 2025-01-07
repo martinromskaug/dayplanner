@@ -12,87 +12,86 @@ import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 public class StorageHandler {
 
-    private static final String TASKS_FILE_PATH = "tasks.json";
     private static final String PLANNERS_FILE_PATH = "planners.json";
 
-    private List<Task> allTasks; // Holder oppgavene i minnet
+    private Map<String, List<Task>> planners; // Planleggernavn -> Oppgaveliste
 
     public StorageHandler() {
-        this.allTasks = loadTasks(); // Last opp oppgaver ved oppstart
+        this.planners = loadPlannersWithTasks(); // Last inn planleggere og oppgaver ved oppstart
     }
 
-    public List<Task> loadTasks() {
-        try (FileReader reader = new FileReader(TASKS_FILE_PATH)) {
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-                    .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
-                    .create();
-            Type taskListType = new TypeToken<List<Task>>() {
-            }.getType();
-            List<Task> tasks = gson.fromJson(reader, taskListType);
-            return tasks != null ? tasks : new ArrayList<>();
-        } catch (IOException e) {
-            System.err.println("Error loading tasks: " + e.getMessage());
-            return new ArrayList<>();
-        }
-    }
-
-    public List<Task> loadTasksForPlanner(String plannerName) {
-        return allTasks.stream()
-                .filter(task -> plannerName.equals(task.getPlannerName()))
-                .collect(Collectors.toList());
-    }
-
-    public void saveTask(Task task) {
-        // Fjern eventuelle eksisterende oppgaver med samme navn og planlegger
-        allTasks.removeIf(
-                t -> t.getTaskName().equals(task.getTaskName()) && t.getPlannerName().equals(task.getPlannerName()));
-        allTasks.add(task); // Legg til eller oppdater oppgaven
-        persistTasks();
-    }
-
-    public void removeTask(Task task) {
-        allTasks.removeIf(
-                t -> t.getTaskName().equals(task.getTaskName()) && t.getPlannerName().equals(task.getPlannerName()));
-        persistTasks();
-    }
-
-    private void persistTasks() {
-        try (FileWriter writer = new FileWriter(TASKS_FILE_PATH)) {
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-                    .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
-                    .create();
-            gson.toJson(allTasks, writer);
-        } catch (IOException e) {
-            System.err.println("Error saving tasks: " + e.getMessage());
-        }
-    }
-
-    public List<String> loadPlannerNames() {
+    private Map<String, List<Task>> loadPlannersWithTasks() {
         try (FileReader reader = new FileReader(PLANNERS_FILE_PATH)) {
-            Gson gson = new Gson();
-            Type listType = new TypeToken<List<String>>() {
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                    .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
+                    .create();
+            Type mapType = new TypeToken<Map<String, List<Task>>>() {
             }.getType();
-            List<String> plannerNames = gson.fromJson(reader, listType);
-            return plannerNames != null ? plannerNames : new ArrayList<>();
+            Map<String, List<Task>> loadedPlanners = gson.fromJson(reader, mapType);
+            return loadedPlanners != null ? loadedPlanners : new HashMap<>();
         } catch (IOException e) {
-            System.err.println("Error loading planner names: " + e.getMessage());
-            return new ArrayList<>();
+            System.err.println("Error loading planners and tasks: " + e.getMessage());
+            return new HashMap<>();
         }
     }
 
-    public void savePlannerNames(List<String> plannerNames) {
+    public void savePlannersWithTasks() {
         try (FileWriter writer = new FileWriter(PLANNERS_FILE_PATH)) {
-            Gson gson = new Gson();
-            gson.toJson(plannerNames, writer);
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                    .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
+                    .create();
+            gson.toJson(planners, writer);
         } catch (IOException e) {
-            System.err.println("Error saving planner names: " + e.getMessage());
+            System.err.println("Error saving planners and tasks: " + e.getMessage());
+        }
+    }
+
+    public List<Task> getTasksForPlanner(String plannerName) {
+        return planners.getOrDefault(plannerName, new ArrayList<>());
+    }
+
+    public void addTaskToPlanner(String plannerName, Task task) {
+        planners.putIfAbsent(plannerName, new ArrayList<>());
+        planners.get(plannerName).add(task);
+        savePlannersWithTasks(); // Lagre endringen
+    }
+
+    public void removeTaskFromPlanner(String plannerName, String taskName) {
+        List<Task> tasks = planners.get(plannerName);
+        if (tasks != null) {
+            tasks.removeIf(task -> task.getTaskName().equals(taskName));
+            savePlannersWithTasks(); // Lagre endringen
+        }
+    }
+
+    public List<String> getAllPlannerNames() {
+        return new ArrayList<>(planners.keySet());
+    }
+
+    public void addPlanner(String plannerName) {
+        planners.putIfAbsent(plannerName, new ArrayList<>());
+        savePlannersWithTasks();
+    }
+
+    public void removePlanner(String plannerName) {
+        planners.remove(plannerName);
+        savePlannersWithTasks();
+    }
+
+    public void updateTask(Task task) {
+        List<Task> tasks = planners.get(task.getPlannerName());
+        if (tasks != null) {
+            tasks.removeIf(t -> t.getTaskName().equals(task.getTaskName()));
+            tasks.add(task);
+            savePlannersWithTasks();
         }
     }
 }
