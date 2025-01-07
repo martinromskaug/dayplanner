@@ -7,7 +7,7 @@ import com.martin.dayplanner.view.ViewableAppModel;
 public class AppModel implements ViewableAppModel, ControllableAppModel {
 
     private final StorageHandler storageHandler;
-    private final HomeScreen homeScreenModel;
+    private HomeScreen homeScreenModel;
     private Object activeModel;
     private String activePlanner;
 
