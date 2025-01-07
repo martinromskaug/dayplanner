@@ -16,7 +16,7 @@ public class Task {
         this.taskName = taskName;
         this.plannerName = plannerName;
         this.status = TaskStatus.NOTSTARTED;
-        this.priority = null;
+        this.priority = TaskPriority.LOW;
         this.dueDate = null;
         this.dueTime = null;
     }

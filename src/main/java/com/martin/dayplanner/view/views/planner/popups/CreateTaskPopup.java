@@ -48,6 +48,7 @@ public class CreateTaskPopup {
         Label priorityLabel = new Label("Priority:");
         ComboBox<TaskPriority> priorityBox = new ComboBox<>();
         priorityBox.getItems().addAll(TaskPriority.values());
+        priorityBox.setValue(TaskPriority.LOW);
 
         // Buttons
         Button addButton = new Button("Add");

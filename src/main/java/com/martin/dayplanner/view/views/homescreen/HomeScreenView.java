@@ -2,7 +2,6 @@ package com.martin.dayplanner.view.views.homescreen;
 
 import com.martin.dayplanner.view.views.BaseView;
 import com.martin.dayplanner.model.Planner;
-import com.martin.dayplanner.model.task.Task;
 import com.martin.dayplanner.view.Viewable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -57,8 +56,8 @@ public class HomeScreenView extends BaseView implements Viewable {
         centerGrid.add(createSection("Your Plans", plansListView, plansButtonRow), 0, 0, 1, 2);
 
         // Deadlines og Active Tasks seksjoner
-        centerGrid.add(createSection("Deadlines", deadlinesListView, "tasks-box"), 1, 0);
-        centerGrid.add(createSection("Active Tasks", activeTasksListView, "tasks-box"), 1, 1);
+        centerGrid.add(createSection("Deadlines", deadlinesListView, "tasks-box"), 1, 1);
+        centerGrid.add(createSection("Active Tasks", activeTasksListView, "tasks-box"), 1, 0);
 
         return centerGrid;
     }

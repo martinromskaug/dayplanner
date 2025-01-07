@@ -1,6 +1,7 @@
 package com.martin.dayplanner.view.views.planner;
 
 import com.martin.dayplanner.model.task.Task;
+import com.martin.dayplanner.model.task.TaskPriority;
 import com.martin.dayplanner.model.task.TaskStatus;
 import com.martin.dayplanner.view.views.BaseView;
 import com.martin.dayplanner.view.Viewable;
@@ -81,6 +82,8 @@ public class PlannerView extends BaseView implements Viewable {
 
     private List<String> getTaskNames(TaskStatus status) {
         return model.getTasksByStatus(status).stream()
+                .sorted((task1, task2) -> task2.getPriority().compareTo(task1.getPriority())) // Sorter etter prioritet
+                                                                                              // (høyest først)
                 .map(Task::getTaskName)
                 .collect(Collectors.toList());
     }
