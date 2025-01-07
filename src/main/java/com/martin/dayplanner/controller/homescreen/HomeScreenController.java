@@ -1,7 +1,8 @@
 package com.martin.dayplanner.controller.homescreen;
 
 import com.martin.dayplanner.controller.AppController;
-import com.martin.dayplanner.view.homescreen.HomeScreenView;
+import com.martin.dayplanner.view.views.homescreen.HomeScreenView;
+import com.martin.dayplanner.view.views.homescreen.popups.CreatePlanPopup;
 
 public class HomeScreenController {
 
@@ -41,9 +42,20 @@ public class HomeScreenController {
     }
 
     private void createNewPlan() {
-        // Logikk for å opprette en ny plan
-        model.addPlanner("New Plan"); // For testing, oppretter en plan med navn "New Plan"
-        view.updatePlannerList(); // Oppdater visningen
+        CreatePlanPopup popup = new CreatePlanPopup();
+        popup.setPlanCreationListener(planName -> {
+            if (planName != null && !planName.isEmpty()) {
+                try {
+                    model.addPlanner(planName);
+                    view.updatePlannerList(); // Oppdater listen med planer
+                } catch (IllegalArgumentException e) {
+                    System.err.println("Error: " + e.getMessage());
+                }
+            } else {
+                System.err.println("Plan name cannot be empty.");
+            }
+        });
+        popup.showPopup();
     }
 
     private void goToSelectedPlan() {
@@ -58,4 +70,5 @@ public class HomeScreenController {
             System.out.println("No plan selected.");
         }
     }
+
 }

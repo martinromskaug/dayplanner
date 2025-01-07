@@ -1,5 +1,6 @@
-package com.martin.dayplanner.view.planner.popups;
+package com.martin.dayplanner.view.views.planner.popups;
 
+import com.martin.dayplanner.model.task.Task;
 import com.martin.dayplanner.model.task.TaskPriority;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -12,21 +13,22 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 
-public class CreateTaskPopup {
+public class EditTaskPopup {
 
-    public interface TaskCreationListener {
-        void onTaskCreated(String name, LocalDate dueDate, LocalTime dueTime, TaskPriority priority);
+    public interface TaskEditListener {
+        void onTaskEdited(Task task, String newName, LocalDate newDueDate, LocalTime newDueTime,
+                TaskPriority newPriority);
     }
 
-    private TaskCreationListener listener;
+    private TaskEditListener listener;
 
-    public void setTaskCreationListener(TaskCreationListener listener) {
+    public void setTaskEditListener(TaskEditListener listener) {
         this.listener = listener;
     }
 
-    public void showPopup() {
+    public void showPopup(Task task) {
         Stage popupStage = new Stage();
-        popupStage.setTitle("Add New Task");
+        popupStage.setTitle("Edit Task");
 
         // Layout
         GridPane grid = new GridPane();
@@ -34,44 +36,48 @@ public class CreateTaskPopup {
         grid.setHgap(10);
         grid.setVgap(10);
 
-        // Input fields
+        // Input fields pre-filled with task data
         Label nameLabel = new Label("Task Name:");
-        TextField nameInput = new TextField();
+        TextField nameInput = new TextField(task.getTaskName());
 
-        Label dateLabel = new Label("Due Date:");
-        DatePicker datePicker = new DatePicker();
+        Label dateLabel = new Label("Due Date (optional):");
+        DatePicker datePicker = new DatePicker(task.getDueDate());
 
-        Label timeLabel = new Label("Due Time:");
+        Label timeLabel = new Label("Due Time (optional):");
         TextField timeInput = new TextField();
+        if (task.getDueTime() != null) {
+            timeInput.setText(task.getDueTime().toString());
+        }
         timeInput.setPromptText("HH:mm");
 
-        Label priorityLabel = new Label("Priority:");
+        Label priorityLabel = new Label("Priority (optional):");
         ComboBox<TaskPriority> priorityBox = new ComboBox<>();
         priorityBox.getItems().addAll(TaskPriority.values());
+        priorityBox.setValue(task.getPriority() != null ? task.getPriority() : TaskPriority.LOW);
 
         // Buttons
-        Button addButton = new Button("Add");
+        Button saveButton = new Button("Save");
         Button cancelButton = new Button("Cancel");
         Label errorLabel = new Label();
         errorLabel.setStyle("-fx-text-fill: red;");
 
         // Button actions
-        addButton.setOnAction(e -> {
-            String name = nameInput.getText().trim();
+        saveButton.setOnAction(e -> {
+            String newName = nameInput.getText().trim();
 
             // Validate name
-            if (name.isEmpty()) {
+            if (newName.isEmpty()) {
                 errorLabel.setText("Task name is required.");
                 return;
             }
 
-            LocalDate dueDate = datePicker.getValue();
-            LocalTime dueTime = null;
-            TaskPriority priority = priorityBox.getValue();
+            LocalDate newDueDate = datePicker.getValue();
+            LocalTime newDueTime = null;
+            TaskPriority newPriority = priorityBox.getValue();
 
             try {
                 if (!timeInput.getText().isEmpty()) {
-                    dueTime = LocalTime.parse(timeInput.getText());
+                    newDueTime = LocalTime.parse(timeInput.getText());
                 }
             } catch (DateTimeParseException ex) {
                 errorLabel.setText("Invalid time format. Use HH:mm.");
@@ -79,7 +85,7 @@ public class CreateTaskPopup {
             }
 
             if (listener != null) {
-                listener.onTaskCreated(name, dueDate, dueTime, priority);
+                listener.onTaskEdited(task, newName, newDueDate, newDueTime, newPriority);
             }
             popupStage.close();
         });
@@ -95,7 +101,7 @@ public class CreateTaskPopup {
         grid.add(timeInput, 1, 2);
         grid.add(priorityLabel, 0, 3);
         grid.add(priorityBox, 1, 3);
-        grid.add(addButton, 0, 4);
+        grid.add(saveButton, 0, 4);
         grid.add(cancelButton, 1, 4);
         grid.add(errorLabel, 0, 5, 2, 1);
 

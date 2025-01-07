@@ -1,4 +1,4 @@
-package com.martin.dayplanner.view.planner;
+package com.martin.dayplanner.view.views.planner;
 
 import java.util.List;
 

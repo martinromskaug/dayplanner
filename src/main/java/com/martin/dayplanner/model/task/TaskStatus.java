@@ -1,7 +1,7 @@
 package com.martin.dayplanner.model.task;
 
 public enum TaskStatus {
-    NEW,
-    PENDING,
+    NOTSTARTED,
+    ACTIVE,
     COMPLETED
 }

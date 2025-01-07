@@ -1,8 +1,8 @@
 package com.martin.dayplanner.view;
 
-import com.martin.dayplanner.view.homescreen.HomeScreenView;
-import com.martin.dayplanner.view.planner.PlannerView;
-import com.martin.dayplanner.view.planner.ViewablePlanner;
+import com.martin.dayplanner.view.views.homescreen.HomeScreenView;
+import com.martin.dayplanner.view.views.planner.PlannerView;
+import com.martin.dayplanner.view.views.planner.ViewablePlanner;
 
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;

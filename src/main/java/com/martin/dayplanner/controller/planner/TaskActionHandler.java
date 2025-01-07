@@ -1,9 +1,9 @@
 package com.martin.dayplanner.controller.planner;
 
 import com.martin.dayplanner.model.task.Task;
-import com.martin.dayplanner.view.planner.PlannerView;
-import com.martin.dayplanner.view.planner.popups.CreateTaskPopup;
-import com.martin.dayplanner.view.planner.popups.EditTaskPopup;
+import com.martin.dayplanner.view.views.planner.PlannerView;
+import com.martin.dayplanner.view.views.planner.popups.CreateTaskPopup;
+import com.martin.dayplanner.view.views.planner.popups.EditTaskPopup;
 
 import javafx.scene.control.ListView;
 
@@ -20,24 +20,24 @@ public class TaskActionHandler {
         CreateTaskPopup popup = new CreateTaskPopup();
         popup.setTaskCreationListener((name, dueDate, dueTime, priority) -> {
             if (model.addTask(name, dueDate, dueTime, priority)) {
-                view.updateAllTaskLists();
+                view.updateTaskLists();
             }
         });
         popup.showPopup();
     }
 
     public void handleRemoveTask() {
-        for (ListView<String> taskList : view.getAllTaskLists()) {
+        for (ListView<String> taskList : view.getTaskLists()) {
             String selectedTaskName = taskList.getSelectionModel().getSelectedItem();
             if (selectedTaskName != null) {
                 model.removeTask(selectedTaskName);
-                view.updateAllTaskLists();
+                view.updateTaskLists();
             }
         }
     }
 
     public void handleEditTask() {
-        for (ListView<String> taskList : view.getAllTaskLists()) {
+        for (ListView<String> taskList : view.getTaskLists()) {
             String selectedTaskName = taskList.getSelectionModel().getSelectedItem();
             if (selectedTaskName != null) {
                 Task taskToEdit = model.findTaskByName(selectedTaskName);
@@ -45,7 +45,7 @@ public class TaskActionHandler {
                     EditTaskPopup popup = new EditTaskPopup();
                     popup.setTaskEditListener((task, newName, newDueDate, newDueTime, newPriority) -> {
                         model.editTask(task, newName, newDueDate, newDueTime, newPriority);
-                        view.updateAllTaskLists();
+                        view.updateTaskLists();
                     });
                     popup.showPopup(taskToEdit);
                 }

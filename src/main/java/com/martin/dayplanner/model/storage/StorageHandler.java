@@ -20,6 +20,12 @@ public class StorageHandler {
     private static final String TASKS_FILE_PATH = "tasks.json";
     private static final String PLANNERS_FILE_PATH = "planners.json";
 
+    private List<Task> allTasks; // Holder oppgavene i minnet
+
+    public StorageHandler() {
+        this.allTasks = loadTasks(); // Last opp oppgaver ved oppstart
+    }
+
     public List<Task> loadTasks() {
         try (FileReader reader = new FileReader(TASKS_FILE_PATH)) {
             Gson gson = new GsonBuilder()
@@ -28,28 +34,41 @@ public class StorageHandler {
                     .create();
             Type taskListType = new TypeToken<List<Task>>() {
             }.getType();
-            return gson.fromJson(reader, taskListType);
+            List<Task> tasks = gson.fromJson(reader, taskListType);
+            return tasks != null ? tasks : new ArrayList<>();
         } catch (IOException e) {
             System.err.println("Error loading tasks: " + e.getMessage());
-            saveTasks(new ArrayList<>()); // Opprett filen hvis den mangler
             return new ArrayList<>();
         }
     }
 
     public List<Task> loadTasksForPlanner(String plannerName) {
-        List<Task> allTasks = loadTasks();
         return allTasks.stream()
                 .filter(task -> plannerName.equals(task.getPlannerName()))
                 .collect(Collectors.toList());
     }
 
-    public void saveTasks(List<Task> tasks) {
+    public void saveTask(Task task) {
+        // Fjern eventuelle eksisterende oppgaver med samme navn og planlegger
+        allTasks.removeIf(
+                t -> t.getTaskName().equals(task.getTaskName()) && t.getPlannerName().equals(task.getPlannerName()));
+        allTasks.add(task); // Legg til eller oppdater oppgaven
+        persistTasks();
+    }
+
+    public void removeTask(Task task) {
+        allTasks.removeIf(
+                t -> t.getTaskName().equals(task.getTaskName()) && t.getPlannerName().equals(task.getPlannerName()));
+        persistTasks();
+    }
+
+    private void persistTasks() {
         try (FileWriter writer = new FileWriter(TASKS_FILE_PATH)) {
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
                     .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
                     .create();
-            gson.toJson(tasks, writer);
+            gson.toJson(allTasks, writer);
         } catch (IOException e) {
             System.err.println("Error saving tasks: " + e.getMessage());
         }

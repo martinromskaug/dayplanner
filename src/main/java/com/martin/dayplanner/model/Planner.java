@@ -5,7 +5,7 @@ import com.martin.dayplanner.model.storage.StorageHandler;
 import com.martin.dayplanner.model.task.Task;
 import com.martin.dayplanner.model.task.TaskPriority;
 import com.martin.dayplanner.model.task.TaskStatus;
-import com.martin.dayplanner.view.planner.ViewablePlanner;
+import com.martin.dayplanner.view.views.planner.ViewablePlanner;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -67,7 +67,7 @@ public class Planner implements ControllablePlanner, ViewablePlanner {
         if (!allTasks.contains(newTask)) {
             allTasks.add(newTask);
             tasksByStatus.get(newTask.getStatus()).add(newTask);
-            saveTasks();
+            storageHandler.saveTask(newTask);
             return true;
         }
         return false;
@@ -79,7 +79,7 @@ public class Planner implements ControllablePlanner, ViewablePlanner {
         if (selectedTask != null) {
             allTasks.remove(selectedTask);
             tasksByStatus.get(selectedTask.getStatus()).remove(selectedTask);
-            saveTasks();
+            storageHandler.removeTask(selectedTask);
             return true;
         }
         return false;
@@ -105,14 +105,10 @@ public class Planner implements ControllablePlanner, ViewablePlanner {
             tasksByStatus.get(taskToUpdate.getStatus()).remove(taskToUpdate);
             taskToUpdate.setStatus(targetStatus);
             tasksByStatus.get(targetStatus).add(taskToUpdate);
-            saveTasks();
+            storageHandler.saveTask(taskToUpdate);
             return true;
         }
         return false;
-    }
-
-    private void saveTasks() {
-        storageHandler.saveTasks(allTasks);
     }
 
     @Override
@@ -123,7 +119,7 @@ public class Planner implements ControllablePlanner, ViewablePlanner {
         task.setDueTime(newDueTime);
         task.setPriority(newPriority);
 
-        saveTasks();
+        storageHandler.saveTask(task);
     }
 
     @Override

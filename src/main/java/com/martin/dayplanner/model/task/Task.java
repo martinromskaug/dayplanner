@@ -15,7 +15,7 @@ public class Task {
     public Task(String taskName, String plannerName) {
         this.taskName = taskName;
         this.plannerName = plannerName;
-        this.status = TaskStatus.NEW;
+        this.status = TaskStatus.NOTSTARTED;
         this.priority = null;
         this.dueDate = null;
         this.dueTime = null;

@@ -11,40 +11,65 @@
     -fx-font-size: 48px !important;
     -fx-font-weight: 800 !important;
     -fx-text-fill: #2c3e50 !important;
-    -fx-padding: 20; /* Mer rom rundt tittelen */
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 2, 2); /* Subtil skygge */
+    -fx-padding: 15; /* Mer rom rundt tittelen */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 10, 0, 4, 4); /* Kraftigere skygge */
     -fx-alignment: center; /* Sentrert tekst */
     -fx-letter-spacing: 1px; /* Litt mer avstand mellom bokstavene */
 }
 
 /* Stil for dato */
 .date-label {
-    -fx-font-size: 16px;
-    -fx-font-weight: 600;
-    -fx-text-fill: #2c3e50;
+    -fx-font-size: 16px !important;
+    -fx-font-weight: 600 !important;
+    -fx-text-fill: #43586c !important;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 2, 2);
 }
 
 /* Stil for år */
 .year-label {
-    -fx-font-size: 14px;
-    -fx-font-weight: 400;
-    -fx-text-fill: #2c3e50;
+    -fx-font-size: 14px !important;
+    -fx-font-weight: 400 !important;
+    -fx-text-fill: #43586c !important;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 2, 2);
 }
 
 /* Stil for klokke */
 .clock-label {
     -fx-font-size: 40px !important; /* Øk størrelsen for mer synlighet */
     -fx-font-weight: 800 !important; /* Gjør klokken mer fremtredende */
-    -fx-text-fill: #2c3e50; /* Match tekstfarge med resten av layouten */
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 3, 0, 2, 2); /* Subtil skygge for å fremheve klokken */
+    -fx-text-fill: #2c3e50 !important; /* Match tekstfarge med resten av layouten */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 6, 0, 3, 3); /* Mer fremtredende skygge */
 }
 
-
 .title-box {
-    -fx-padding: 30; /* Økt padding for å gi tittelen mer plass */
+    -fx-padding: 10; /* Økt padding for å gi tittelen mer plass */
     -fx-alignment: center;
     -fx-spacing: 200; /* Opprettholder balanse med dato/tid */
 }
+
+/* Stil for hvit boks rundt toppseksjonen */
+.title-box-wrapper {
+    -fx-padding: 10;
+    -fx-background-color: #ffffff; /* Hvit bakgrunn */
+    -fx-background-radius: 10px; /* Myke avrundede hjørner */
+    -fx-border-radius: 10px;
+    -fx-border-color: #e0e0e0; /* Lys grå kant */
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 4, 4); /* Subtil skygge */
+}
+
+
+/* Stil for underoverskrifter */
+.section-label {
+    -fx-font-size: 18px !important; /* Mindre enn tittelen */
+    -fx-font-weight: 900 !important; /* Fortsatt fet skrift */
+    -fx-text-fill: #43586c !important;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 6, 0, 2, 2); /* Subtil skygge */
+    -fx-padding: 10 0 10 0; /* Litt rom over og under */
+    -fx-alignment: center; /* Sentrert tekst */
+    -fx-letter-spacing: 0.5px; /* Litt mindre bokstavavstand */
+}
+
 
 
 /* Midtseksjonen */
@@ -55,7 +80,6 @@
     -fx-alignment: center;
 }
 
-
 /* Bokser for "Your Plans", "Deadlines" og "Active Tasks" */
 .plans-box, .deadlines-box, .tasks-box {
     -fx-padding: 15;
@@ -64,7 +88,7 @@
     -fx-border-radius: 10px;
     -fx-border-color: #e0e0e0; /* Lys grå kant */
     -fx-border-width: 1px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 10, 0, 2, 2); /* Subtil skygge */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 12, 0, 5, 5); /* Dypere skygge for bokser */
 }
 
 .plans-box {
@@ -86,8 +110,10 @@
 
 .list-view .list-cell {
     -fx-padding: 10;
-    -fx-background-color: transparent; /* Transparent celler */
+    -fx-font-size: 15px !important; /* Større skriftstørrelse */
+    -fx-font-weight: 900 !important; /* Ekstra fet skrift */
     -fx-text-fill: #2d3436; /* Moderne tekstfarge */
+    -fx-background-color: transparent; /* Transparent celler */
     -fx-border-color: transparent;
 }
 
@@ -100,6 +126,8 @@
     -fx-background-color: #e9ecef; /* Subtil blågrå ved fokus */
     -fx-border-radius: 5px;
 }
+
+
 
 /* Scrollbar */
 .scroll-bar {
@@ -124,39 +152,33 @@
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
     -fx-background-color: #ffffff; /* Ren hvit bakgrunn */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 3, 3); /* Skygge rundt tekstboks */
 }
 
-/* Knappene */
+/* Minimalistiske knapper */
 .button-row .button {
-    -fx-padding: 10 20;
-    -fx-font-size: 14px;
-    -fx-font-weight: 600; /* Semi-bold */
-    -fx-text-fill: #ffffff;
+    -fx-padding: 5 10; /* Reduser padding */
+    -fx-font-size: 18px; /* Mindre tekst */
+    -fx-font-weight: 500; /* Tynnere tekst */
+    -fx-text-fill: #ffffff; /* Hvit tekst */
     -fx-background-color: #0984e3; /* Frisk blå */
-    -fx-background-radius: 8px;
-    -fx-border-radius: 8px;
-    -fx-border-color: #74b9ff; /* Lys blå */
-    -fx-border-width: 1px;
+    -fx-background-radius: 5px; /* Mykere hjørner */
+    -fx-border-radius: 5px;
+    -fx-border-width: 0; /* Fjern kantlinjen */
     -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 1, 1); /* Subtil skygge */
 }
 
 .button-row .button:hover {
-    -fx-background-color: #74b9ff; /* Lys blå ved hover */
+    -fx-background-color: #74b9ff; /* Lysere blå ved hover */
 }
 
 .button-row .button:pressed {
     -fx-background-color: #0984e3; /* Original blå ved trykk */
 }
 
-/* Fokus på knapper */
-.button:focused {
-    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.15), 3, 0, 0, 0);
-}
 
 /* Andre komponenter */
 .label {
     -fx-font-size: 16px;
     -fx-text-fill: #2d3436;
 }
-

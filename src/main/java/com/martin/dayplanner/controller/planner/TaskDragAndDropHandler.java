@@ -1,7 +1,7 @@
 package com.martin.dayplanner.controller.planner;
 
 import com.martin.dayplanner.model.task.TaskStatus;
-import com.martin.dayplanner.view.planner.PlannerView;
+import com.martin.dayplanner.view.views.planner.PlannerView;
 
 import javafx.scene.control.ListView;
 import javafx.scene.input.ClipboardContent;
@@ -18,8 +18,8 @@ public class TaskDragAndDropHandler {
     }
 
     public void setupDragAndDropListeners() {
-        for (ListView<String> sourceList : view.getAllTaskLists()) {
-            for (ListView<String> targetList : view.getAllTaskLists()) {
+        for (ListView<String> sourceList : view.getTaskLists()) {
+            for (ListView<String> targetList : view.getTaskLists()) {
                 if (sourceList != targetList) {
                     setupDragAndDrop(sourceList, targetList);
                 }
@@ -52,7 +52,7 @@ public class TaskDragAndDropHandler {
                 String taskName = dragboard.getString();
                 TaskStatus targetStatus = getStatusFromListView(targetList);
                 if (targetStatus != null && model.updateTaskStatus(taskName, targetStatus)) {
-                    view.updateAllTaskLists();
+                    view.updateTaskLists();
                 }
                 event.setDropCompleted(true);
             }
@@ -61,11 +61,11 @@ public class TaskDragAndDropHandler {
     }
 
     private TaskStatus getStatusFromListView(ListView<String> listView) {
-        int index = view.getAllTaskLists().indexOf(listView);
+        int index = view.getTaskLists().indexOf(listView);
         if (index == 0)
-            return TaskStatus.NEW;
+            return TaskStatus.NOTSTARTED;
         if (index == 1)
-            return TaskStatus.PENDING;
+            return TaskStatus.ACTIVE;
         if (index == 2)
             return TaskStatus.COMPLETED;
         return null;
