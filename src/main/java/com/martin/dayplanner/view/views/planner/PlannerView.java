@@ -1,7 +1,6 @@
 package com.martin.dayplanner.view.views.planner;
 
 import com.martin.dayplanner.model.task.Task;
-import com.martin.dayplanner.model.task.TaskPriority;
 import com.martin.dayplanner.model.task.TaskStatus;
 import com.martin.dayplanner.view.views.BaseView;
 import com.martin.dayplanner.view.Viewable;
