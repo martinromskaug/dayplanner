@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class StorageHandler {
 
-    private static final String PLANNERS_FILE_PATH = "planners.json";
+    private static final String PLANNERS_FILE_PATH = "data/planners.json";
 
     private Map<String, List<Task>> planners; // Planleggernavn -> Oppgaveliste
 

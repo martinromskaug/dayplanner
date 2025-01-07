@@ -13,3 +13,6 @@ Thumbs.db
 
 # Loggfiler
 *.log
+
+# Spesifikke filer
+planners.json
