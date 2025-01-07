@@ -80,7 +80,7 @@ public class HomeScreenView extends BaseView implements Viewable {
     public void updateActiveTaskList() {
         activeTasksListView.getItems().setAll(
                 model.getActiveTasks().stream()
-                        .map(Task::getTaskName)
+                        .map(task -> task.getPlannerName() + ": " + task.getTaskName())
                         .toList());
     }
 
