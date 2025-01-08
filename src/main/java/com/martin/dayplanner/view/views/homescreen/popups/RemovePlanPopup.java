@@ -19,7 +19,6 @@ public class RemovePlanPopup {
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.setTitle("Confirm Removal");
 
-        // Opprett innholdet i popup-vinduet
         Label confirmationMessage = new Label("Are you sure you want to remove the plan: " + planName + "?");
         confirmationMessage.setWrapText(true);
 

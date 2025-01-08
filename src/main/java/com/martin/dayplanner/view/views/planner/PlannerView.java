@@ -81,8 +81,7 @@ public class PlannerView extends BaseView implements Viewable {
 
     private List<String> getTaskNames(TaskStatus status) {
         return model.getTasksByStatus(status).stream()
-                .sorted((task1, task2) -> task2.getPriority().compareTo(task1.getPriority())) // Sorter etter prioritet
-                                                                                              // (høyest først)
+                .sorted((task1, task2) -> task2.getPriority().compareTo(task1.getPriority()))
                 .map(Task::getTaskName)
                 .collect(Collectors.toList());
     }

@@ -20,10 +20,10 @@ public class StorageHandler {
 
     private static final String PLANNERS_FILE_PATH = "data/planners.json";
 
-    private Map<String, List<Task>> planners; // Planleggernavn -> Oppgaveliste
+    private Map<String, List<Task>> planners;
 
     public StorageHandler() {
-        this.planners = loadPlannersWithTasks(); // Last inn planleggere og oppgaver ved oppstart
+        this.planners = loadPlannersWithTasks();
     }
 
     private Map<String, List<Task>> loadPlannersWithTasks() {
@@ -61,14 +61,14 @@ public class StorageHandler {
     public void addTaskToPlanner(String plannerName, Task task) {
         planners.putIfAbsent(plannerName, new ArrayList<>());
         planners.get(plannerName).add(task);
-        savePlannersWithTasks(); // Lagre endringen
+        savePlannersWithTasks();
     }
 
     public void removeTaskFromPlanner(String plannerName, String taskName) {
         List<Task> tasks = planners.get(plannerName);
         if (tasks != null) {
             tasks.removeIf(task -> task.getTaskName().equals(taskName));
-            savePlannersWithTasks(); // Lagre endringen
+            savePlannersWithTasks();
         }
     }
 

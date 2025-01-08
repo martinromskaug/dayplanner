@@ -30,13 +30,11 @@ public class EditTaskPopup {
         Stage popupStage = new Stage();
         popupStage.setTitle("Edit Task");
 
-        // Layout
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10));
         grid.setHgap(10);
         grid.setVgap(10);
 
-        // Input fields pre-filled with task data
         Label nameLabel = new Label("Task Name:");
         TextField nameInput = new TextField(task.getTaskName());
 
@@ -55,17 +53,14 @@ public class EditTaskPopup {
         priorityBox.getItems().addAll(TaskPriority.values());
         priorityBox.setValue(task.getPriority() != null ? task.getPriority() : TaskPriority.LOW);
 
-        // Buttons
         Button saveButton = new Button("Save");
         Button cancelButton = new Button("Cancel");
         Label errorLabel = new Label();
         errorLabel.setStyle("-fx-text-fill: red;");
 
-        // Button actions
         saveButton.setOnAction(e -> {
             String newName = nameInput.getText().trim();
 
-            // Validate name
             if (newName.isEmpty()) {
                 errorLabel.setText("Task name is required.");
                 return;
@@ -92,7 +87,6 @@ public class EditTaskPopup {
 
         cancelButton.setOnAction(e -> popupStage.close());
 
-        // Add elements to grid
         grid.add(nameLabel, 0, 0);
         grid.add(nameInput, 1, 0);
         grid.add(dateLabel, 0, 1);
@@ -105,7 +99,6 @@ public class EditTaskPopup {
         grid.add(cancelButton, 1, 4);
         grid.add(errorLabel, 0, 5, 2, 1);
 
-        // Set up Scene and Stage
         Scene scene = new Scene(grid, 400, 300);
         popupStage.setScene(scene);
         popupStage.initModality(Modality.APPLICATION_MODAL);

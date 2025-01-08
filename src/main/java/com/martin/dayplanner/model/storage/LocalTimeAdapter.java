@@ -15,19 +15,19 @@ public class LocalTimeAdapter extends TypeAdapter<LocalTime> {
     @Override
     public void write(JsonWriter out, LocalTime value) throws IOException {
         if (value == null) {
-            out.nullValue(); // Skriv null til JSON hvis verdien er null
+            out.nullValue();
         } else {
-            out.value(value.format(formatter)); // Skriv formaterte verdier
+            out.value(value.format(formatter));
         }
     }
 
     @Override
     public LocalTime read(JsonReader in) throws IOException {
-        if (in.peek().name().equals("NULL")) { // Hvis JSON-verdien er null
-            in.nextNull(); // Hopp over verdien
-            return null; // Returner null
+        if (in.peek().name().equals("NULL")) {
+            in.nextNull();
+            return null;
         } else {
-            return LocalTime.parse(in.nextString(), formatter); // Parse gyldig LocalTime
+            return LocalTime.parse(in.nextString(), formatter);
         }
     }
 }

@@ -11,17 +11,15 @@ public class AppController {
     private final ControllableAppModel model;
     private final AppView view;
     private HomeScreenController homeScreenController;
-    private PlannerController plannerController; // Oppdateres kun ved behov
+    private PlannerController plannerController;
 
     public AppController(ControllableAppModel model, AppView view) {
         this.model = model;
         this.view = view;
 
-        // Initialiser HomeScreenController én gang
         this.homeScreenController = new HomeScreenController(model.getHomeScreenModel(), view.getHomeScreenView(),
                 this);
 
-        // Sett initial visning
         updateActiveView();
     }
 
@@ -34,10 +32,8 @@ public class AppController {
         } else if (activeModel instanceof Planner) {
             Planner activePlanner = (Planner) activeModel;
 
-            // Oppdater PlannerView
             view.updatePlannerView(activePlanner);
 
-            // Opprett PlannerController hvis PlannerView ikke er null
             if (plannerController == null || !plannerController.isManaging(activePlanner)) {
                 if (view.getPlannerView() != null) {
                     plannerController = new PlannerController(

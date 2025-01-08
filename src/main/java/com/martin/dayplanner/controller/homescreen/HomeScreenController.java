@@ -16,19 +16,16 @@ public class HomeScreenController {
         this.view = view;
         this.appController = appController;
 
-        // Koble knappene til deres respektive handlinger
         setupEventHandlers();
     }
 
     private void setupEventHandlers() {
-        // Koble knappene til deres respektive handlinger
         view.getCreateNewPlanButton().setOnAction(e -> createNewPlan());
         view.getGoToPlanButton().setOnAction(e -> goToSelectedPlan());
         view.getRemovePlanButton().setOnAction(e -> removeSelectedPlan());
 
-        // Legg til dobbeltklikkshåndtering for å navigere til en plan
         view.getPlansListView().setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) { // Sjekk om det er dobbeltklikk
+            if (event.getClickCount() == 2) {
                 goToSelectedPlan();
             }
         });
@@ -38,11 +35,9 @@ public class HomeScreenController {
         String selectedPlanName = view.getPlansListView().getSelectionModel().getSelectedItem();
 
         if (selectedPlanName != null) {
-            // Opprett og vis popup-en
             RemovePlanPopup popup = new RemovePlanPopup();
             boolean isConfirmed = popup.showPopup(selectedPlanName);
 
-            // Slett planen hvis brukeren bekreftet
             if (isConfirmed) {
                 model.removePlanner(selectedPlanName);
                 view.updateHomeScreen();
@@ -73,12 +68,10 @@ public class HomeScreenController {
     }
 
     private void goToSelectedPlan() {
-        // Hent valgt plan fra visningen
         String selectedPlanName = view.getPlansListView().getSelectionModel().getSelectedItem();
 
         if (selectedPlanName != null) {
-            // Naviger til valgt plan
-            model.openPlanner(selectedPlanName); // Åpner den valgte planen
+            model.openPlanner(selectedPlanName);
             appController.updateActiveView();
         } else {
             System.out.println("No plan selected.");

@@ -15,19 +15,19 @@ public class LocalDateAdapter extends TypeAdapter<LocalDate> {
     @Override
     public void write(JsonWriter out, LocalDate value) throws IOException {
         if (value == null) {
-            out.nullValue(); // Skriv en null-verdi til JSON hvis LocalDate er null
+            out.nullValue();
         } else {
-            out.value(value.format(formatter)); // Skriv formaterte LocalDate-verdier
+            out.value(value.format(formatter));
         }
     }
 
     @Override
     public LocalDate read(JsonReader in) throws IOException {
-        if (in.peek().name().equals("NULL")) { // Håndter null-verdi under lesing
+        if (in.peek().name().equals("NULL")) {
             in.nextNull();
             return null;
         } else {
-            return LocalDate.parse(in.nextString(), formatter); // Parse gyldige verdier
+            return LocalDate.parse(in.nextString(), formatter);
         }
     }
 }

@@ -62,11 +62,9 @@ public class HomeScreenView extends BaseView implements Viewable {
         centerGrid.setVgap(15);
         centerGrid.getStyleClass().add("center-grid");
 
-        // Your Plans-seksjon med knappene under listen
         HBox plansButtonRow = createButtonRow();
         centerGrid.add(createSection("Your Plans", plansListView, plansButtonRow), 0, 0, 1, 2);
 
-        // Deadlines og Active Tasks seksjoner
         centerGrid.add(createSection("Deadlines", deadlinesListView, "tasks-box"), 1, 1);
         centerGrid.add(createSection("Active Tasks", activeTasksListView, "tasks-box"), 1, 0);
 
@@ -101,32 +99,27 @@ public class HomeScreenView extends BaseView implements Viewable {
         deadlinesListView.getItems().setAll(
                 model.getTasksWithDeadline().stream()
                         .filter(task -> {
-                            // Sjekk at oppgaven ikke har utgått
                             LocalDate today = LocalDate.now();
                             LocalTime now = LocalTime.now();
                             boolean isNotExpired = task.getDueDate().isAfter(today) ||
                                     (task.getDueDate().isEqual(today) && task.getDueTime().isAfter(now));
 
-                            // Sjekk at oppgaven ikke er fullført
                             boolean isNotCompleted = task.getStatus() != TaskStatus.COMPLETED;
 
                             return isNotExpired && isNotCompleted;
                         })
                         .sorted((task1, task2) -> {
-                            // Sammenlign datoer og tider for å sortere
                             int dateComparison = task1.getDueDate().compareTo(task2.getDueDate());
                             if (dateComparison == 0) {
-                                // Hvis datoene er like, sammenlign tidene
                                 return task1.getDueTime().compareTo(task2.getDueTime());
                             }
                             return dateComparison;
                         })
                         .map(task -> String.format("%s kl. %s %s: %s",
-                                task.getDueDate().format(dateFormatter).toLowerCase(), // Dato med månedsnavn
-                                task.getDueTime().format(timeFormatter), // Tid
-                                task.getPlannerName(), // Planner
-                                task.getTaskName() // Task Name
-                        ))
+                                task.getDueDate().format(dateFormatter).toLowerCase(),
+                                task.getDueTime().format(timeFormatter),
+                                task.getPlannerName(),
+                                task.getTaskName()))
                         .toList());
     }
 
