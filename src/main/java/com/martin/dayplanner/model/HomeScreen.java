@@ -79,4 +79,21 @@ public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
         return activeTasks;
     }
 
+    @Override
+    public List<Task> getTasksWithDeadline() {
+        List<Task> tasksWithDeadline = new ArrayList<>();
+        List<String> plannerNames = storageHandler.getAllPlannerNames();
+
+        for (String plannerName : plannerNames) {
+            List<Task> tasksForPlanner = storageHandler.getTasksForPlanner(plannerName);
+            for (Task task : tasksForPlanner) {
+                if (task.getDueDate() != null && task.getDueTime() != null) {
+                    tasksWithDeadline.add(task);
+                }
+            }
+        }
+
+        return tasksWithDeadline;
+    }
+
 }

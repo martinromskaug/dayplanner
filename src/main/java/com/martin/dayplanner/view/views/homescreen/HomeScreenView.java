@@ -1,7 +1,13 @@
 package com.martin.dayplanner.view.views.homescreen;
 
 import com.martin.dayplanner.view.views.BaseView;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
 import com.martin.dayplanner.model.Planner;
+import com.martin.dayplanner.model.task.TaskStatus;
 import com.martin.dayplanner.view.Viewable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -34,9 +40,14 @@ public class HomeScreenView extends BaseView implements Viewable {
         activeTasksListView = createListView();
 
         root = new BorderPane();
-        updatePlannerList();
-        updateActiveTaskList();
+        updateHomeScreen();
         setupLayout();
+    }
+
+    public void updateHomeScreen() {
+        updateActiveTaskList();
+        updatePlannerList();
+        updateDeadlinesList();
     }
 
     private void setupLayout() {
@@ -80,6 +91,42 @@ public class HomeScreenView extends BaseView implements Viewable {
         activeTasksListView.getItems().setAll(
                 model.getActiveTasks().stream()
                         .map(task -> task.getPlannerName() + ": " + task.getTaskName())
+                        .toList());
+    }
+
+    public void updateDeadlinesList() {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MMM");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        deadlinesListView.getItems().setAll(
+                model.getTasksWithDeadline().stream()
+                        .filter(task -> {
+                            // Sjekk at oppgaven ikke har utgått
+                            LocalDate today = LocalDate.now();
+                            LocalTime now = LocalTime.now();
+                            boolean isNotExpired = task.getDueDate().isAfter(today) ||
+                                    (task.getDueDate().isEqual(today) && task.getDueTime().isAfter(now));
+
+                            // Sjekk at oppgaven ikke er fullført
+                            boolean isNotCompleted = task.getStatus() != TaskStatus.COMPLETED;
+
+                            return isNotExpired && isNotCompleted;
+                        })
+                        .sorted((task1, task2) -> {
+                            // Sammenlign datoer og tider for å sortere
+                            int dateComparison = task1.getDueDate().compareTo(task2.getDueDate());
+                            if (dateComparison == 0) {
+                                // Hvis datoene er like, sammenlign tidene
+                                return task1.getDueTime().compareTo(task2.getDueTime());
+                            }
+                            return dateComparison;
+                        })
+                        .map(task -> String.format("%s kl. %s %s: %s",
+                                task.getDueDate().format(dateFormatter).toLowerCase(), // Dato med månedsnavn
+                                task.getDueTime().format(timeFormatter), // Tid
+                                task.getPlannerName(), // Planner
+                                task.getTaskName() // Task Name
+                        ))
                         .toList());
     }
 

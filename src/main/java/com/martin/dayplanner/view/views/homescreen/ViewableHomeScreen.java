@@ -11,4 +11,5 @@ public interface ViewableHomeScreen {
 
     public List<Task> getActiveTasks();
 
+    public List<Task> getTasksWithDeadline();
 }

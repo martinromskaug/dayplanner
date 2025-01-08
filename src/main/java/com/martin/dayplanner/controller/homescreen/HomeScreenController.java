@@ -3,6 +3,7 @@ package com.martin.dayplanner.controller.homescreen;
 import com.martin.dayplanner.controller.AppController;
 import com.martin.dayplanner.view.views.homescreen.HomeScreenView;
 import com.martin.dayplanner.view.views.homescreen.popups.CreatePlanPopup;
+import com.martin.dayplanner.view.views.homescreen.popups.RemovePlanPopup;
 
 public class HomeScreenController {
 
@@ -37,9 +38,18 @@ public class HomeScreenController {
         String selectedPlanName = view.getPlansListView().getSelectionModel().getSelectedItem();
 
         if (selectedPlanName != null) {
-            // Naviger til valgt plan
-            model.removePlanner(selectedPlanName);
-            view.updatePlannerList();
+            // Opprett og vis popup-en
+            RemovePlanPopup popup = new RemovePlanPopup();
+            boolean isConfirmed = popup.showPopup(selectedPlanName);
+
+            // Slett planen hvis brukeren bekreftet
+            if (isConfirmed) {
+                model.removePlanner(selectedPlanName);
+                view.updatePlannerList();
+                System.out.println("Plan removed: " + selectedPlanName);
+            } else {
+                System.out.println("Plan removal canceled.");
+            }
         } else {
             System.out.println("No plan selected.");
         }
@@ -76,7 +86,7 @@ public class HomeScreenController {
     }
 
     public void updateHomeScreen() {
-        view.updateActiveTaskList();
+        view.updateHomeScreen();
     }
 
 }
