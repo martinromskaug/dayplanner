@@ -20,13 +20,17 @@ public class HomeScreenController {
     }
 
     private void setupEventHandlers() {
-        // Opprett ny plan når "Create New Plan"-knappen trykkes
+        // Koble knappene til deres respektive handlinger
         view.getCreateNewPlanButton().setOnAction(e -> createNewPlan());
-
-        // Naviger til valgt plan når "Go to Plan"-knappen trykkes
         view.getGoToPlanButton().setOnAction(e -> goToSelectedPlan());
-
         view.getRemovePlanButton().setOnAction(e -> removeSelectedPlan());
+
+        // Legg til dobbeltklikkshåndtering for å navigere til en plan
+        view.getPlansListView().setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) { // Sjekk om det er dobbeltklikk
+                goToSelectedPlan();
+            }
+        });
     }
 
     private void removeSelectedPlan() {
