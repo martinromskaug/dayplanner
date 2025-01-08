@@ -60,12 +60,15 @@ public abstract class BaseView {
 
     protected VBox createTopSection(String title) {
         Label titleLabel = createLabel(title, "title-label");
+        titleLabel.setStyle("-fx-border-color: red; -fx-border-width: 2;");
         VBox dateTimeBox = createDateTimeBox();
+        dateTimeBox.setStyle("-fx-border-color: blue; -fx-border-width: 2;");
         HBox titleBox = new HBox(titleLabel, dateTimeBox);
 
         titleBox.setAlignment(Pos.CENTER);
         titleBox.setPadding(new Insets(10, 20, 10, 20));
         titleBox.getStyleClass().add("title-box");
+        titleBox.setStyle("-fx-border-color: green; -fx-border-width: 2;");
 
         return wrapInWhiteBox(titleBox, "title-box-wrapper");
     }

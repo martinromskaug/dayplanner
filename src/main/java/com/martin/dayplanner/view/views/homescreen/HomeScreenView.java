@@ -80,21 +80,21 @@ public class HomeScreenView extends BaseView implements Viewable {
         return buttonRow;
     }
 
-    public void updatePlannerList() {
+    private void updatePlannerList() {
         plansListView.getItems().setAll(
                 model.getPlanners().stream()
                         .map(Planner::getPlannerName)
                         .toList());
     }
 
-    public void updateActiveTaskList() {
+    private void updateActiveTaskList() {
         activeTasksListView.getItems().setAll(
                 model.getActiveTasks().stream()
                         .map(task -> task.getPlannerName() + ": " + task.getTaskName())
                         .toList());
     }
 
-    public void updateDeadlinesList() {
+    private void updateDeadlinesList() {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MMM");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 

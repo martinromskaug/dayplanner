@@ -45,7 +45,7 @@ public class HomeScreenController {
             // Slett planen hvis brukeren bekreftet
             if (isConfirmed) {
                 model.removePlanner(selectedPlanName);
-                view.updatePlannerList();
+                view.updateHomeScreen();
                 System.out.println("Plan removed: " + selectedPlanName);
             } else {
                 System.out.println("Plan removal canceled.");
@@ -61,7 +61,7 @@ public class HomeScreenController {
             if (planName != null && !planName.isEmpty()) {
                 try {
                     model.addPlanner(planName);
-                    view.updatePlannerList(); // Oppdater listen med planer
+                    view.updateHomeScreen();
                 } catch (IllegalArgumentException e) {
                     System.err.println("Error: " + e.getMessage());
                 }
