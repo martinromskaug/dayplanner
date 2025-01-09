@@ -8,13 +8,16 @@
 
 /* Toppseksjonen */
 .title-label {
-    -fx-font-size: 48px !important;
+    -fx-font-size: 40px !important;
     -fx-font-weight: 800 !important;
     -fx-text-fill: #2c3e50 !important;
-    -fx-padding: 15; /* Mer rom rundt tittelen */
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 10, 0, 4, 4); /* Kraftigere skygge */
-    -fx-alignment: center; /* Sentrert tekst */
     -fx-letter-spacing: 1px; /* Litt mer avstand mellom bokstavene */
+}
+
+.date-time-box {
+    -fx-alignment: center-right; /* Plasserer innholdet til høyre */
+    -fx-hgrow: never; /* Sikrer at boksen ikke ekspanderer */
 }
 
 /* Stil for dato */
@@ -41,20 +44,14 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 6, 0, 3, 3); /* Mer fremtredende skygge */
 }
 
-.title-box {
-    -fx-padding: 10; /* Økt padding for å gi tittelen mer plass */
-    -fx-alignment: center;
-    -fx-spacing: 200; /* Opprettholder balanse med dato/tid */
-}
-
 /* Stil for hvit boks rundt toppseksjonen */
 .title-box-wrapper {
-    -fx-padding: 10;
     -fx-background-color: #ffffff; /* Hvit bakgrunn */
     -fx-background-radius: 10px; /* Myke avrundede hjørner */
     -fx-border-radius: 10px;
     -fx-border-color: #e0e0e0; /* Lys grå kant */
     -fx-border-width: 1px;
+    -fx-padding: 10 35 10 35;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 4, 4); /* Subtil skygge */
 }
 

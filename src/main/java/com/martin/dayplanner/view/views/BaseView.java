@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
@@ -34,8 +35,6 @@ public abstract class BaseView {
 
     protected VBox wrapInWhiteBox(Region content, String styleClass) {
         VBox box = new VBox(content);
-        box.setAlignment(Pos.CENTER);
-        box.setPadding(new Insets(10));
         box.getStyleClass().add(styleClass);
         return box;
     }
@@ -45,6 +44,10 @@ public abstract class BaseView {
         Label yearLabel = createLabel("", "year-label");
         Label clockLabel = createLabel("", "clock-label");
 
+        // Sett fast bredde for klokken
+        clockLabel.setPrefWidth(100); // Juster denne verdien til ønsket bredde
+        clockLabel.setAlignment(Pos.CENTER_RIGHT); // Sentraliser teksten i boksen
+
         updateDateTime(dateLabel, yearLabel, clockLabel);
         setupDynamicClock(dateLabel, yearLabel, clockLabel);
 
@@ -53,22 +56,29 @@ public abstract class BaseView {
 
         HBox dateTimeBox = new HBox(20, dateYearBox, clockLabel);
         dateTimeBox.setAlignment(Pos.CENTER_RIGHT);
+
         VBox box = new VBox(dateTimeBox);
-        box.setAlignment(Pos.CENTER);
         return box;
     }
 
     protected VBox createTopSection(String title) {
         Label titleLabel = createLabel(title, "title-label");
-        titleLabel.setStyle("-fx-border-color: red; -fx-border-width: 2;");
+        // titleLabel.setStyle("-fx-border-color: red; -fx-border-width: 2;");
         VBox dateTimeBox = createDateTimeBox();
-        dateTimeBox.setStyle("-fx-border-color: blue; -fx-border-width: 2;");
-        HBox titleBox = new HBox(titleLabel, dateTimeBox);
+        dateTimeBox.getStyleClass().add("date-time-box");
+        // dateTimeBox.setStyle("-fx-border-color: blue; -fx-border-width: 2;");
 
-        titleBox.setAlignment(Pos.CENTER);
-        titleBox.setPadding(new Insets(10, 20, 10, 20));
+        HBox titleBox = new HBox();
+        titleBox.getChildren().addAll(titleLabel, dateTimeBox);
+        HBox.setHgrow(titleLabel, Priority.ALWAYS);
+        HBox.setHgrow(dateTimeBox, Priority.NEVER);
+
+        titleLabel.setMaxWidth(Double.MAX_VALUE);
+        titleLabel.setAlignment(Pos.CENTER_LEFT);
+        dateTimeBox.setAlignment(Pos.CENTER_RIGHT);
+
         titleBox.getStyleClass().add("title-box");
-        titleBox.setStyle("-fx-border-color: green; -fx-border-width: 2;");
+        // titleBox.setStyle("-fx-border-color: green; -fx-border-width: 2;");
 
         return wrapInWhiteBox(titleBox, "title-box-wrapper");
     }
