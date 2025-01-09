@@ -1,24 +1,37 @@
 package com.martin.dayplanner.model.task;
 
+import com.martin.dayplanner.model.Planner;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Objects;
+import java.util.UUID;
 
 public class Task {
 
+    private final String id;
     private String taskName;
-    private String plannerName;
+    private transient Planner planner;
     private TaskStatus status;
     private TaskPriority priority;
     private LocalDate dueDate;
     private LocalTime dueTime;
 
-    public Task(String taskName, String plannerName) {
+    public Task(String taskName, Planner planner) {
         this.taskName = taskName;
-        this.plannerName = plannerName;
+        this.planner = planner;
+        this.id = generateId(); // Generer unik ID
         this.status = TaskStatus.NOTSTARTED;
         this.priority = TaskPriority.LOW;
         this.dueDate = null;
         this.dueTime = null;
+    }
+
+    private String generateId() {
+        return taskName + "-" + UUID.randomUUID(); // Kombiner navn og UUID
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getTaskName() {
@@ -29,12 +42,16 @@ public class Task {
         this.taskName = taskName;
     }
 
-    public String getPlannerName() {
-        return plannerName;
+    public Planner getPlanner() {
+        return planner;
     }
 
-    public void setPlannerName(String updatedPlanName) {
-        this.plannerName = updatedPlanName;
+    public void setPlanner(Planner planner) {
+        this.planner = planner;
+    }
+
+    public String getPlannerName() {
+        return planner.getPlannerName();
     }
 
     public TaskStatus getStatus() {
@@ -69,4 +86,18 @@ public class Task {
         this.dueTime = dueTime;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Task task = (Task) o;
+        return Objects.equals(id, task.id); // Sjekk basert på unik ID
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id); // Hash basert på unik ID
+    }
 }

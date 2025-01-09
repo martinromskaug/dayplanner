@@ -7,6 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -91,6 +92,18 @@ public abstract class BaseView {
     protected VBox createSection(String title, ListView<String> listView, HBox buttonRow) {
         Label sectionLabel = createLabel(title, "section-label");
         VBox sectionBox = wrapInWhiteBox(listView, "plans-box");
+        return new VBox(5, sectionLabel, sectionBox, buttonRow);
+    }
+
+    protected VBox createSection(String title, TreeView<String> treeView, String style) {
+        Label sectionLabel = createLabel(title, "section-label");
+        VBox sectionBox = wrapInWhiteBox(treeView, style);
+        return new VBox(5, sectionLabel, sectionBox);
+    }
+
+    protected VBox createSection(String title, TreeView<String> treeView, HBox buttonRow) {
+        Label sectionLabel = createLabel(title, "section-label");
+        VBox sectionBox = wrapInWhiteBox(treeView, "plans-box");
         return new VBox(5, sectionLabel, sectionBox, buttonRow);
     }
 

@@ -10,17 +10,35 @@ import com.martin.dayplanner.view.views.planner.ViewablePlanner;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 public class Planner implements ControllablePlanner, ViewablePlanner {
 
+    private final String id;
     private String plannerName;
-    private AppModel appModel;
-    private final StorageHandler storageHandler;
+    private transient PlannerGroup plannerGroup;
+    private transient AppModel appModel;
+    private final transient StorageHandler storageHandler;
+    private LocalDate dueDate;
+    private LocalTime dueTime;
 
-    public Planner(String plannerName, AppModel appModel, StorageHandler storageHandler) {
-        this.appModel = appModel;
+    public Planner(String plannerName, PlannerGroup plannerGroup, AppModel appModel, StorageHandler storageHandler) {
         this.plannerName = plannerName;
+        this.plannerGroup = plannerGroup;
+        this.appModel = appModel;
         this.storageHandler = storageHandler;
+        this.dueDate = null;
+        this.dueTime = null;
+        this.id = generateId();
+    }
+
+    private String generateId() {
+        return plannerName + "-" + UUID.randomUUID();
+    }
+
+    public String getId() {
+        return id;
     }
 
     @Override
@@ -32,9 +50,28 @@ public class Planner implements ControllablePlanner, ViewablePlanner {
         this.plannerName = newPlannerName;
     }
 
-    @Override
-    public List<Task> getAllTasks() {
-        return storageHandler.getTasksForPlanner(plannerName);
+    public PlannerGroup getPlannerGroup() {
+        return plannerGroup;
+    }
+
+    public void setPlannerGroup(PlannerGroup plannerGroup) {
+        this.plannerGroup = plannerGroup;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public LocalTime getDueTime() {
+        return dueTime;
+    }
+
+    public void setDueTime(LocalTime dueTime) {
+        this.dueTime = dueTime;
     }
 
     @Override
@@ -43,14 +80,14 @@ public class Planner implements ControllablePlanner, ViewablePlanner {
             throw new IllegalArgumentException("Task name cannot be null or empty");
         }
 
-        Task newTask = new Task(taskName, plannerName);
+        Task newTask = new Task(taskName, this);
         newTask.setDueDate(dueDate);
         newTask.setDueTime(dueTime);
         newTask.setPriority(priority);
         newTask.setStatus(TaskStatus.NOTSTARTED);
 
         try {
-            storageHandler.addTaskToPlanner(plannerName, newTask);
+            storageHandler.addTaskToPlanner(plannerGroup, this, newTask);
             return true;
         } catch (Exception e) {
             System.err.println("Error adding task: " + e.getMessage());
@@ -61,8 +98,15 @@ public class Planner implements ControllablePlanner, ViewablePlanner {
     @Override
     public boolean removeTask(String taskName) {
         try {
-            storageHandler.removeTaskFromPlanner(plannerName, taskName);
-            return true;
+            Task taskToRemove = findTaskByName(taskName);
+
+            if (taskToRemove != null) {
+                storageHandler.removeTaskFromPlanner(plannerGroup, this, taskToRemove);
+                return true;
+            } else {
+                System.err.println("Task not found: " + taskName);
+                return false;
+            }
         } catch (Exception e) {
             System.err.println("Error removing task: " + e.getMessage());
             return false;
@@ -71,7 +115,7 @@ public class Planner implements ControllablePlanner, ViewablePlanner {
 
     @Override
     public List<Task> getTasksByStatus(TaskStatus status) {
-        return storageHandler.getTasksForPlanner(plannerName)
+        return storageHandler.getTasksForPlanner(plannerGroup, this)
                 .stream()
                 .filter(task -> task.getStatus() == status)
                 .toList();
@@ -79,7 +123,7 @@ public class Planner implements ControllablePlanner, ViewablePlanner {
 
     @Override
     public Task findTaskByName(String selectedTaskName) {
-        return storageHandler.getTasksForPlanner(plannerName)
+        return storageHandler.getTasksForPlanner(plannerGroup, this)
                 .stream()
                 .filter(task -> task.getTaskName().equals(selectedTaskName))
                 .findFirst()
@@ -92,7 +136,7 @@ public class Planner implements ControllablePlanner, ViewablePlanner {
         if (taskToUpdate != null && taskToUpdate.getStatus() != targetStatus) {
             taskToUpdate.setStatus(targetStatus);
             try {
-                storageHandler.updateTask(taskToUpdate);
+                storageHandler.updateTask(plannerGroup, this, taskToUpdate);
                 return true;
             } catch (Exception e) {
                 System.err.println("Error updating task status: " + e.getMessage());
@@ -114,7 +158,7 @@ public class Planner implements ControllablePlanner, ViewablePlanner {
         task.setPriority(newPriority);
 
         try {
-            storageHandler.updateTask(task);
+            storageHandler.updateTask(plannerGroup, this, task);
         } catch (Exception e) {
             System.err.println("Error editing task: " + e.getMessage());
         }
@@ -124,4 +168,20 @@ public class Planner implements ControllablePlanner, ViewablePlanner {
     public void goToMenu() {
         appModel.goToMenu();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Planner planner = (Planner) o;
+        return Objects.equals(id, planner.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
 }
