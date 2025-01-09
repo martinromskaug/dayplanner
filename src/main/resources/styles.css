@@ -89,12 +89,12 @@
 }
 
 .plans-box {
-    -fx-pref-width: 400;
+    -fx-pref-width: 300;
     -fx-pref-height: 450;
 }
 
 .deadlines-box, .tasks-box {
-    -fx-pref-width: 300;
+    -fx-pref-width: 400;
     -fx-pref-height: 200;
 }
 

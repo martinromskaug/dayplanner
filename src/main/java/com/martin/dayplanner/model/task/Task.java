@@ -33,6 +33,10 @@ public class Task {
         return plannerName;
     }
 
+    public void setPlannerName(String updatedPlanName) {
+        this.plannerName = updatedPlanName;
+    }
+
     public TaskStatus getStatus() {
         return status;
     }

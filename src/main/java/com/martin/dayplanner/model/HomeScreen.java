@@ -96,4 +96,22 @@ public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
         return tasksWithDeadline;
     }
 
+    @Override
+    public void editPlanner(String selectedPlanName, String updatedPlanName) {
+        if (updatedPlanName == null || updatedPlanName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Updated planner name cannot be null or empty.");
+        }
+        if (findPlannerByName(updatedPlanName) != null) {
+            throw new IllegalArgumentException("A planner with the updated name already exists.");
+        }
+
+        Planner selectedPlanner = findPlannerByName(selectedPlanName);
+        if (selectedPlanner == null) {
+            throw new IllegalArgumentException("Planner not found: " + selectedPlanName);
+        }
+
+        // Bruk StorageHandler for å oppdatere planner-navnet
+        storageHandler.updatePlannerName(selectedPlanName, updatedPlanName);
+    }
+
 }

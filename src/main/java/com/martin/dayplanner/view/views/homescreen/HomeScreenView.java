@@ -21,8 +21,8 @@ public class HomeScreenView extends BaseView implements Viewable {
 
     private final ViewableHomeScreen model;
     private final Button removePlanButton;
+    private final Button editPlanButton;
     private final Button createNewPlanButton;
-    private final Button goToPlanButton;
     private final ListView<String> plansListView;
     private final ListView<String> deadlinesListView;
     private final ListView<String> activeTasksListView;
@@ -32,8 +32,8 @@ public class HomeScreenView extends BaseView implements Viewable {
         this.model = model;
 
         removePlanButton = createButton("Remove Plan");
+        editPlanButton = createButton("Edit Plan");
         createNewPlanButton = createButton("Add Plan");
-        goToPlanButton = createButton("Go to Plan");
 
         plansListView = createListView();
         deadlinesListView = createListView();
@@ -72,7 +72,7 @@ public class HomeScreenView extends BaseView implements Viewable {
     }
 
     private HBox createButtonRow() {
-        HBox buttonRow = new HBox(10, removePlanButton, createNewPlanButton, goToPlanButton);
+        HBox buttonRow = new HBox(10, removePlanButton, editPlanButton, createNewPlanButton);
         buttonRow.setAlignment(Pos.CENTER);
         buttonRow.getStyleClass().add("button-row");
         return buttonRow;
@@ -132,8 +132,8 @@ public class HomeScreenView extends BaseView implements Viewable {
         return createNewPlanButton;
     }
 
-    public Button getGoToPlanButton() {
-        return goToPlanButton;
+    public Button getEditPlanButton() {
+        return editPlanButton;
     }
 
     public Button getRemovePlanButton() {

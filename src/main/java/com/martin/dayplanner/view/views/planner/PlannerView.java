@@ -58,8 +58,8 @@ public class PlannerView extends BaseView implements Viewable {
         taskGrid.setVgap(5);
         taskGrid.getStyleClass().add("center-grid");
 
-        taskGrid.add(createSection("New Tasks", newTasksListView, "plans-box"), 0, 0);
-        taskGrid.add(createSection("Pending Tasks", pendingTasksListView, "plans-box"), 1, 0);
+        taskGrid.add(createSection("Not Started", newTasksListView, "plans-box"), 0, 0);
+        taskGrid.add(createSection("Active Tasks", pendingTasksListView, "plans-box"), 1, 0);
         taskGrid.add(createSection("Completed Tasks", completedTasksListView, "plans-box"), 2, 0);
 
         return taskGrid;

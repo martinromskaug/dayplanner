@@ -3,6 +3,7 @@ package com.martin.dayplanner.controller.homescreen;
 import com.martin.dayplanner.controller.AppController;
 import com.martin.dayplanner.view.views.homescreen.HomeScreenView;
 import com.martin.dayplanner.view.views.homescreen.popups.CreatePlanPopup;
+import com.martin.dayplanner.view.views.homescreen.popups.EditPlanPopup;
 import com.martin.dayplanner.view.views.homescreen.popups.RemovePlanPopup;
 
 public class HomeScreenController {
@@ -21,14 +22,38 @@ public class HomeScreenController {
 
     private void setupEventHandlers() {
         view.getCreateNewPlanButton().setOnAction(e -> createNewPlan());
-        view.getGoToPlanButton().setOnAction(e -> goToSelectedPlan());
         view.getRemovePlanButton().setOnAction(e -> removeSelectedPlan());
+        view.getEditPlanButton().setOnAction(e -> editSelectedPlan());
 
         view.getPlansListView().setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 goToSelectedPlan();
             }
         });
+    }
+
+    private void editSelectedPlan() {
+        String selectedPlanName = view.getPlansListView().getSelectionModel().getSelectedItem();
+
+        if (selectedPlanName != null) {
+            EditPlanPopup popup = new EditPlanPopup(selectedPlanName);
+            popup.setPlanEditListener(updatedPlanName -> {
+                if (updatedPlanName != null && !updatedPlanName.isEmpty()) {
+                    try {
+                        model.editPlanner(selectedPlanName, updatedPlanName); // Oppdater modellens plan
+                        view.updateHomeScreen(); // Oppdater visningen
+                        System.out.println("Plan edited: " + selectedPlanName + " -> " + updatedPlanName);
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("Error: " + e.getMessage());
+                    }
+                } else {
+                    System.err.println("Updated plan name cannot be empty.");
+                }
+            });
+            popup.showPopup();
+        } else {
+            System.out.println("No plan selected.");
+        }
     }
 
     private void removeSelectedPlan() {

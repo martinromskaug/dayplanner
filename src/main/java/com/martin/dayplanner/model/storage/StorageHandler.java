@@ -94,4 +94,27 @@ public class StorageHandler {
             savePlannersWithTasks();
         }
     }
+
+    public void updatePlannerName(String selectedPlanName, String updatedPlanName) {
+        if (selectedPlanName.equals(updatedPlanName)) {
+            // Ingen endring i navn, ingen oppdatering nødvendig
+            return;
+        }
+
+        if (planners.containsKey(updatedPlanName)) {
+            throw new IllegalArgumentException("A planner with the new name already exists.");
+        }
+
+        List<Task> tasks = planners.remove(selectedPlanName); // Fjern gammel planner
+        if (tasks != null) {
+            planners.put(updatedPlanName, tasks); // Legg til med det nye navnet
+            for (Task task : tasks) {
+                task.setPlannerName(updatedPlanName); // Oppdater planner-navnet i hver oppgave
+            }
+            savePlannersWithTasks(); // Lagre endringene til fil
+        } else {
+            throw new IllegalArgumentException("Planner not found: " + selectedPlanName);
+        }
+    }
+
 }
