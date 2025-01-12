@@ -16,6 +16,17 @@ public class AppModel implements ViewableAppModel, ControllableAppModel {
         this.homeScreenModel = new HomeScreen(this, storageHandler);
         this.activeModel = homeScreenModel;
         this.activePlanner = null;
+        setup();
+    }
+
+    private void setup() {
+        for (Planner planner : storageHandler.getPlanners()) {
+            planner.setStorageHandler(storageHandler);
+            planner.setAppModel(this);
+            PlannerGroup group = storageHandler.findGroupByID(planner.getGroupId());
+            planner.setPlannerGroup(group);
+        
+        }
     }
 
     @Override

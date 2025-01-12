@@ -1,6 +1,7 @@
 package com.martin.dayplanner.controller.homescreen;
 
 import com.martin.dayplanner.controller.AppController;
+import com.martin.dayplanner.view.views.homescreen.GroupTreeItem;
 import com.martin.dayplanner.view.views.homescreen.HomeScreenView;
 import com.martin.dayplanner.view.views.homescreen.popups.CreatePlanPopup;
 import com.martin.dayplanner.view.views.homescreen.popups.EditPlanPopup;
@@ -22,6 +23,13 @@ public class HomeScreenController {
     }
 
     private void setupEventHandlers() {
+        view.getPlansTreeView().getRoot().getChildren().forEach(item -> {
+            if (item instanceof GroupTreeItem) {
+                GroupTreeItem groupItem = (GroupTreeItem) item; // Manuell casting
+                groupItem.getAddButton().setOnAction(e -> handleAddPlanner(groupItem.getGroupName()));
+            }
+        });
+
         view.getCreateNewPlanButton().setOnAction(e -> createNewPlan());
         view.getRemovePlanButton().setOnAction(e -> removeSelectedPlan());
         view.getEditPlanButton().setOnAction(e -> editSelectedPlan());
@@ -80,20 +88,28 @@ public class HomeScreenController {
     }
 
     private void createNewPlan() {
-        CreatePlanPopup popup = new CreatePlanPopup();
-        popup.setPlanCreationListener(planName -> {
-            if (planName != null && !planName.isEmpty()) {
-                try {
-                    model.addPlannerToGroup("My first group", planName);
-                    view.updateHomeScreen();
-                } catch (IllegalArgumentException e) {
-                    System.err.println("Error: " + e.getMessage());
+        TreeItem<String> selectedItem = view.getPlansTreeView().getSelectionModel().getSelectedItem();
+
+        if (selectedItem != null) {
+            String selectedGroupName = selectedItem.getValue(); // Henter gruppenavnet fra valgt rot
+            CreatePlanPopup popup = new CreatePlanPopup();
+            popup.setPlanCreationListener(planName -> {
+                if (planName != null && !planName.isEmpty()) {
+                    try {
+                        model.addPlannerToGroup(planName, selectedGroupName); // Legger planen til den valgte gruppen
+                        view.updateHomeScreen(); // Oppdaterer visningen
+                        System.out.println("Plan created: " + planName + " in group: " + selectedGroupName);
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("Error: " + e.getMessage());
+                    }
+                } else {
+                    System.err.println("Plan name cannot be empty.");
                 }
-            } else {
-                System.err.println("Plan name cannot be empty.");
-            }
-        });
-        popup.showPopup();
+            });
+            popup.showPopup();
+        } else {
+            System.out.println("No group selected or selection is not a group.");
+        }
     }
 
     private void createNewGroup() {
@@ -127,6 +143,24 @@ public class HomeScreenController {
 
     public void updateHomeScreen() {
         view.updateHomeScreen();
+    }
+
+    private void handleAddPlanner(String groupName) {
+        CreatePlanPopup popup = new CreatePlanPopup();
+        popup.setPlanCreationListener(planName -> {
+            if (planName != null && !planName.isEmpty()) {
+                try {
+                    model.addPlannerToGroup(planName, groupName); // Modellhåndtering
+                    view.updateHomeScreen(); // Oppdater visningen etter endring
+                    System.out.println("Planner added: " + planName + " to group " + groupName);
+                } catch (IllegalArgumentException e) {
+                    System.err.println("Error adding planner: " + e.getMessage());
+                }
+            } else {
+                System.err.println("Planner name cannot be empty.");
+            }
+        });
+        popup.showPopup();
     }
 
 }

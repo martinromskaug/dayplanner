@@ -17,9 +17,10 @@ public class Planner implements ControllablePlanner, ViewablePlanner {
 
     private final String id;
     private String plannerName;
+    private String groupId;
     private transient PlannerGroup plannerGroup;
     private transient AppModel appModel;
-    private final transient StorageHandler storageHandler;
+    private transient StorageHandler storageHandler;
     private LocalDate dueDate;
     private LocalTime dueTime;
 
@@ -31,6 +32,7 @@ public class Planner implements ControllablePlanner, ViewablePlanner {
         this.dueDate = null;
         this.dueTime = null;
         this.id = generateId();
+        this.groupId = plannerGroup.getId();
     }
 
     private String generateId() {
@@ -115,6 +117,9 @@ public class Planner implements ControllablePlanner, ViewablePlanner {
 
     @Override
     public List<Task> getTasksByStatus(TaskStatus status) {
+        if (storageHandler == null) {
+            throw new IllegalStateException("StorageHandler is not initialized");
+        }
         return storageHandler.getTasksForPlanner(plannerGroup, this)
                 .stream()
                 .filter(task -> task.getStatus() == status)
@@ -182,6 +187,18 @@ public class Planner implements ControllablePlanner, ViewablePlanner {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setStorageHandler(StorageHandler storageHandler) {
+        this.storageHandler = storageHandler;
+    }
+
+    public void setAppModel(AppModel appModel) {
+        this.appModel = appModel;
     }
 
 }

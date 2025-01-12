@@ -23,13 +23,13 @@ public class HomeScreenView extends BaseView implements Viewable {
     private final Button removePlanButton;
     private final Button editPlanButton;
     private final Button createNewPlanButton;
-    private final TreeView<String> plansTreeView;
+    private TreeView<String> plansTreeView;
     private final BorderPane root;
 
     public HomeScreenView(ViewableHomeScreen model) {
         this.model = model;
 
-        addGroupButton = createButton("Add Plan");
+        addGroupButton = createButton("Add Group");
         removePlanButton = createButton("Remove Plan");
         editPlanButton = createButton("Edit Plan");
         createNewPlanButton = createButton("Add Plan");
@@ -43,6 +43,10 @@ public class HomeScreenView extends BaseView implements Viewable {
 
     public void updateHomeScreen() {
         updatePlannerList();
+    }
+
+    private void setupTreeViewCellFactory() {
+        plansTreeView.setCellFactory(treeView -> new PlanTreeCell());
     }
 
     private void setupLayout() {
@@ -73,11 +77,18 @@ public class HomeScreenView extends BaseView implements Viewable {
     private TreeView<String> createTreeView() {
         TreeItem<String> root = new TreeItem<>("Root");
         root.setExpanded(true);
-        return new TreeView<>(root);
+
+        plansTreeView = new TreeView<>(root); // Opprett plansTreeView her
+        plansTreeView.setShowRoot(false);
+
+        // Sett opp cell factory etter opprettelsen
+        setupTreeViewCellFactory();
+
+        return plansTreeView;
     }
 
     private void updatePlannerList() {
-        TreeItem<String> root = new TreeItem<>("Your Plans");
+        TreeItem<String> root = new TreeItem<>("Root");
         root.setExpanded(true);
 
         List<PlannerGroup> plannerGroups = model.getPlannerGroups();
