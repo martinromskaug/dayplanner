@@ -1,9 +1,15 @@
 package com.martin.dayplanner.model;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.martin.dayplanner.controller.homescreen.ControllableHomeScreen;
 import com.martin.dayplanner.model.storage.StorageHandler;
+import com.martin.dayplanner.model.task.Task;
+import com.martin.dayplanner.model.task.TaskStatus;
 import com.martin.dayplanner.view.views.homescreen.ViewableHomeScreen;
 
 public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
@@ -48,22 +54,6 @@ public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
             throw new IllegalArgumentException("Group name cannot be null or empty");
         }
         storageHandler.addPlannerGroup(new PlannerGroup(groupName));
-    }
-
-    @Override
-    public void addPlannerToGroup(String plannerName, String groupName) {
-        if (plannerName == null || plannerName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Planner name cannot be null or empty");
-        }
-
-        PlannerGroup group = storageHandler.findGroupByName(groupName); // Bruker findGroupByName
-
-        if (findPlannerByName(plannerName) != null) {
-            throw new IllegalArgumentException("A planner with this name already exists");
-        }
-
-        Planner newPlanner = new Planner(plannerName, group, appModel, storageHandler);
-        storageHandler.addPlannerToGroup(group, newPlanner);
     }
 
     @Override
@@ -150,6 +140,55 @@ public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
         groupToEdit.setGroupName(updatedGroupName);
 
         storageHandler.updatePlannerGroup(groupToEdit);
+    }
+
+    @Override
+    public Map<String, List<Task>> getActiveTasks() {
+        return storageHandler.getAllTasks().stream()
+                .filter(task -> task.getStatus() == TaskStatus.ACTIVE) // Kun aktive oppgaver
+                .collect(Collectors.groupingBy(Task::getPlannerName)); // Gruppér etter planleggernavn
+    }
+
+    @Override
+    public List<Planner> getPlannersWithDeadline() {
+        return storageHandler.getAllPlanners().stream()
+                .filter(planner -> planner.getDueDate() != null) // Sjekker om planlegger har en definert frist
+                .toList();
+    }
+
+    @Override
+    public void addPlannerToGroup(String groupName, String plannerName, LocalDate date, LocalTime time) {
+        if (groupName == null || groupName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Group name cannot be null or empty");
+        }
+        if (plannerName == null || plannerName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Planner name cannot be null or empty");
+        }
+
+        // Finn gruppen ved navn
+        PlannerGroup group = storageHandler.findGroupByName(groupName);
+        if (group == null) {
+            throw new IllegalArgumentException("PlannerGroup not found: " + groupName);
+        }
+
+        // Sjekk om en planner med samme navn allerede finnes
+        if (findPlannerByName(plannerName) != null) {
+            throw new IllegalArgumentException("A planner with this name already exists");
+        }
+
+        // Opprett ny planner med dato og tid
+        Planner newPlanner = new Planner(plannerName, group, appModel, storageHandler);
+        newPlanner.setDueDate(date); // Sett dato
+        newPlanner.setDueTime(time); // Sett klokkeslett
+
+        // Legg til planner i gruppen via StorageHandler
+        storageHandler.addPlannerToGroup(group, newPlanner);
+
+        System.out.printf("Planner '%s' added to group '%s' with date %s and time %s%n",
+                plannerName,
+                groupName,
+                date != null ? date.toString() : "No Date",
+                time != null ? time.toString() : "No Time");
     }
 
 }

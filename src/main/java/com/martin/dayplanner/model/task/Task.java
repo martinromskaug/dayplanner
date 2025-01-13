@@ -11,6 +11,7 @@ public class Task {
     private final String id;
     private String taskName;
     private transient Planner planner;
+    private String plannerName;
     private TaskStatus status;
     private TaskPriority priority;
     private LocalDate dueDate;
@@ -19,6 +20,7 @@ public class Task {
     public Task(String taskName, Planner planner) {
         this.taskName = taskName;
         this.planner = planner;
+        this.plannerName = planner.getPlannerName();
         this.id = generateId(); // Generer unik ID
         this.status = TaskStatus.NOTSTARTED;
         this.priority = TaskPriority.LOW;
@@ -51,7 +53,7 @@ public class Task {
     }
 
     public String getPlannerName() {
-        return planner.getPlannerName();
+        return plannerName;
     }
 
     public TaskStatus getStatus() {

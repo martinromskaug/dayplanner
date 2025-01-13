@@ -1,10 +1,13 @@
 package com.martin.dayplanner.controller.homescreen;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 public interface ControllableHomeScreen {
 
     public void addPlannerGroup(String groupName);
 
-    public void addPlannerToGroup(String groupName, String plannerName);
+    public void addPlannerToGroup(String groupName, String plannerName, LocalDate date, LocalTime time);
 
     public void removePlannerGroup(String groupToRemove);
 

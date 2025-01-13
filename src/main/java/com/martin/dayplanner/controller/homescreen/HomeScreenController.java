@@ -3,6 +3,7 @@ package com.martin.dayplanner.controller.homescreen;
 import com.martin.dayplanner.controller.AppController;
 import com.martin.dayplanner.view.views.homescreen.GroupTreeItem;
 import com.martin.dayplanner.view.views.homescreen.HomeScreenView;
+import com.martin.dayplanner.view.views.homescreen.popups.CreateGroupPopup;
 import com.martin.dayplanner.view.views.homescreen.popups.CreatePlanPopup;
 import com.martin.dayplanner.view.views.homescreen.popups.EditPlanPopup;
 import com.martin.dayplanner.view.views.homescreen.popups.RemovePlanPopup;
@@ -23,13 +24,6 @@ public class HomeScreenController {
     }
 
     private void setupEventHandlers() {
-        view.getPlansTreeView().getRoot().getChildren().forEach(item -> {
-            if (item instanceof GroupTreeItem) {
-                GroupTreeItem groupItem = (GroupTreeItem) item; // Manuell casting
-                groupItem.getAddButton().setOnAction(e -> handleAddPlanner(groupItem.getGroupName()));
-            }
-        });
-
         view.getCreateNewPlanButton().setOnAction(e -> createNewPlan());
         view.getRemovePlanButton().setOnAction(e -> removeSelectedPlan());
         view.getEditPlanButton().setOnAction(e -> editSelectedPlan());
@@ -92,13 +86,19 @@ public class HomeScreenController {
 
         if (selectedItem != null) {
             String selectedGroupName = selectedItem.getValue(); // Henter gruppenavnet fra valgt rot
-            CreatePlanPopup popup = new CreatePlanPopup();
-            popup.setPlanCreationListener(planName -> {
+
+            // Opprett popup med riktig modell
+            CreatePlanPopup popup = new CreatePlanPopup(view);
+            popup.setPlanCreationListener((planName, groupName, date, time) -> {
                 if (planName != null && !planName.isEmpty()) {
                     try {
-                        model.addPlannerToGroup(planName, selectedGroupName); // Legger planen til den valgte gruppen
-                        view.updateHomeScreen(); // Oppdaterer visningen
-                        System.out.println("Plan created: " + planName + " in group: " + selectedGroupName);
+                        model.addPlannerToGroup(planName, groupName, date, time); // Oppdater modell med dato og tid
+                        view.updateHomeScreen(); // Oppdater visningen
+                        System.out.printf("Plan created: %s in group: %s on %s at %s%n",
+                                planName,
+                                groupName,
+                                date != null ? date.toString() : "No Date",
+                                time != null ? time.toString() : "No Time");
                     } catch (IllegalArgumentException e) {
                         System.err.println("Error: " + e.getMessage());
                     }
@@ -113,8 +113,8 @@ public class HomeScreenController {
     }
 
     private void createNewGroup() {
-        CreatePlanPopup popup = new CreatePlanPopup();
-        popup.setPlanCreationListener(planName -> {
+        CreateGroupPopup popup = new CreateGroupPopup();
+        popup.setGroupCreationListener(planName -> {
             if (planName != null && !planName.isEmpty()) {
                 try {
                     model.addPlannerGroup(planName);
@@ -144,23 +144,4 @@ public class HomeScreenController {
     public void updateHomeScreen() {
         view.updateHomeScreen();
     }
-
-    private void handleAddPlanner(String groupName) {
-        CreatePlanPopup popup = new CreatePlanPopup();
-        popup.setPlanCreationListener(planName -> {
-            if (planName != null && !planName.isEmpty()) {
-                try {
-                    model.addPlannerToGroup(planName, groupName); // Modellhåndtering
-                    view.updateHomeScreen(); // Oppdater visningen etter endring
-                    System.out.println("Planner added: " + planName + " to group " + groupName);
-                } catch (IllegalArgumentException e) {
-                    System.err.println("Error adding planner: " + e.getMessage());
-                }
-            } else {
-                System.err.println("Planner name cannot be empty.");
-            }
-        });
-        popup.showPopup();
-    }
-
 }

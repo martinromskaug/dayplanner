@@ -264,8 +264,12 @@ public class StorageHandler {
         }
     }
 
-    public List<Planner> getPlanners() {
+    public List<Planner> getAllPlanners() {
         return planners;
+    }
+
+    public List<Task> getAllTasks() {
+        return tasks;
     }
 
     public PlannerGroup findGroupByID(String groupId) {

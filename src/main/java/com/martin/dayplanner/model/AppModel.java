@@ -20,12 +20,12 @@ public class AppModel implements ViewableAppModel, ControllableAppModel {
     }
 
     private void setup() {
-        for (Planner planner : storageHandler.getPlanners()) {
+        for (Planner planner : storageHandler.getAllPlanners()) {
             planner.setStorageHandler(storageHandler);
             planner.setAppModel(this);
             PlannerGroup group = storageHandler.findGroupByID(planner.getGroupId());
             planner.setPlannerGroup(group);
-        
+
         }
     }
 
