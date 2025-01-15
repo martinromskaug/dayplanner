@@ -7,6 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -20,10 +21,6 @@ public abstract class BaseView {
 
     protected Button createButton(String text) {
         return new Button(text);
-    }
-
-    protected ListView<String> createListView() {
-        return new ListView<>();
     }
 
     protected Label createLabel(String text, String styleClass) {
@@ -82,16 +79,34 @@ public abstract class BaseView {
         return wrapInWhiteBox(titleBox, "title-box-wrapper");
     }
 
-    protected VBox createSection(String title, ListView<String> listView, String style) {
+    protected VBox createSection(String title, ListView<ListItemData> listView, String style) {
         Label sectionLabel = createLabel(title, "section-label");
         VBox sectionBox = wrapInWhiteBox(listView, style);
         return new VBox(5, sectionLabel, sectionBox);
     }
 
-    protected VBox createSection(String title, ListView<String> listView, HBox buttonRow) {
+    protected VBox createSection(String title, ListView<ListItemData> listView, HBox buttonRow) {
         Label sectionLabel = createLabel(title, "section-label");
         VBox sectionBox = wrapInWhiteBox(listView, "plans-box");
         return new VBox(5, sectionLabel, sectionBox, buttonRow);
+    }
+
+    protected VBox createSection(String title, TreeView<ListItemData> treeView, String style) {
+        Label sectionLabel = createLabel(title, "section-label");
+        VBox sectionBox = wrapInWhiteBox(treeView, style);
+        return new VBox(5, sectionLabel, sectionBox);
+    }
+
+    protected VBox createSection(String title, TreeView<ListItemData> treeView, HBox buttonRow) {
+        Label sectionLabel = createLabel(title, "section-label");
+        VBox sectionBox = wrapInWhiteBox(treeView, "plans-box");
+        return new VBox(5, sectionLabel, sectionBox, buttonRow);
+    }
+
+    protected VBox createSection(String title, TreeView<ListItemData> treeView, HBox buttonRow1, HBox buttonRow2) {
+        Label sectionLabel = createLabel(title, "section-label");
+        VBox sectionBox = wrapInWhiteBox(treeView, "plans-box");
+        return new VBox(5, sectionLabel, sectionBox, buttonRow1, buttonRow2);
     }
 
     private void setupDynamicClock(Label dateLabel, Label yearLabel, Label clockLabel) {

@@ -1,21 +1,26 @@
 package com.martin.dayplanner.view.views.homescreen;
 
-import com.martin.dayplanner.view.views.BaseView;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-
 import com.martin.dayplanner.model.Planner;
-import com.martin.dayplanner.model.task.TaskStatus;
-import com.martin.dayplanner.view.Viewable;
+import com.martin.dayplanner.model.PlannerGroup;
+import com.martin.dayplanner.model.task.Task;
+import com.martin.dayplanner.view.views.BaseView;
+import com.martin.dayplanner.view.views.ListItemData;
+import com.martin.dayplanner.view.views.Viewable;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class HomeScreenView extends BaseView implements Viewable {
 
@@ -23,9 +28,13 @@ public class HomeScreenView extends BaseView implements Viewable {
     private final Button removePlanButton;
     private final Button editPlanButton;
     private final Button createNewPlanButton;
-    private final ListView<String> plansListView;
-    private final ListView<String> deadlinesListView;
-    private final ListView<String> activeTasksListView;
+    private final Button removeGroupButton;
+    private final Button editGroupButton;
+    private final Button createNewGroupButton;
+    private TreeView<ListItemData> plansTreeView;
+    private TreeView<ListItemData> deadlinesTreeView;
+    private TreeView<ListItemData> activeTasksTreeView;
+    private final HomeScreenPopupConfigurator popup;
     private final BorderPane root;
 
     public HomeScreenView(ViewableHomeScreen model) {
@@ -35,9 +44,15 @@ public class HomeScreenView extends BaseView implements Viewable {
         editPlanButton = createButton("Edit Plan");
         createNewPlanButton = createButton("Add Plan");
 
-        plansListView = createListView();
-        deadlinesListView = createListView();
-        activeTasksListView = createListView();
+        removeGroupButton = createButton("Remove Group");
+        editGroupButton = createButton("Edit Group");
+        createNewGroupButton = createButton("Add Group");
+
+        plansTreeView = createTreeView();
+        deadlinesTreeView = createTreeView();
+        activeTasksTreeView = createTreeView();
+
+        this.popup = new HomeScreenPopupConfigurator(model);
 
         root = new BorderPane();
         updateHomeScreen();
@@ -45,9 +60,9 @@ public class HomeScreenView extends BaseView implements Viewable {
     }
 
     public void updateHomeScreen() {
-        updateActiveTaskList();
         updatePlannerList();
         updateDeadlinesList();
+        updateActiveTasksList();
     }
 
     private void setupLayout() {
@@ -62,65 +77,110 @@ public class HomeScreenView extends BaseView implements Viewable {
         centerGrid.setVgap(15);
         centerGrid.getStyleClass().add("center-grid");
 
-        HBox plansButtonRow = createButtonRow();
-        centerGrid.add(createSection("Your Plans", plansListView, plansButtonRow), 0, 0, 1, 2);
+        HBox plansButtonRow = createButtonRow(removePlanButton, editPlanButton, createNewPlanButton);
+        HBox groupButtonRow = createButtonRow(removeGroupButton, editGroupButton, createNewGroupButton);
+        centerGrid.add(createSection("Your Plans", plansTreeView, plansButtonRow, groupButtonRow), 0, 0, 1, 2);
 
-        centerGrid.add(createSection("Deadlines", deadlinesListView, "tasks-box"), 1, 1);
-        centerGrid.add(createSection("Active Tasks", activeTasksListView, "tasks-box"), 1, 0);
+        centerGrid.add(createSection("Deadlines", deadlinesTreeView, "tasks-box"), 1, 1);
+        centerGrid.add(createSection("Active Tasks", activeTasksTreeView, "tasks-box"), 1, 0);
 
         return centerGrid;
     }
 
-    private HBox createButtonRow() {
-        HBox buttonRow = new HBox(10, removePlanButton, editPlanButton, createNewPlanButton);
+    private HBox createButtonRow(Button button1, Button button2, Button button3) {
+        HBox buttonRow = new HBox(10, button1, button2, button3);
         buttonRow.setAlignment(Pos.CENTER);
         buttonRow.getStyleClass().add("button-row");
         return buttonRow;
     }
 
-    private void updatePlannerList() {
-        plansListView.getItems().setAll(
-                model.getPlanners().stream()
-                        .map(Planner::getPlannerName)
-                        .toList());
+    private TreeView<ListItemData> createTreeView() {
+        TreeItem<ListItemData> root = new TreeItem<>(new ListItemData("root", "Root"));
+        root.setExpanded(true);
+
+        TreeView<ListItemData> treeView = new TreeView<>(root);
+        treeView.setShowRoot(false);
+
+        return treeView;
     }
 
-    private void updateActiveTaskList() {
-        activeTasksListView.getItems().setAll(
-                model.getActiveTasks().stream()
-                        .map(task -> task.getPlannerName() + ": " + task.getTaskName())
-                        .toList());
+    private void updatePlannerList() {
+        TreeItem<ListItemData> root = new TreeItem<>(new ListItemData("root", "Root"));
+        root.setExpanded(true);
+
+        List<PlannerGroup> plannerGroups = model.getPlannerGroups();
+        for (PlannerGroup group : plannerGroups) {
+            TreeItem<ListItemData> groupItem = new TreeItem<>(new ListItemData(group.getId(), group.getGroupName()));
+
+            List<Planner> planners = model.getPlannersForGroup(group.getId());
+            for (Planner planner : planners) {
+                TreeItem<ListItemData> plannerItem = new TreeItem<>(
+                        new ListItemData(planner.getId(), planner.getPlannerName()));
+                groupItem.getChildren().add(plannerItem);
+            }
+
+            root.getChildren().add(groupItem);
+        }
+
+        plansTreeView.setRoot(root);
     }
 
     private void updateDeadlinesList() {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MMM");
+        TreeItem<ListItemData> root = new TreeItem<>(new ListItemData("root", "Root"));
+        root.setExpanded(true);
+
+        List<Planner> plannersWithDeadlines = model.getPlannersWithDeadline();
+        Map<LocalDate, List<Planner>> plannersByDate = plannersWithDeadlines.stream()
+                .collect(Collectors.groupingBy(Planner::getDueDate));
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-        deadlinesListView.getItems().setAll(
-                model.getTasksWithDeadline().stream()
-                        .filter(task -> {
-                            LocalDate today = LocalDate.now();
-                            LocalTime now = LocalTime.now();
-                            boolean isNotExpired = task.getDueDate().isAfter(today) ||
-                                    (task.getDueDate().isEqual(today) && task.getDueTime().isAfter(now));
+        for (Map.Entry<LocalDate, List<Planner>> entry : plannersByDate.entrySet()) {
+            LocalDate date = entry.getKey();
+            List<Planner> planners = entry.getValue();
 
-                            boolean isNotCompleted = task.getStatus() != TaskStatus.COMPLETED;
+            TreeItem<ListItemData> dateItem = new TreeItem<>(
+                    new ListItemData(date.toString(), date.format(dateFormatter)));
+            dateItem.setExpanded(true);
 
-                            return isNotExpired && isNotCompleted;
-                        })
-                        .sorted((task1, task2) -> {
-                            int dateComparison = task1.getDueDate().compareTo(task2.getDueDate());
-                            if (dateComparison == 0) {
-                                return task1.getDueTime().compareTo(task2.getDueTime());
-                            }
-                            return dateComparison;
-                        })
-                        .map(task -> String.format("%s kl. %s %s: %s",
-                                task.getDueDate().format(dateFormatter).toLowerCase(),
-                                task.getDueTime().format(timeFormatter),
-                                task.getPlannerName(),
-                                task.getTaskName()))
-                        .toList());
+            for (Planner planner : planners) {
+                String formattedPlanner = String.format("%s %s", planner.getDueTime().format(timeFormatter),
+                        planner.getPlannerName());
+                TreeItem<ListItemData> plannerItem = new TreeItem<>(
+                        new ListItemData(planner.getId(), formattedPlanner));
+                dateItem.getChildren().add(plannerItem);
+            }
+
+            root.getChildren().add(dateItem);
+        }
+
+        deadlinesTreeView.setRoot(root);
+    }
+
+    private void updateActiveTasksList() {
+        TreeItem<ListItemData> root = new TreeItem<>(new ListItemData("root", "Root"));
+        root.setExpanded(true);
+
+        Map<String, List<Task>> tasksByPlanner = model.getActiveTasks();
+
+        for (Map.Entry<String, List<Task>> entry : tasksByPlanner.entrySet()) {
+            String plannerId = entry.getKey();
+            String plannerName = model.getPlannerNameById(plannerId);
+            List<Task> tasks = entry.getValue();
+
+            TreeItem<ListItemData> plannerItem = new TreeItem<>(new ListItemData(plannerId, plannerName));
+            plannerItem.setExpanded(true);
+
+            for (Task task : tasks) {
+                TreeItem<ListItemData> taskItem = new TreeItem<>(new ListItemData(task.getId(), task.getTaskName()));
+                plannerItem.getChildren().add(taskItem);
+            }
+
+            root.getChildren().add(plannerItem);
+        }
+
+        activeTasksTreeView.setRoot(root);
     }
 
     @Override
@@ -140,15 +200,31 @@ public class HomeScreenView extends BaseView implements Viewable {
         return removePlanButton;
     }
 
-    public ListView<String> getPlansListView() {
-        return plansListView;
+    public Button getCreateNewGroupButton() {
+        return createNewGroupButton;
     }
 
-    public ListView<String> getDeadlinesListView() {
-        return deadlinesListView;
+    public Button getEditGroupButton() {
+        return editGroupButton;
     }
 
-    public ListView<String> getActiveTasksListView() {
-        return activeTasksListView;
+    public Button getRemoveGroupButton() {
+        return removeGroupButton;
+    }
+
+    public TreeView<ListItemData> getPlansTreeView() {
+        return plansTreeView;
+    }
+
+    public TreeView<ListItemData> getDeadlinesTreeView() {
+        return deadlinesTreeView;
+    }
+
+    public TreeView<ListItemData> getActiveTasksTreeView() {
+        return activeTasksTreeView;
+    }
+
+    public HomeScreenPopupConfigurator getPopup() {
+        return popup;
     }
 }

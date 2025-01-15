@@ -1,21 +1,26 @@
 package com.martin.dayplanner.controller.homescreen;
 
 import com.martin.dayplanner.controller.AppController;
+import com.martin.dayplanner.view.views.ListItemData;
+import com.martin.dayplanner.view.views.PopupFieldKey;
+import com.martin.dayplanner.view.views.PopupView;
+import com.martin.dayplanner.view.views.homescreen.HomeScreenPopupConfigurator;
 import com.martin.dayplanner.view.views.homescreen.HomeScreenView;
-import com.martin.dayplanner.view.views.homescreen.popups.CreatePlanPopup;
-import com.martin.dayplanner.view.views.homescreen.popups.EditPlanPopup;
-import com.martin.dayplanner.view.views.homescreen.popups.RemovePlanPopup;
+
+import javafx.scene.control.TreeItem;
 
 public class HomeScreenController {
 
-    private ControllableHomeScreen model;
-    private HomeScreenView view;
-    private AppController appController;
+    private final ControllableHomeScreen model;
+    private final HomeScreenView view;
+    private final AppController appController;
+    private final HomeScreenPopupConfigurator popupConfigurator;
 
     public HomeScreenController(ControllableHomeScreen model, HomeScreenView view, AppController appController) {
         this.model = model;
         this.view = view;
         this.appController = appController;
+        this.popupConfigurator = view.getPopup();
 
         setupEventHandlers();
     }
@@ -24,87 +29,134 @@ public class HomeScreenController {
         view.getCreateNewPlanButton().setOnAction(e -> createNewPlan());
         view.getRemovePlanButton().setOnAction(e -> removeSelectedPlan());
         view.getEditPlanButton().setOnAction(e -> editSelectedPlan());
+        view.getCreateNewGroupButton().setOnAction(e -> createNewGroup());
+        view.getRemoveGroupButton().setOnAction(e -> removeSelectedGroup());
+        view.getEditGroupButton().setOnAction(e -> editSelectedGroup());
 
-        view.getPlansListView().setOnMouseClicked(event -> {
+        view.getPlansTreeView().setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 goToSelectedPlan();
             }
         });
     }
 
-    private void editSelectedPlan() {
-        String selectedPlanName = view.getPlansListView().getSelectionModel().getSelectedItem();
+    private void createNewPlan() {
+        PopupView popup = popupConfigurator.configureCreatePlanPopup();
 
-        if (selectedPlanName != null) {
-            EditPlanPopup popup = new EditPlanPopup(selectedPlanName);
-            popup.setPlanEditListener(updatedPlanName -> {
-                if (updatedPlanName != null && !updatedPlanName.isEmpty()) {
-                    try {
-                        model.editPlanner(selectedPlanName, updatedPlanName); // Oppdater modellens plan
-                        view.updateHomeScreen(); // Oppdater visningen
-                        System.out.println("Plan edited: " + selectedPlanName + " -> " + updatedPlanName);
-                    } catch (IllegalArgumentException e) {
-                        System.err.println("Error: " + e.getMessage());
-                    }
-                } else {
-                    System.err.println("Updated plan name cannot be empty.");
-                }
-            });
-            popup.showPopup();
-        } else {
-            System.out.println("No plan selected.");
-        }
+        popup.setActions(values -> {
+            model.addPlanner(values);
+            view.updateHomeScreen();
+            System.out.printf("Plan created: %s in group ID: %s%n",
+                    values.get(PopupFieldKey.NAME), values.get(PopupFieldKey.PARENT_GROUP));
+        }, null);
+
+        popup.show();
     }
 
     private void removeSelectedPlan() {
-        String selectedPlanName = view.getPlansListView().getSelectionModel().getSelectedItem();
+        TreeItem<ListItemData> selectedItem = view.getPlansTreeView().getSelectionModel().getSelectedItem();
 
-        if (selectedPlanName != null) {
-            RemovePlanPopup popup = new RemovePlanPopup();
-            boolean isConfirmed = popup.showPopup(selectedPlanName);
+        if (selectedItem != null && selectedItem.isLeaf()) {
+            String plannerId = selectedItem.getValue().getId();
+            PopupView popup = popupConfigurator.configureRemovePlanPopup(plannerId);
 
-            if (isConfirmed) {
-                model.removePlanner(selectedPlanName);
+            popup.setActions(values -> {
+                model.removePlanner(plannerId);
                 view.updateHomeScreen();
-                System.out.println("Plan removed: " + selectedPlanName);
-            } else {
-                System.out.println("Plan removal canceled.");
-            }
+            }, null);
+
+            popup.show();
+
+            System.out.println("Plan removed with ID: " + plannerId);
         } else {
-            System.out.println("No plan selected.");
+            System.out.println("No plan selected or selection is not a plan.");
         }
     }
 
-    private void createNewPlan() {
-        CreatePlanPopup popup = new CreatePlanPopup();
-        popup.setPlanCreationListener(planName -> {
-            if (planName != null && !planName.isEmpty()) {
-                try {
-                    model.addPlanner(planName);
-                    view.updateHomeScreen();
-                } catch (IllegalArgumentException e) {
-                    System.err.println("Error: " + e.getMessage());
-                }
-            } else {
-                System.err.println("Plan name cannot be empty.");
-            }
-        });
-        popup.showPopup();
+    private void editSelectedPlan() {
+        TreeItem<ListItemData> selectedItem = view.getPlansTreeView().getSelectionModel().getSelectedItem();
+
+        if (selectedItem != null && selectedItem.isLeaf()) {
+            String plannerId = selectedItem.getValue().getId();
+            PopupView popup = popupConfigurator.configureEditPlanPopup(plannerId);
+
+            popup.setActions(values -> {
+                model.editPlanner(values);
+                view.updateHomeScreen();
+                System.out.printf("Plan updated: ID %s -> %s%n",
+                        plannerId, values.get(PopupFieldKey.NAME));
+            }, null);
+
+            popup.show();
+        } else {
+            System.out.println("No plan selected or selection is not a plan.");
+        }
+    }
+
+    private void createNewGroup() {
+        PopupView popup = popupConfigurator.configureCreateGroupPopup();
+
+        popup.setActions(values -> {
+            model.addPlannerGroup(values);
+            view.updateHomeScreen();
+            System.out.println("Group created: " + values.get(PopupFieldKey.NAME));
+        }, null);
+
+        popup.show();
+    }
+
+    private void removeSelectedGroup() {
+        TreeItem<ListItemData> selectedItem = view.getPlansTreeView().getSelectionModel().getSelectedItem();
+
+        if (selectedItem != null && !selectedItem.isLeaf()) {
+            String groupId = selectedItem.getValue().getId();
+            PopupView popup = popupConfigurator.configureRemoveGroupPopup(groupId);
+
+            popup.setActions(values -> {
+                model.removePlannerGroup(groupId);
+                view.updateHomeScreen();
+            }, null);
+
+            popup.show();
+
+            System.out.println("Group removed with ID: " + groupId);
+        } else {
+            System.out.println("No group selected or selection is not a group.");
+        }
+    }
+
+    private void editSelectedGroup() {
+        TreeItem<ListItemData> selectedItem = view.getPlansTreeView().getSelectionModel().getSelectedItem();
+
+        if (selectedItem != null && !selectedItem.isLeaf()) {
+            String groupId = selectedItem.getValue().getId();
+            PopupView popup = popupConfigurator.configureEditGroupPopup(groupId);
+
+            popup.setActions(values -> {
+                model.editPlannerGroup(values);
+                view.updateHomeScreen();
+                System.out.printf("Group updated: ID %s -> %s%n", groupId, values.get(PopupFieldKey.NAME));
+            }, null);
+
+            popup.show();
+        } else {
+            System.out.println("No group selected or selection is not a group.");
+        }
     }
 
     private void goToSelectedPlan() {
-        String selectedPlanName = view.getPlansListView().getSelectionModel().getSelectedItem();
+        TreeItem<ListItemData> selectedItem = view.getPlansTreeView().getSelectionModel().getSelectedItem();
 
-        if (selectedPlanName != null) {
-            model.openPlanner(selectedPlanName);
+        if (selectedItem != null && selectedItem.isLeaf()) {
+            String plannerId = selectedItem.getValue().getId();
+            model.openPlanner(plannerId);
             appController.updateActiveView();
         } else {
-            System.out.println("No plan selected.");
+            System.out.println("No plan selected or selection is not a plan.");
         }
     }
 
     public void updateHomeScreen() {
         view.updateHomeScreen();
     }
-
 }

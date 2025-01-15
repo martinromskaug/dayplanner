@@ -9,13 +9,21 @@ public class AppModel implements ViewableAppModel, ControllableAppModel {
     private final StorageHandler storageHandler;
     private HomeScreen homeScreenModel;
     private Object activeModel;
-    private String activePlanner;
+    private String activePlannerId;
 
     public AppModel() {
         this.storageHandler = new StorageHandler();
         this.homeScreenModel = new HomeScreen(this, storageHandler);
         this.activeModel = homeScreenModel;
-        this.activePlanner = null;
+        this.activePlannerId = null;
+        setup();
+    }
+
+    private void setup() {
+        for (Planner planner : storageHandler.getAllPlanners()) {
+            planner.setStorageHandler(storageHandler);
+            planner.setAppModel(this);
+        }
     }
 
     @Override
@@ -23,18 +31,17 @@ public class AppModel implements ViewableAppModel, ControllableAppModel {
         return activeModel;
     }
 
-    public void openPlanner(String plannerName) {
-        Planner selectedPlanner = homeScreenModel.findPlannerByName(plannerName);
+    public void openPlanner(String plannerId) {
+        Planner selectedPlanner = storageHandler.findPlannerByID(plannerId);
         if (selectedPlanner != null) {
             activeModel = selectedPlanner;
-            activePlanner = plannerName;
-            System.out.println("Active model changed to Planner: " + plannerName);
+            activePlannerId = plannerId;
         }
     }
 
     public void goToMenu() {
         this.activeModel = homeScreenModel;
-        this.activePlanner = null;
+        this.activePlannerId = null;
     }
 
     @Override
@@ -44,7 +51,7 @@ public class AppModel implements ViewableAppModel, ControllableAppModel {
 
     @Override
     public Planner getPlannerModel() {
-        Planner plannerModel = homeScreenModel.findPlannerByName(activePlanner);
+        Planner plannerModel = storageHandler.findPlannerByID(activePlannerId);
         return plannerModel;
     }
 }

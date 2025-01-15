@@ -1,6 +1,7 @@
 package com.martin.dayplanner.controller.planner;
 
 import com.martin.dayplanner.controller.AppController;
+import com.martin.dayplanner.view.views.ListItemData;
 import com.martin.dayplanner.view.views.planner.PlannerView;
 
 import javafx.scene.control.ListView;
@@ -26,7 +27,7 @@ public class PlannerController {
 
         view.getAddTaskButton().setOnAction(e -> actionHandler.handleAddTask());
 
-        for (ListView<String> taskList : view.getTaskLists()) {
+        for (ListView<ListItemData> taskList : view.getTaskLists()) {
             actionHandler.setupListSelectionListener(taskList);
         }
         view.getRemoveTaskButton().setOnAction(e -> actionHandler.handleRemoveTask());

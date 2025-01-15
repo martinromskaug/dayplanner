@@ -1,5 +1,6 @@
 package com.martin.dayplanner.view;
 
+import com.martin.dayplanner.view.views.Viewable;
 import com.martin.dayplanner.view.views.homescreen.HomeScreenView;
 import com.martin.dayplanner.view.views.planner.PlannerView;
 import com.martin.dayplanner.view.views.planner.ViewablePlanner;

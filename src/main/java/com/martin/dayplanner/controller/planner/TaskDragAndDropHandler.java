@@ -1,6 +1,7 @@
 package com.martin.dayplanner.controller.planner;
 
 import com.martin.dayplanner.model.task.TaskStatus;
+import com.martin.dayplanner.view.views.ListItemData;
 import com.martin.dayplanner.view.views.planner.PlannerView;
 
 import javafx.scene.control.ListView;
@@ -9,8 +10,9 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 
 public class TaskDragAndDropHandler {
-    private ControllablePlanner model;
-    private PlannerView view;
+
+    private final ControllablePlanner model;
+    private final PlannerView view;
 
     public TaskDragAndDropHandler(ControllablePlanner model, PlannerView view) {
         this.model = model;
@@ -18,8 +20,8 @@ public class TaskDragAndDropHandler {
     }
 
     public void setupDragAndDropListeners() {
-        for (ListView<String> sourceList : view.getTaskLists()) {
-            for (ListView<String> targetList : view.getTaskLists()) {
+        for (ListView<ListItemData> sourceList : view.getTaskLists()) {
+            for (ListView<ListItemData> targetList : view.getTaskLists()) {
                 if (sourceList != targetList) {
                     setupDragAndDrop(sourceList, targetList);
                 }
@@ -27,13 +29,13 @@ public class TaskDragAndDropHandler {
         }
     }
 
-    private void setupDragAndDrop(ListView<String> sourceList, ListView<String> targetList) {
+    private void setupDragAndDrop(ListView<ListItemData> sourceList, ListView<ListItemData> targetList) {
         sourceList.setOnDragDetected(event -> {
-            String selectedTaskName = sourceList.getSelectionModel().getSelectedItem();
-            if (selectedTaskName != null) {
+            ListItemData selectedTask = sourceList.getSelectionModel().getSelectedItem();
+            if (selectedTask != null) {
                 Dragboard dragboard = sourceList.startDragAndDrop(TransferMode.MOVE);
                 ClipboardContent content = new ClipboardContent();
-                content.putString(selectedTaskName);
+                content.putString(selectedTask.getId()); // Legger oppgavens ID i dragboard
                 dragboard.setContent(content);
                 event.consume();
             }
@@ -49,18 +51,21 @@ public class TaskDragAndDropHandler {
         targetList.setOnDragDropped(event -> {
             Dragboard dragboard = event.getDragboard();
             if (dragboard.hasString()) {
-                String taskName = dragboard.getString();
+                String taskId = dragboard.getString();
                 TaskStatus targetStatus = getStatusFromListView(targetList);
-                if (targetStatus != null && model.updateTaskStatus(taskName, targetStatus)) {
+                if (targetStatus != null) {
+                    model.updateTaskStatus(taskId, targetStatus);
                     view.updateTaskLists();
                 }
                 event.setDropCompleted(true);
+            } else {
+                event.setDropCompleted(false);
             }
             event.consume();
         });
     }
 
-    private TaskStatus getStatusFromListView(ListView<String> listView) {
+    private TaskStatus getStatusFromListView(ListView<ListItemData> listView) {
         int index = view.getTaskLists().indexOf(listView);
         if (index == 0)
             return TaskStatus.NOTSTARTED;
