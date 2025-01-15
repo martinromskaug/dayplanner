@@ -89,14 +89,22 @@ public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
         LocalDate dueDate = (LocalDate) plannerData.get(PopupFieldKey.DUE_DATE);
         LocalTime dueTime = (LocalTime) plannerData.get(PopupFieldKey.DUE_TIME);
 
-        if (name != null && parentId != null) {
-            Planner newPlanner = new Planner(name, parentId, storageHandler, appModel);
-            newPlanner.setDueDate(dueDate);
-            newPlanner.setDueTime(dueTime);
-            storageHandler.addPlannerToGroup(newPlanner, parentId);
-        } else {
+        if (name == null || parentId == null) {
             throw new IllegalArgumentException("Planner must have a name and a parent group.");
         }
+
+        // Valider at parentId eksisterer
+        PlannerGroup parentGroup = storageHandler.findGroupByID(parentId);
+        if (parentGroup == null) {
+            throw new IllegalArgumentException("Parent group not found with ID: " + parentId);
+        }
+
+        // Opprett og legg til planner
+        Planner newPlanner = new Planner(name, parentId, storageHandler, appModel);
+        newPlanner.setDueDate(dueDate);
+        newPlanner.setDueTime(dueTime);
+
+        storageHandler.addPlannerToGroup(newPlanner, parentId);
     }
 
     @Override

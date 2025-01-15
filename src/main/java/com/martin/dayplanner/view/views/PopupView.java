@@ -10,9 +10,8 @@ import javafx.stage.Stage;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.format.DateTimeParseException;
+import java.util.*;
 import java.util.function.Consumer;
 
 import com.martin.dayplanner.model.PlannerGroup;
@@ -25,6 +24,8 @@ public class PopupView {
     private final Map<PopupFieldKey, Object> metadata = new HashMap<>();
     private final Map<PopupFieldKey, Control> fields = new HashMap<>();
     private final Label errorLabel;
+
+    private final ResourceBundle bundle = ResourceBundle.getBundle("messages", Locale.getDefault());
 
     public PopupView(String title) {
         stage = new Stage();
@@ -50,18 +51,13 @@ public class PopupView {
         TextField textField = new TextField();
         textField.setPromptText(placeholder);
 
-        // Sett tidligere verdi som standard hvis den finnes
         if (previousValue != null) {
             textField.setText(previousValue);
         }
 
         textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal) {
-                if (textField.getText().trim().isEmpty()) {
-                    errorLabel.setText("Name is required.");
-                } else {
-                    errorLabel.setText("");
-                }
+            if (!newVal && textField.getText().trim().isEmpty()) {
+                showErrors(Collections.singletonList(bundle.getString("error.name_required")));
             }
         });
 
@@ -76,21 +72,15 @@ public class PopupView {
         Label fieldLabel = new Label(label);
         ComboBox<PlannerGroup> comboBox = new ComboBox<>();
         comboBox.setPromptText(placeholder);
-
-        // Legg til alle PlannerGroups
         comboBox.getItems().addAll(options);
 
-        // Sett tidligere verdi som standard hvis den finnes
         if (previousValue != null) {
             comboBox.setValue(previousValue);
         }
 
-        // Validering for Parent Group
         comboBox.focusedProperty().addListener((obs, oldVal, newVal) -> {
             if (!newVal && comboBox.getValue() == null) {
-                errorLabel.setText("Parent Group is required.");
-            } else {
-                errorLabel.setText("");
+                showErrors(Collections.singletonList(bundle.getString("error.parent_group_required")));
             }
         });
 
@@ -104,11 +94,8 @@ public class PopupView {
         Label fieldLabel = new Label(label);
         ComboBox<TaskPriority> comboBox = new ComboBox<>();
         comboBox.setPromptText(placeholder);
-
-        // Legg til TaskPriority enum-verdier
         comboBox.getItems().addAll(TaskPriority.values());
 
-        // Sett tidligere verdi som standard hvis den finnes
         if (previousValue != null) {
             comboBox.setValue(previousValue);
         }
@@ -124,7 +111,6 @@ public class PopupView {
         DatePicker datePicker = new DatePicker();
         fields.put(PopupFieldKey.DUE_DATE, datePicker);
 
-        // Sett tidligere dato hvis tilgjengelig
         if (previousDate != null) {
             datePicker.setValue(previousDate);
         }
@@ -134,13 +120,11 @@ public class PopupView {
         timeField.setPromptText("HH:mm");
         fields.put(PopupFieldKey.DUE_TIME, timeField);
 
-        // Sett tidligere tid hvis tilgjengelig
         if (previousTime != null) {
             timeField.setText(previousTime.format(DateTimeFormatter.ofPattern("HH:mm")));
         }
 
-        // Layout-justering
-        int row = fields.size() / 2; // Antall rader basert på antall felter
+        int row = fields.size() / 2;
         layout.add(dateFieldLabel, 0, row);
         layout.add(datePicker, 1, row);
         layout.add(timeFieldLabel, 0, row + 1);
@@ -149,20 +133,20 @@ public class PopupView {
 
     public void addLabel(String text) {
         Label label = new Label(text);
-        layout.add(label, 0, layout.getChildren().size());
+        label.setWrapText(true);
+        int row = layout.getChildren().size();
+        layout.add(label, 0, row, 2, 1);
     }
 
     public void setActions(Consumer<Map<PopupFieldKey, Object>> onConfirm, Runnable onCancel) {
-        Button confirmButton = new Button("Confirm");
-        Button cancelButton = new Button("Cancel");
+        Button confirmButton = new Button(bundle.getString("button.confirm"));
+        Button cancelButton = new Button(bundle.getString("button.cancel"));
 
         confirmButton.setOnAction(e -> {
             if (validateFields()) {
                 Map<PopupFieldKey, Object> values = getFieldValues();
                 onConfirm.accept(values);
                 stage.close();
-            } else {
-                errorLabel.setText("Please fill in all required fields.");
             }
         });
 
@@ -179,7 +163,10 @@ public class PopupView {
     }
 
     public void show() {
-        Scene scene = new Scene(layout, 400, 400);
+        ScrollPane scrollPane = new ScrollPane(layout);
+        scrollPane.setFitToWidth(true);
+
+        Scene scene = new Scene(scrollPane, 400, 400);
         stage.setScene(scene);
         stage.showAndWait();
     }
@@ -191,37 +178,56 @@ public class PopupView {
             Control control = entry.getValue();
 
             if (control instanceof TextField) {
-                values.put(key, ((TextField) control).getText().trim());
+                String textValue = ((TextField) control).getText().trim();
+                if (key == PopupFieldKey.DUE_TIME && !textValue.isEmpty()) {
+                    try {
+                        LocalTime time = LocalTime.parse(textValue, DateTimeFormatter.ofPattern("HH:mm"));
+                        values.put(key, time);
+                    } catch (DateTimeParseException e) {
+                        showErrors(Collections.singletonList(bundle.getString("error.invalid_time_format")));
+                    }
+                } else {
+                    values.put(key, textValue.isEmpty() ? null : textValue);
+                }
             } else if (control instanceof ComboBox) {
                 if (key == PopupFieldKey.PARENT_GROUP) {
-                    // Hent ID fra PlannerGroup-objektet for PARENT_GROUP
-                    PlannerGroup selectedGroup = (PlannerGroup) ((ComboBox<?>) control).getValue();
-                    values.put(key, selectedGroup != null ? selectedGroup.getId() : null);
-                } else if (key == PopupFieldKey.PRIORITY) {
-                    // Hent TaskPriority direkte
+                    PlannerGroup group = (PlannerGroup) ((ComboBox<?>) control).getValue();
+                    values.put(key, group != null ? group.getId() : null);
+                } else {
                     values.put(key, ((ComboBox<?>) control).getValue());
                 }
             } else if (control instanceof DatePicker) {
-                DatePicker datePicker = (DatePicker) control;
-                values.put(key, datePicker.getValue());
+                values.put(key, ((DatePicker) control).getValue());
             }
         }
         return values;
     }
 
     private boolean validateFields() {
+        List<String> errors = new ArrayList<>();
+
         TextField nameField = (TextField) fields.get(PopupFieldKey.NAME);
         if (nameField != null && nameField.getText().trim().isEmpty()) {
-            errorLabel.setText("Name is required.");
-            return false;
+            errors.add(bundle.getString("error.name_required"));
         }
 
         ComboBox<?> parentGroupField = (ComboBox<?>) fields.get(PopupFieldKey.PARENT_GROUP);
         if (parentGroupField != null && parentGroupField.getValue() == null) {
-            errorLabel.setText("Parent Group is required.");
-            return false;
+            errors.add(bundle.getString("error.parent_group_required"));
         }
 
+        if (!errors.isEmpty()) {
+            showErrors(errors);
+            return false;
+        }
         return true;
+    }
+
+    private void showErrors(List<String> errors) {
+        StringBuilder errorText = new StringBuilder();
+        for (String error : errors) {
+            errorText.append("- ").append(error).append("\n");
+        }
+        errorLabel.setText(errorText.toString());
     }
 }

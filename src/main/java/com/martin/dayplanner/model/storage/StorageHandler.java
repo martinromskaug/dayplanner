@@ -176,9 +176,9 @@ public class StorageHandler {
 
     public void removePlannerGroup(String groupId) {
         if (relations.remove(groupId) != null) {
-            plannerGroups.removeIf(group -> group.getId().equals(groupId));
-            planners.removeIf(planner -> planner.getGroupId().equals(groupId));
             tasks.removeIf(task -> findPlannerByID(task.getPlannerId()).getGroupId().equals(groupId));
+            plannerGroups.removeIf(group -> group.getId().equals(groupId));
+            plannerGroups.removeIf(group -> group.getId().equals(groupId));
             saveStorage();
         } else {
             throw new IllegalArgumentException("PlannerGroup not found with ID: " + groupId);
@@ -188,8 +188,8 @@ public class StorageHandler {
     public void removePlannerFromGroup(String plannerId, String groupId) {
         Map<String, List<String>> plannerMap = relations.get(groupId);
         if (plannerMap != null && plannerMap.remove(plannerId) != null) {
-            planners.removeIf(planner -> planner.getId().equals(plannerId));
             tasks.removeIf(task -> task.getPlannerId().equals(plannerId));
+            planners.removeIf(planner -> planner.getId().equals(plannerId));
             saveStorage();
         } else {
             throw new IllegalArgumentException("Planner not found in group: " + groupId);

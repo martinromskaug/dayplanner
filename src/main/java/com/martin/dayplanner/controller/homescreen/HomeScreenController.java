@@ -65,6 +65,8 @@ public class HomeScreenController {
                 view.updateHomeScreen();
             }, null);
 
+            popup.show();
+
             System.out.println("Plan removed with ID: " + plannerId);
         } else {
             System.out.println("No plan selected or selection is not a plan.");
@@ -114,6 +116,8 @@ public class HomeScreenController {
                 model.removePlannerGroup(groupId);
                 view.updateHomeScreen();
             }, null);
+
+            popup.show();
 
             System.out.println("Group removed with ID: " + groupId);
         } else {
