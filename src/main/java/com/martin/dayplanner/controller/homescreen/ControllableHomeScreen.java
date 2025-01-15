@@ -1,21 +1,22 @@
 package com.martin.dayplanner.controller.homescreen;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.util.Map;
+
+import com.martin.dayplanner.view.views.PopupFieldKey;
 
 public interface ControllableHomeScreen {
 
-    public void addPlannerGroup(String groupName);
+    void addPlanner(Map<PopupFieldKey, Object> plannerData);
 
-    public void addPlannerToGroup(String groupName, String plannerName, LocalDate date, LocalTime time);
+    void editPlanner(Map<PopupFieldKey, Object> plannerData);
 
-    public void removePlannerGroup(String groupToRemove);
+    void removePlanner(String plannerId);
 
-    public void removePlanner(String plannerToRemove);
+    void addPlannerGroup(Map<PopupFieldKey, Object> groupData);
 
-    public void openPlanner(String selectedPlanName);
+    void editPlannerGroup(Map<PopupFieldKey, Object> groupData);
 
-    public void editPlannerGroup(String selectedGroupName, String updatedGroupName);
+    void removePlannerGroup(String groupId);
 
-    public void editPlanner(String selectedPlanName, String updatedPlanName);
+    void openPlanner(String plannerId);
 }

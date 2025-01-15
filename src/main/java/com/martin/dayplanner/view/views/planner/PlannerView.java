@@ -1,9 +1,9 @@
 package com.martin.dayplanner.view.views.planner;
 
-import com.martin.dayplanner.model.task.Task;
 import com.martin.dayplanner.model.task.TaskStatus;
 import com.martin.dayplanner.view.views.BaseView;
-import com.martin.dayplanner.view.Viewable;
+import com.martin.dayplanner.view.views.ListItemData;
+import com.martin.dayplanner.view.views.Viewable;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,6 +12,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,26 +20,28 @@ import java.util.stream.Collectors;
 public class PlannerView extends BaseView implements Viewable {
 
     private final ViewablePlanner model;
+    private final PlannerPopupConfigurator popup;
     private final Button addTaskButton;
     private final Button removeTaskButton;
     private final Button editTaskButton;
     private final Button goToMenuButton;
-    private final ListView<String> newTasksListView;
-    private final ListView<String> pendingTasksListView;
-    private final ListView<String> completedTasksListView;
+    private final ListView<ListItemData> newTasksListView;
+    private final ListView<ListItemData> pendingTasksListView;
+    private final ListView<ListItemData> completedTasksListView;
     private final BorderPane root;
 
     public PlannerView(ViewablePlanner model) {
         this.model = model;
+        this.popup = new PlannerPopupConfigurator(model);
 
         addTaskButton = createButton("Add Task");
         removeTaskButton = createButton("Remove Task");
         editTaskButton = createButton("Edit Task");
         goToMenuButton = createButton("Go To Menu");
 
-        newTasksListView = createListView();
-        pendingTasksListView = createListView();
-        completedTasksListView = createListView();
+        newTasksListView = new ListView<>();
+        pendingTasksListView = new ListView<>();
+        completedTasksListView = new ListView<>();
 
         root = new BorderPane();
         updateTaskLists();
@@ -74,15 +77,15 @@ public class PlannerView extends BaseView implements Viewable {
     }
 
     public void updateTaskLists() {
-        newTasksListView.getItems().setAll(getTaskNames(TaskStatus.NOTSTARTED));
-        pendingTasksListView.getItems().setAll(getTaskNames(TaskStatus.ACTIVE));
-        completedTasksListView.getItems().setAll(getTaskNames(TaskStatus.COMPLETED));
+        newTasksListView.getItems().setAll(getTaskItems(TaskStatus.NOTSTARTED));
+        pendingTasksListView.getItems().setAll(getTaskItems(TaskStatus.ACTIVE));
+        completedTasksListView.getItems().setAll(getTaskItems(TaskStatus.COMPLETED));
     }
 
-    private List<String> getTaskNames(TaskStatus status) {
+    private List<ListItemData> getTaskItems(TaskStatus status) {
         return model.getTasksByStatus(status).stream()
                 .sorted((task1, task2) -> task2.getPriority().compareTo(task1.getPriority()))
-                .map(Task::getTaskName)
+                .map(task -> new ListItemData(task.getId(), task.getTaskName()))
                 .collect(Collectors.toList());
     }
 
@@ -91,8 +94,8 @@ public class PlannerView extends BaseView implements Viewable {
         return root;
     }
 
-    public List<ListView<String>> getTaskLists() {
-        List<ListView<String>> allTaskLists = new ArrayList<>();
+    public List<ListView<ListItemData>> getTaskLists() {
+        List<ListView<ListItemData>> allTaskLists = new ArrayList<>();
         allTaskLists.add(newTasksListView);
         allTaskLists.add(pendingTasksListView);
         allTaskLists.add(completedTasksListView);
@@ -117,5 +120,9 @@ public class PlannerView extends BaseView implements Viewable {
 
     public Button getGoToMenuButton() {
         return goToMenuButton;
+    }
+
+    public PlannerPopupConfigurator getPopup() {
+        return popup;
     }
 }
