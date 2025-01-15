@@ -10,6 +10,8 @@ import com.martin.dayplanner.view.views.Viewable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
@@ -81,8 +83,8 @@ public class HomeScreenView extends BaseView implements Viewable {
         HBox groupButtonRow = createButtonRow(removeGroupButton, editGroupButton, createNewGroupButton);
         centerGrid.add(createSection("Your Plans", plansTreeView, plansButtonRow, groupButtonRow), 0, 0, 1, 2);
 
-        centerGrid.add(createSection("Deadlines", deadlinesTreeView, "tasks-box"), 1, 1);
-        centerGrid.add(createSection("Active Tasks", activeTasksTreeView, "tasks-box"), 1, 0);
+        centerGrid.add(createSection("Deadlines", deadlinesTreeView, "tasks-box"), 1, 0);
+        centerGrid.add(createSection("Active Tasks", activeTasksTreeView, "tasks-box"), 1, 1);
 
         return centerGrid;
     }
@@ -147,8 +149,30 @@ public class HomeScreenView extends BaseView implements Viewable {
             for (Planner planner : planners) {
                 String formattedPlanner = String.format("%s %s", planner.getDueTime().format(timeFormatter),
                         planner.getPlannerName());
+
+                // Opprett TreeItem for planleggerens navn
                 TreeItem<ListItemData> plannerItem = new TreeItem<>(
                         new ListItemData(planner.getId(), formattedPlanner));
+
+                // Beregn progresjon og formater prosent
+                double progress = planner.getProgress(); // Hent progresjon (0.0 til 1.0)
+                String progressPercentage = String.format("%.0f%%", progress * 100);
+
+                // Opprett ProgressBar
+                ProgressBar progressBar = new ProgressBar(progress);
+                progressBar.setMaxWidth(Double.MAX_VALUE); // Sett progressbaren til å fylle tilgjengelig bredde
+
+                // Opprett en HBox for ProgressBar og prosentandel
+                Label progressLabel = new Label(progressPercentage);
+                HBox progressBox = new HBox(10, progressBar, progressLabel);
+                progressBox.setAlignment(Pos.CENTER_LEFT);
+                progressBox.setPadding(new Insets(5, 0, 0, 20)); // Innrykk for å indikere underordnet nivå
+
+                // Opprett TreeItem for progressbaren
+                TreeItem<ListItemData> progressItem = new TreeItem<>(new ListItemData("", ""));
+                progressItem.setGraphic(progressBox);
+
+                plannerItem.getChildren().add(progressItem);
                 dateItem.getChildren().add(plannerItem);
             }
 
