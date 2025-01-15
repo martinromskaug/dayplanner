@@ -14,7 +14,7 @@ public class PlannerGroup {
     }
 
     private String generateId() {
-        return groupName + "-" + UUID.randomUUID();
+        return UUID.randomUUID().toString();
     }
 
     public String getId() {
@@ -36,11 +36,16 @@ public class PlannerGroup {
         if (o == null || getClass() != o.getClass())
             return false;
         PlannerGroup that = (PlannerGroup) o;
-        return Objects.equals(groupName, that.groupName);
+        return Objects.equals(Id, that.Id); // Sammenlign ID-er
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(groupName);
+        return Objects.hash(Id); // Basert på ID
+    }
+
+    @Override
+    public String toString() {
+        return groupName;
     }
 }

@@ -1,6 +1,5 @@
 package com.martin.dayplanner.model.task;
 
-import com.martin.dayplanner.model.Planner;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
@@ -10,18 +9,16 @@ public class Task {
 
     private final String id;
     private String taskName;
-    private transient Planner planner;
-    private String plannerName;
+    private String plannerId;
     private TaskStatus status;
     private TaskPriority priority;
     private LocalDate dueDate;
     private LocalTime dueTime;
 
-    public Task(String taskName, Planner planner) {
+    public Task(String taskName, String plannerId) {
         this.taskName = taskName;
-        this.planner = planner;
-        this.plannerName = planner.getPlannerName();
-        this.id = generateId(); // Generer unik ID
+        this.plannerId = plannerId;
+        this.id = generateId();
         this.status = TaskStatus.NOTSTARTED;
         this.priority = TaskPriority.LOW;
         this.dueDate = null;
@@ -29,7 +26,7 @@ public class Task {
     }
 
     private String generateId() {
-        return taskName + "-" + UUID.randomUUID(); // Kombiner navn og UUID
+        return UUID.randomUUID().toString();
     }
 
     public String getId() {
@@ -44,16 +41,8 @@ public class Task {
         this.taskName = taskName;
     }
 
-    public Planner getPlanner() {
-        return planner;
-    }
-
-    public void setPlanner(Planner planner) {
-        this.planner = planner;
-    }
-
-    public String getPlannerName() {
-        return plannerName;
+    public String getPlannerId() {
+        return plannerId;
     }
 
     public TaskStatus getStatus() {

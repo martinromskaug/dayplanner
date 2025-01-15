@@ -10,32 +10,17 @@ import com.martin.dayplanner.controller.homescreen.ControllableHomeScreen;
 import com.martin.dayplanner.model.storage.StorageHandler;
 import com.martin.dayplanner.model.task.Task;
 import com.martin.dayplanner.model.task.TaskStatus;
+import com.martin.dayplanner.view.views.PopupFieldKey;
 import com.martin.dayplanner.view.views.homescreen.ViewableHomeScreen;
 
 public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
 
-    private AppModel appModel;
+    private final AppModel appModel;
     private final StorageHandler storageHandler;
 
     public HomeScreen(AppModel appModel, StorageHandler storageHandler) {
         this.appModel = appModel;
         this.storageHandler = storageHandler;
-    }
-
-    public Planner findPlannerByName(String plannerName) {
-        if (plannerName == null || plannerName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Planner name cannot be null or empty");
-        }
-
-        for (PlannerGroup group : storageHandler.getAllPlannerGroups()) {
-            for (Planner planner : storageHandler.getPlannersForGroup(group)) {
-                if (planner.getPlannerName().equals(plannerName)) {
-                    return planner;
-                }
-            }
-        }
-
-        return null;
     }
 
     @Override
@@ -44,151 +29,137 @@ public class HomeScreen implements ControllableHomeScreen, ViewableHomeScreen {
     }
 
     @Override
-    public List<Planner> getPlannersForGroup(PlannerGroup plannerGroup) {
-        return storageHandler.getPlannersForGroup(plannerGroup);
-    }
-
-    @Override
-    public void addPlannerGroup(String groupName) {
-        if (groupName == null || groupName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Group name cannot be null or empty");
-        }
-        storageHandler.addPlannerGroup(new PlannerGroup(groupName));
-    }
-
-    @Override
-    public void removePlannerGroup(String groupName) {
-        if (groupName == null || groupName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Group name cannot be null or empty");
-        }
-
-        PlannerGroup groupToRemove = storageHandler.findGroupByName(groupName);
-
-        storageHandler.removePlannerGroup(groupToRemove);
-    }
-
-    @Override
-    public void removePlanner(String plannerToRemove) {
-        if (plannerToRemove == null || plannerToRemove.trim().isEmpty()) {
-            throw new IllegalArgumentException("Planner name cannot be null or empty");
-        }
-
-        PlannerGroup group = findPlannerByName(plannerToRemove).getPlannerGroup();
-
-        Planner planner = storageHandler.getPlannersForGroup(group)
-                .stream()
-                .filter(p -> p.getPlannerName().equals(plannerToRemove))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Planner not found: " + plannerToRemove));
-
-        storageHandler.removePlannerFromGroup(group, planner);
-    }
-
-    @Override
-    public void openPlanner(String selectedPlanName) {
-        appModel.openPlanner(selectedPlanName);
-    }
-
-    @Override
-    public void editPlanner(String selectedPlanName, String updatedPlanName) {
-        if (selectedPlanName == null || selectedPlanName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Selected planner name cannot be null or empty");
-        }
-        if (updatedPlanName == null || updatedPlanName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Updated planner name cannot be null or empty");
-        }
-        if (selectedPlanName.equals(updatedPlanName)) {
-            throw new IllegalArgumentException("Updated planner name cannot be the same as the current name");
-        }
-
-        Planner plannerToEdit = findPlannerByName(selectedPlanName);
-        if (plannerToEdit == null) {
-            throw new IllegalArgumentException("Planner not found: " + selectedPlanName);
-        }
-
-        if (findPlannerByName(updatedPlanName) != null) {
-            throw new IllegalArgumentException("A planner with the updated name already exists");
-        }
-
-        plannerToEdit.setPlannerName(updatedPlanName);
-
-        storageHandler.updatePlanner(plannerToEdit.getPlannerGroup(), plannerToEdit);
-    }
-
-    @Override
-    public void editPlannerGroup(String selectedGroupName, String updatedGroupName) {
-        if (selectedGroupName == null || selectedGroupName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Selected group name cannot be null or empty");
-        }
-        if (updatedGroupName == null || updatedGroupName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Updated group name cannot be null or empty");
-        }
-        if (selectedGroupName.equals(updatedGroupName)) {
-            throw new IllegalArgumentException("Updated group name cannot be the same as the current name");
-        }
-
-        PlannerGroup groupToEdit = storageHandler.findGroupByName(selectedGroupName);
-        if (groupToEdit == null) {
-            throw new IllegalArgumentException("PlannerGroup not found: " + selectedGroupName);
-        }
-
-        if (storageHandler.getAllPlannerGroups().stream()
-                .anyMatch(group -> group.getGroupName().equals(updatedGroupName))) {
-            throw new IllegalArgumentException("A PlannerGroup with the updated name already exists");
-        }
-
-        groupToEdit.setGroupName(updatedGroupName);
-
-        storageHandler.updatePlannerGroup(groupToEdit);
+    public List<Planner> getPlannersForGroup(String groupId) {
+        return storageHandler.getAllPlanners().stream()
+                .filter(planner -> planner.getGroupId().equals(groupId))
+                .collect(Collectors.toList());
     }
 
     @Override
     public Map<String, List<Task>> getActiveTasks() {
         return storageHandler.getAllTasks().stream()
-                .filter(task -> task.getStatus() == TaskStatus.ACTIVE) // Kun aktive oppgaver
-                .collect(Collectors.groupingBy(Task::getPlannerName)); // Gruppér etter planleggernavn
+                .filter(task -> task.getStatus() == TaskStatus.ACTIVE)
+                .collect(Collectors.groupingBy(Task::getPlannerId));
     }
 
     @Override
     public List<Planner> getPlannersWithDeadline() {
         return storageHandler.getAllPlanners().stream()
-                .filter(planner -> planner.getDueDate() != null) // Sjekker om planlegger har en definert frist
-                .toList();
+                .filter(planner -> planner.getDueDate() != null)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void addPlannerToGroup(String groupName, String plannerName, LocalDate date, LocalTime time) {
-        if (groupName == null || groupName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Group name cannot be null or empty");
+    public String getPlannerNameById(String plannerId) {
+        Planner planner = storageHandler.findPlannerByID(plannerId);
+        return planner != null ? planner.getPlannerName() : null;
+    }
+
+    @Override
+    public String getGroupNameById(String groupId) {
+        PlannerGroup group = storageHandler.findGroupByID(groupId);
+        return group != null ? group.getGroupName() : null;
+    }
+
+    @Override
+    public PlannerGroup getParentGroupByPlannerId(String plannerId) {
+        Planner planner = storageHandler.findPlannerByID(plannerId);
+        if (planner != null) {
+            return storageHandler.findGroupByID(planner.getGroupId());
         }
-        if (plannerName == null || plannerName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Planner name cannot be null or empty");
+        return null;
+    }
+
+    @Override
+    public LocalDate getPlannerDate(String plannerId) {
+        Planner planner = storageHandler.findPlannerByID(plannerId);
+        return planner != null ? planner.getDueDate() : null;
+    }
+
+    @Override
+    public LocalTime getPlannerTime(String plannerId) {
+        Planner planner = storageHandler.findPlannerByID(plannerId);
+        return planner != null ? planner.getDueTime() : null;
+    }
+
+    @Override
+    public void addPlanner(Map<PopupFieldKey, Object> plannerData) {
+        String name = (String) plannerData.get(PopupFieldKey.NAME);
+        String parentId = (String) plannerData.get(PopupFieldKey.PARENT_GROUP);
+        LocalDate dueDate = (LocalDate) plannerData.get(PopupFieldKey.DUE_DATE);
+        LocalTime dueTime = (LocalTime) plannerData.get(PopupFieldKey.DUE_TIME);
+
+        if (name != null && parentId != null) {
+            Planner newPlanner = new Planner(name, parentId, storageHandler, appModel);
+            newPlanner.setDueDate(dueDate);
+            newPlanner.setDueTime(dueTime);
+            storageHandler.addPlannerToGroup(newPlanner, parentId);
+        } else {
+            throw new IllegalArgumentException("Planner must have a name and a parent group.");
         }
+    }
 
-        // Finn gruppen ved navn
-        PlannerGroup group = storageHandler.findGroupByName(groupName);
-        if (group == null) {
-            throw new IllegalArgumentException("PlannerGroup not found: " + groupName);
+    @Override
+    public void editPlanner(Map<PopupFieldKey, Object> plannerData) {
+        String plannerId = (String) plannerData.get(PopupFieldKey.ID);
+        String name = (String) plannerData.get(PopupFieldKey.NAME);
+        LocalDate dueDate = (LocalDate) plannerData.get(PopupFieldKey.DUE_DATE);
+        LocalTime dueTime = (LocalTime) plannerData.get(PopupFieldKey.DUE_TIME);
+
+        Planner existingPlanner = storageHandler.findPlannerByID(plannerId);
+        if (existingPlanner != null) {
+            existingPlanner.setPlannerName(name);
+            existingPlanner.setDueDate(dueDate);
+            existingPlanner.setDueTime(dueTime);
+            storageHandler.updatePlanner(existingPlanner);
+        } else {
+            throw new IllegalArgumentException("Planner not found with ID: " + plannerId);
         }
+    }
 
-        // Sjekk om en planner med samme navn allerede finnes
-        if (findPlannerByName(plannerName) != null) {
-            throw new IllegalArgumentException("A planner with this name already exists");
+    @Override
+    public void addPlannerGroup(Map<PopupFieldKey, Object> groupData) {
+        String name = (String) groupData.get(PopupFieldKey.NAME);
+        if (name != null && !name.isEmpty()) {
+            PlannerGroup newGroup = new PlannerGroup(name);
+            storageHandler.addPlannerGroup(newGroup);
+        } else {
+            throw new IllegalArgumentException("Group must have a name.");
         }
+    }
 
-        // Opprett ny planner med dato og tid
-        Planner newPlanner = new Planner(plannerName, group, appModel, storageHandler);
-        newPlanner.setDueDate(date); // Sett dato
-        newPlanner.setDueTime(time); // Sett klokkeslett
+    @Override
+    public void editPlannerGroup(Map<PopupFieldKey, Object> groupData) {
+        String groupId = (String) groupData.get(PopupFieldKey.ID);
+        String name = (String) groupData.get(PopupFieldKey.NAME);
 
-        // Legg til planner i gruppen via StorageHandler
-        storageHandler.addPlannerToGroup(group, newPlanner);
+        PlannerGroup group = storageHandler.findGroupByID(groupId);
+        if (group != null) {
+            group.setGroupName(name);
+            storageHandler.updatePlannerGroup(group);
+        } else {
+            throw new IllegalArgumentException("Group not found with ID: " + groupId);
+        }
+    }
 
-        System.out.printf("Planner '%s' added to group '%s' with date %s and time %s%n",
-                plannerName,
-                groupName,
-                date != null ? date.toString() : "No Date",
-                time != null ? time.toString() : "No Time");
+    @Override
+    public void removePlannerGroup(String groupId) {
+        storageHandler.removePlannerGroup(groupId);
+    }
+
+    @Override
+    public void openPlanner(String plannerId) {
+        appModel.openPlanner(plannerId);
+    }
+
+    @Override
+    public void removePlanner(String plannerId) {
+        Planner planner = storageHandler.findPlannerByID(plannerId);
+        if (planner != null) {
+            storageHandler.removePlannerFromGroup(plannerId, planner.getGroupId());
+        } else {
+            throw new IllegalArgumentException("Planner not found with ID: " + plannerId);
+        }
     }
 
 }
