@@ -18,7 +18,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -150,15 +152,17 @@ public class HomeScreenView extends BaseView implements Viewable {
                         LinkedHashMap::new,
                         Collectors.toList()));
 
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MMM.yyyy");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
         for (Map.Entry<LocalDate, List<Planner>> entry : plannersByDate.entrySet()) {
             LocalDate date = entry.getKey();
             List<Planner> planners = entry.getValue();
 
+            String dueDateAndDays = String.format("%s             %s", date.format(dateFormatter), daysUntil(date));
+
             TreeItem<ListItemData> dateItem = new TreeItem<>(
-                    new ListItemData(date.toString(), date.format(dateFormatter)));
+                    new ListItemData(date.toString(), dueDateAndDays));
             dateItem.setExpanded(true);
 
             for (Planner planner : planners) {
@@ -199,6 +203,25 @@ public class HomeScreenView extends BaseView implements Viewable {
         }
 
         deadlinesTreeView.setRoot(root);
+    }
+
+    private String daysUntil(LocalDate date) {
+        LocalDateTime targetDateTime = date.atStartOfDay(); // Starten av dagen for den gitte datoen
+        LocalDateTime now = LocalDateTime.now();
+
+        if (now.isAfter(targetDateTime)) {
+            return "Date has passed";
+        }
+
+        Duration duration = Duration.between(now, targetDateTime);
+
+        long totalDays = duration.toDays();
+
+        if (totalDays >= 1) {
+            return String.format("%d days left", totalDays);
+        } else {
+            return "< 1 day left";
+        }
     }
 
     private void updateActiveTasksList() {
