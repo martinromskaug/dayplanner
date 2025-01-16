@@ -20,6 +20,8 @@ import javafx.scene.layout.HBox;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -103,6 +105,9 @@ public class HomeScreenView extends BaseView implements Viewable {
         TreeView<ListItemData> treeView = new TreeView<>(root);
         treeView.setShowRoot(false);
 
+        // Legg til CSS-klasse
+        treeView.getStyleClass().add("tree-view");
+
         return treeView;
     }
 
@@ -132,8 +137,18 @@ public class HomeScreenView extends BaseView implements Viewable {
         root.setExpanded(true);
 
         List<Planner> plannersWithDeadlines = model.getPlannersWithDeadline();
+
+        // Sorter planleggere etter dato og tid
+        plannersWithDeadlines.sort(Comparator
+                .comparing(Planner::getDueDate)
+                .thenComparing(Planner::getDueTime));
+
+        // Behold sorteringsrekkefølge ved å bruke LinkedHashMap
         Map<LocalDate, List<Planner>> plannersByDate = plannersWithDeadlines.stream()
-                .collect(Collectors.groupingBy(Planner::getDueDate));
+                .collect(Collectors.groupingBy(
+                        Planner::getDueDate,
+                        LinkedHashMap::new,
+                        Collectors.toList()));
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -147,8 +162,12 @@ public class HomeScreenView extends BaseView implements Viewable {
             dateItem.setExpanded(true);
 
             for (Planner planner : planners) {
-                String formattedPlanner = String.format("%s %s", planner.getDueTime().format(timeFormatter),
-                        planner.getPlannerName());
+                String formattedPlanner = String.format("%s %s -%s",
+                        planner.getDueTime() != null ? planner.getDueTime().format(timeFormatter) : "N/A",
+                        planner.getPlannerName() != null ? planner.getPlannerName() : "No Name",
+                        model.getParentGroupByPlannerId(planner.getId()) != null
+                                ? model.getParentGroupByPlannerId(planner.getId())
+                                : "No Group");
 
                 // Opprett TreeItem for planleggerens navn
                 TreeItem<ListItemData> plannerItem = new TreeItem<>(
@@ -191,9 +210,14 @@ public class HomeScreenView extends BaseView implements Viewable {
         for (Map.Entry<String, List<Task>> entry : tasksByPlanner.entrySet()) {
             String plannerId = entry.getKey();
             String plannerName = model.getPlannerNameById(plannerId);
+            PlannerGroup parentGroup = model.getParentGroupByPlannerId(plannerId); // Hent gruppenavn
+            String groupName = parentGroup.getGroupName();
+            String displayName = String.format("%s - %s", plannerName,
+                    groupName != null ? groupName : "No Group"); // Formatter med fallback for null
+
             List<Task> tasks = entry.getValue();
 
-            TreeItem<ListItemData> plannerItem = new TreeItem<>(new ListItemData(plannerId, plannerName));
+            TreeItem<ListItemData> plannerItem = new TreeItem<>(new ListItemData(plannerId, displayName));
             plannerItem.setExpanded(true);
 
             for (Task task : tasks) {

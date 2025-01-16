@@ -179,3 +179,105 @@
     -fx-font-size: 16px;
     -fx-text-fill: #2d3436;
 }
+
+/* TreeView-stiler */
+.tree-view {
+    -fx-background-color: transparent; /* Ingen bakgrunnsfarge */
+    -fx-border-color: transparent; /* Ingen kantlinje */
+    -fx-padding: 0; /* Fjern padding */
+}
+
+.tree-view .tree-cell {
+    -fx-padding: 10;
+    -fx-font-size: 15px !important; /* Større skriftstørrelse */
+    -fx-font-weight: 700 !important; /* Fet skrift */
+    -fx-text-fill: #2d3436; /* Moderne tekstfarge */
+    -fx-background-color: transparent; /* Transparent celler */
+    -fx-border-color: transparent;
+}
+
+.tree-view .tree-cell:hover {
+    -fx-background-color: #f1f1f1; /* Lys grå ved hover */
+    -fx-border-radius: 5px;
+}
+
+.tree-view .tree-cell:focused {
+    -fx-background-color: #e9ecef; /* Subtil blågrå ved fokus */
+    -fx-border-radius: 5px;
+}
+
+/* Skillelinjer mellom elementer */
+.tree-view .tree-row-cell {
+    -fx-border-color: #e0e0e0; /* Lys grå linje */
+    -fx-border-width: 0 0 1px 0; /* Kun linje nederst */
+}
+
+/* Progressbar i TreeView */
+.tree-view .progress-bar {
+    -fx-accent: #0984e3; /* Frisk blå */
+    -fx-background-color: #f4f4f4; /* Lys grå bakgrunn */
+    -fx-background-radius: 5px;
+    -fx-padding: 0;
+}
+
+/* Tooltip-stiler */
+.tree-view .tree-cell .tooltip {
+    -fx-font-size: 12px;
+    -fx-text-fill: #2d3436;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5px;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1px;
+}
+
+
+/* Popup stiler */
+.popup-layout {
+    -fx-padding: 20; /* Ensartet padding */
+    -fx-hgap: 10; /* Avstand mellom kolonner */
+    -fx-vgap: 10; /* Avstand mellom rader */
+    -fx-background-color: #ffffff; /* Ren hvit bakgrunn */
+    -fx-background-radius: 10px; /* Myke hjørner */
+    -fx-border-color: #e0e0e0; /* Lys grå kant */
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 12, 0, 5, 5); /* Subtil skygge */
+}
+
+/* Tekstfelt og kombinasjonsbokser */
+.popup-text-field, .popup-combo-box {
+    -fx-padding: 10; /* Romslige felt */
+    -fx-font-size: 14px; /* Lesbar tekst */
+    -fx-border-color: #dfe6e9; /* Lys grå kant */
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-background-color: #ffffff;
+}
+
+/* Feilmelding */
+.popup-error-label {
+    -fx-text-fill: #e74c3c; /* Rød tekst for feilmeldinger */
+    -fx-font-weight: bold;
+    -fx-wrap-text: true; /* Tillat linjebryting */
+}
+
+/* Knappestil */
+.popup-button {
+    -fx-padding: 10 20; /* Komfortabel størrelse */
+    -fx-font-size: 14px; /* Lesbar størrelse */
+    -fx-font-weight: 700; /* Fremhevet tekst */
+    -fx-text-fill: #ffffff; /* Hvit tekst */
+    -fx-background-color: #0984e3; /* Frisk blå farge */
+    -fx-background-radius: 5px; /* Myke hjørner */
+    -fx-border-radius: 5px;
+}
+
+.popup-button:hover {
+    -fx-background-color: #74b9ff; /* Lysere blå ved hover */
+}
+
+.popup-button:pressed {
+    -fx-background-color: #0984e3; /* Original blå ved trykk */
+}
+
