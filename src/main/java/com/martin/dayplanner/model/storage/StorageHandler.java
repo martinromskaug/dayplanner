@@ -110,23 +110,24 @@ public class StorageHandler {
     }
 
     public void addTaskToPlanner(Task taskToAdd, String plannerId) {
-        if (planners.stream().noneMatch(p -> p.getId().equals(plannerId))) {
-            throw new IllegalArgumentException("Planner not found with ID: " + plannerId);
+        Planner planner = findPlannerByID(plannerId); // Sjekker at planner finnes
+        String groupId = planner.getGroupId(); // Henter tilknyttet gruppe
+
+        if (!relations.containsKey(groupId)) {
+            throw new IllegalArgumentException("PlannerGroup not found with ID: " + groupId);
         }
 
         if (tasks.stream().noneMatch(t -> t.getId().equals(taskToAdd.getId()))) {
             tasks.add(taskToAdd);
         }
 
-        for (Map<String, List<String>> plannerMap : relations.values()) {
-            if (plannerMap.containsKey(plannerId)) {
-                plannerMap.get(plannerId).add(taskToAdd.getId());
-                saveStorage();
-                return;
-            }
+        Map<String, List<String>> plannerMap = relations.get(groupId);
+        if (plannerMap != null) {
+            plannerMap.computeIfAbsent(plannerId, k -> new ArrayList<>()).add(taskToAdd.getId());
+            saveStorage();
+        } else {
+            throw new IllegalArgumentException("Planner not associated with any group: " + plannerId);
         }
-
-        throw new IllegalArgumentException("Planner not associated with any group: " + plannerId);
     }
 
     public void updateTask(Task updatedTask) {
@@ -149,6 +150,10 @@ public class StorageHandler {
 
     public List<Task> getAllTasks() {
         return new ArrayList<>(tasks);
+    }
+
+    public Map<String, Map<String, List<String>>> getRelations() {
+        return new HashMap<String, Map<String, List<String>>>(relations);
     }
 
     public PlannerGroup findGroupByID(String groupId) {
@@ -177,7 +182,7 @@ public class StorageHandler {
     public void removePlannerGroup(String groupId) {
         if (relations.remove(groupId) != null) {
             tasks.removeIf(task -> findPlannerByID(task.getPlannerId()).getGroupId().equals(groupId));
-            plannerGroups.removeIf(group -> group.getId().equals(groupId));
+            planners.removeIf(planner -> planner.getGroupId().equals(groupId));
             plannerGroups.removeIf(group -> group.getId().equals(groupId));
             saveStorage();
         } else {
@@ -242,5 +247,9 @@ public class StorageHandler {
         public Map<String, Map<String, List<String>>> getRelations() {
             return relations;
         }
+    }
+
+    public Object getGroupIdForTask(String id) {
+        return null;
     }
 }

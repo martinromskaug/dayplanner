@@ -3,6 +3,7 @@ package com.martin.dayplanner.view.views.planner;
 import com.martin.dayplanner.model.task.TaskStatus;
 import com.martin.dayplanner.view.views.BaseView;
 import com.martin.dayplanner.view.views.ListItemData;
+import com.martin.dayplanner.view.views.Specimen;
 import com.martin.dayplanner.view.views.Viewable;
 
 import javafx.geometry.Insets;
@@ -85,7 +86,7 @@ public class PlannerView extends BaseView implements Viewable {
     private List<ListItemData> getTaskItems(TaskStatus status) {
         return model.getTasksByStatus(status).stream()
                 .sorted((task1, task2) -> task2.getPriority().compareTo(task1.getPriority()))
-                .map(task -> new ListItemData(task.getId(), task.getTaskName()))
+                .map(task -> new ListItemData(task.getId(), task.getTaskName(), Specimen.TASK))
                 .collect(Collectors.toList());
     }
 
@@ -102,8 +103,8 @@ public class PlannerView extends BaseView implements Viewable {
         return allTaskLists;
     }
 
-    public String getPlannerName() {
-        return model.getPlannerName();
+    public String getPlannerId() {
+        return model.getId();
     }
 
     public Button getEditTaskButton() {

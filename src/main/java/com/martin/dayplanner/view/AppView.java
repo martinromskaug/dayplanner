@@ -32,7 +32,7 @@ public class AppView {
 
     public void updatePlannerView(ViewablePlanner plannerModel) {
         if (plannerModel != null) {
-            if (plannerView == null || !plannerView.getPlannerName().equals(plannerModel.getPlannerName())) {
+            if (plannerView == null || !plannerView.getPlannerId().equals(plannerModel.getId())) {
                 this.plannerView = new PlannerView(plannerModel);
                 System.out.println("PlannerView updated with new model: " + plannerModel.getPlannerName());
             }

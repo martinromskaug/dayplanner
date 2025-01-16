@@ -5,6 +5,7 @@ import com.martin.dayplanner.model.PlannerGroup;
 import com.martin.dayplanner.model.task.Task;
 import com.martin.dayplanner.view.views.BaseView;
 import com.martin.dayplanner.view.views.ListItemData;
+import com.martin.dayplanner.view.views.Specimen;
 import com.martin.dayplanner.view.views.Viewable;
 
 import javafx.geometry.Insets;
@@ -101,7 +102,7 @@ public class HomeScreenView extends BaseView implements Viewable {
     }
 
     private TreeView<ListItemData> createTreeView() {
-        TreeItem<ListItemData> root = new TreeItem<>(new ListItemData("root", "Root"));
+        TreeItem<ListItemData> root = new TreeItem<>(new ListItemData("root", "Root", Specimen.ROOT));
         root.setExpanded(true);
 
         TreeView<ListItemData> treeView = new TreeView<>(root);
@@ -114,17 +115,18 @@ public class HomeScreenView extends BaseView implements Viewable {
     }
 
     private void updatePlannerList() {
-        TreeItem<ListItemData> root = new TreeItem<>(new ListItemData("root", "Root"));
+        TreeItem<ListItemData> root = new TreeItem<>(new ListItemData("root", "Root", Specimen.ROOT));
         root.setExpanded(true);
 
         List<PlannerGroup> plannerGroups = model.getPlannerGroups();
         for (PlannerGroup group : plannerGroups) {
-            TreeItem<ListItemData> groupItem = new TreeItem<>(new ListItemData(group.getId(), group.getGroupName()));
+            TreeItem<ListItemData> groupItem = new TreeItem<>(
+                    new ListItemData(group.getId(), group.getGroupName(), Specimen.GROUP));
 
             List<Planner> planners = model.getPlannersForGroup(group.getId());
             for (Planner planner : planners) {
                 TreeItem<ListItemData> plannerItem = new TreeItem<>(
-                        new ListItemData(planner.getId(), planner.getPlannerName()));
+                        new ListItemData(planner.getId(), planner.getPlannerName(), Specimen.PLANNER));
                 groupItem.getChildren().add(plannerItem);
             }
 
@@ -135,7 +137,7 @@ public class HomeScreenView extends BaseView implements Viewable {
     }
 
     private void updateDeadlinesList() {
-        TreeItem<ListItemData> root = new TreeItem<>(new ListItemData("root", "Root"));
+        TreeItem<ListItemData> root = new TreeItem<>(new ListItemData("root", "Root", Specimen.ROOT));
         root.setExpanded(true);
 
         List<Planner> plannersWithDeadlines = model.getPlannersWithDeadline();
@@ -162,7 +164,7 @@ public class HomeScreenView extends BaseView implements Viewable {
             String dueDateAndDays = String.format("%s             %s", date.format(dateFormatter), daysUntil(date));
 
             TreeItem<ListItemData> dateItem = new TreeItem<>(
-                    new ListItemData(date.toString(), dueDateAndDays));
+                    new ListItemData(date.toString(), dueDateAndDays, Specimen.OTHER));
             dateItem.setExpanded(true);
 
             for (Planner planner : planners) {
@@ -175,7 +177,7 @@ public class HomeScreenView extends BaseView implements Viewable {
 
                 // Opprett TreeItem for planleggerens navn
                 TreeItem<ListItemData> plannerItem = new TreeItem<>(
-                        new ListItemData(planner.getId(), formattedPlanner));
+                        new ListItemData(planner.getId(), formattedPlanner, Specimen.PLANNER));
 
                 // Beregn progresjon og formater prosent
                 double progress = planner.getProgress(); // Hent progresjon (0.0 til 1.0)
@@ -192,7 +194,7 @@ public class HomeScreenView extends BaseView implements Viewable {
                 progressBox.setPadding(new Insets(5, 0, 0, 20)); // Innrykk for å indikere underordnet nivå
 
                 // Opprett TreeItem for progressbaren
-                TreeItem<ListItemData> progressItem = new TreeItem<>(new ListItemData("", ""));
+                TreeItem<ListItemData> progressItem = new TreeItem<>(new ListItemData("", "", Specimen.OTHER));
                 progressItem.setGraphic(progressBox);
 
                 plannerItem.getChildren().add(progressItem);
@@ -206,7 +208,7 @@ public class HomeScreenView extends BaseView implements Viewable {
     }
 
     private String daysUntil(LocalDate date) {
-        LocalDateTime targetDateTime = date.atStartOfDay(); // Starten av dagen for den gitte datoen
+        LocalDateTime targetDateTime = date.atStartOfDay();
         LocalDateTime now = LocalDateTime.now();
 
         if (now.isAfter(targetDateTime)) {
@@ -225,7 +227,7 @@ public class HomeScreenView extends BaseView implements Viewable {
     }
 
     private void updateActiveTasksList() {
-        TreeItem<ListItemData> root = new TreeItem<>(new ListItemData("root", "Root"));
+        TreeItem<ListItemData> root = new TreeItem<>(new ListItemData("root", "Root", Specimen.ROOT));
         root.setExpanded(true);
 
         Map<String, List<Task>> tasksByPlanner = model.getActiveTasks();
@@ -240,11 +242,13 @@ public class HomeScreenView extends BaseView implements Viewable {
 
             List<Task> tasks = entry.getValue();
 
-            TreeItem<ListItemData> plannerItem = new TreeItem<>(new ListItemData(plannerId, displayName));
+            TreeItem<ListItemData> plannerItem = new TreeItem<>(
+                    new ListItemData(plannerId, displayName, Specimen.PLANNER));
             plannerItem.setExpanded(true);
 
             for (Task task : tasks) {
-                TreeItem<ListItemData> taskItem = new TreeItem<>(new ListItemData(task.getId(), task.getTaskName()));
+                TreeItem<ListItemData> taskItem = new TreeItem<>(
+                        new ListItemData(task.getId(), task.getTaskName(), Specimen.TASK));
                 plannerItem.getChildren().add(taskItem);
             }
 

@@ -4,6 +4,7 @@ import com.martin.dayplanner.controller.AppController;
 import com.martin.dayplanner.view.views.ListItemData;
 import com.martin.dayplanner.view.views.PopupFieldKey;
 import com.martin.dayplanner.view.views.PopupView;
+import com.martin.dayplanner.view.views.Specimen;
 import com.martin.dayplanner.view.views.homescreen.HomeScreenPopupConfigurator;
 import com.martin.dayplanner.view.views.homescreen.HomeScreenView;
 
@@ -56,7 +57,7 @@ public class HomeScreenController {
     private void removeSelectedPlan() {
         TreeItem<ListItemData> selectedItem = view.getPlansTreeView().getSelectionModel().getSelectedItem();
 
-        if (selectedItem != null && selectedItem.isLeaf()) {
+        if (selectedItem.getValue().getSpecimen().equals(Specimen.PLANNER)) {
             String plannerId = selectedItem.getValue().getId();
             PopupView popup = popupConfigurator.configureRemovePlanPopup(plannerId);
 
@@ -76,7 +77,7 @@ public class HomeScreenController {
     private void editSelectedPlan() {
         TreeItem<ListItemData> selectedItem = view.getPlansTreeView().getSelectionModel().getSelectedItem();
 
-        if (selectedItem != null && selectedItem.isLeaf()) {
+        if (selectedItem.getValue().getSpecimen().equals(Specimen.PLANNER)) {
             String plannerId = selectedItem.getValue().getId();
             PopupView popup = popupConfigurator.configureEditPlanPopup(plannerId);
 
@@ -108,7 +109,7 @@ public class HomeScreenController {
     private void removeSelectedGroup() {
         TreeItem<ListItemData> selectedItem = view.getPlansTreeView().getSelectionModel().getSelectedItem();
 
-        if (selectedItem != null && !selectedItem.isLeaf()) {
+        if (selectedItem.getValue().getSpecimen().equals(Specimen.GROUP)) {
             String groupId = selectedItem.getValue().getId();
             PopupView popup = popupConfigurator.configureRemoveGroupPopup(groupId);
 
@@ -128,7 +129,7 @@ public class HomeScreenController {
     private void editSelectedGroup() {
         TreeItem<ListItemData> selectedItem = view.getPlansTreeView().getSelectionModel().getSelectedItem();
 
-        if (selectedItem != null && !selectedItem.isLeaf()) {
+        if (selectedItem.getValue().getSpecimen().equals(Specimen.GROUP)) {
             String groupId = selectedItem.getValue().getId();
             PopupView popup = popupConfigurator.configureEditGroupPopup(groupId);
 
