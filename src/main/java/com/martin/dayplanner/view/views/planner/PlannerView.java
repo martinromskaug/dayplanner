@@ -9,6 +9,7 @@ import com.martin.dayplanner.view.views.Viewable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -44,9 +45,33 @@ public class PlannerView extends BaseView implements Viewable {
         pendingTasksListView = new ListView<>();
         completedTasksListView = new ListView<>();
 
+        setupListView(newTasksListView);
+        setupListView(pendingTasksListView);
+        setupListView(completedTasksListView);
+
         root = new BorderPane();
         updateTaskLists();
         setupLayout();
+    }
+
+    private void setupListView(ListView<ListItemData> listView) {
+        listView.setCellFactory(param -> {
+            ListCell<ListItemData> cell = new ListCell<>() {
+                @Override
+                protected void updateItem(ListItemData item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(item.getName());
+                        setWrapText(true);
+                        setPrefWidth(listView.getWidth() - 20); // Adjust width to avoid horizontal scroll
+                    }
+                }
+            };
+            return cell;
+        });
+        listView.setPrefWidth(0); // Disable horizontal scrolling
     }
 
     private void setupLayout() {

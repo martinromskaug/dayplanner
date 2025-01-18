@@ -14,6 +14,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
@@ -52,6 +53,10 @@ public class HomeScreenView extends BaseView implements Viewable {
         plansTreeView = createTreeView("tree-view-focusable");
         deadlinesTreeView = createTreeView("tree-view-non-focusable");
         activeTasksTreeView = createTreeView("tree-view-non-focusable");
+
+        setupTreeView(plansTreeView);
+        setupTreeView(deadlinesTreeView);
+        setupTreeView(activeTasksTreeView);
 
         this.popup = new HomeScreenPopupConfigurator(model);
 
@@ -104,6 +109,40 @@ public class HomeScreenView extends BaseView implements Viewable {
         treeView.getStyleClass().add(styleClass);
 
         return treeView;
+    }
+
+    private void setupTreeView(TreeView<ListItemData> treeView) {
+        treeView.setCellFactory(param -> {
+            TreeCell<ListItemData> cell = new TreeCell<>() {
+                @Override
+                protected void updateItem(ListItemData item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(item.getName());
+                        setWrapText(true);
+                        setPrefWidth(treeView.getWidth() - 20); // Adjust width to avoid horizontal scroll
+                        int depth = getTreeItemLevel(getTreeItem());
+                        if (depth == 1) {
+                            getStyleClass().add("depth-" + depth); // Add depth-based style class only for depth 1
+                        }
+                    }
+                }
+            };
+            return cell;
+        });
+        treeView.setPrefWidth(0); // Disable horizontal scrolling
+    }
+
+    private int getTreeItemLevel(TreeItem<?> item) {
+        int level = 0;
+        TreeItem<?> parent = item.getParent();
+        while (parent != null) {
+            level++;
+            parent = parent.getParent();
+        }
+        return level;
     }
 
     private void updatePlannerList() {

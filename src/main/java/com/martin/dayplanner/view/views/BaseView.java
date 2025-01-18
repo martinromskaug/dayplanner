@@ -26,6 +26,7 @@ public abstract class BaseView {
     protected Label createLabel(String text, String styleClass) {
         Label label = new Label(text);
         label.getStyleClass().add(styleClass);
+        label.setWrapText(true);
         return label;
     }
 

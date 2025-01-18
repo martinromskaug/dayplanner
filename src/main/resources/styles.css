@@ -145,7 +145,8 @@
     /* Moderne tekstfarge */
     -fx-background-color: transparent;
     /* Transparent celler */
-    -fx-border-color: transparent;
+    -fx-border-color: transparent transparent #e0e0e0 transparent; /* Bottom border only */
+    -fx-border-width: 0 0 0.5px 0; /* Thinner line */
 }
 
 .list-view .list-cell:hover {
@@ -248,6 +249,21 @@
     -fx-background-color: transparent;
     /* Transparent celler */
     -fx-border-color: transparent;
+}
+
+.tree-view .tree-cell.depth-0 {
+    -fx-border-color: transparent transparent #e0e0e0 transparent; /* Bottom border only */
+    -fx-border-width: 0 0 0.5px 0; /* Thinner line */
+}
+
+.tree-view .tree-cell.depth-1 {
+    -fx-border-color: transparent transparent #e0e0e0 transparent; /* Bottom border only */
+    -fx-border-width: 0 0 0.5px 0; /* Thinner line */
+}
+
+.tree-view .tree-cell.depth-2 {
+    -fx-border-color: transparent transparent #c0c0c0 transparent; /* Bottom border only */
+    -fx-border-width: 0 0 0.5px 0; /* Thinner line */
 }
 
 /* Stiler for fokusérbare TreeViews */
