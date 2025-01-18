@@ -10,6 +10,7 @@ import com.martin.dayplanner.view.views.Viewable;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -32,12 +33,9 @@ import java.util.stream.Collectors;
 public class HomeScreenView extends BaseView implements Viewable {
 
     private final ViewableHomeScreen model;
-    private final Button removePlanButton;
-    private final Button editPlanButton;
-    private final Button createNewPlanButton;
-    private final Button removeGroupButton;
-    private final Button editGroupButton;
-    private final Button createNewGroupButton;
+    private final Button removeButton;
+    private final Button editButton;
+    private final Button addButton;
     private TreeView<ListItemData> plansTreeView;
     private TreeView<ListItemData> deadlinesTreeView;
     private TreeView<ListItemData> activeTasksTreeView;
@@ -47,17 +45,13 @@ public class HomeScreenView extends BaseView implements Viewable {
     public HomeScreenView(ViewableHomeScreen model) {
         this.model = model;
 
-        removePlanButton = createButton("Remove Plan");
-        editPlanButton = createButton("Edit Plan");
-        createNewPlanButton = createButton("Add Plan");
+        removeButton = createButton("Remove");
+        editButton = createButton("Edit");
+        addButton = createButton("Add");
 
-        removeGroupButton = createButton("Remove Group");
-        editGroupButton = createButton("Edit Group");
-        createNewGroupButton = createButton("Add Group");
-
-        plansTreeView = createTreeView();
-        deadlinesTreeView = createTreeView();
-        activeTasksTreeView = createTreeView();
+        plansTreeView = createTreeView("tree-view-focusable");
+        deadlinesTreeView = createTreeView("tree-view-non-focusable");
+        activeTasksTreeView = createTreeView("tree-view-non-focusable");
 
         this.popup = new HomeScreenPopupConfigurator(model);
 
@@ -84,9 +78,9 @@ public class HomeScreenView extends BaseView implements Viewable {
         centerGrid.setVgap(15);
         centerGrid.getStyleClass().add("center-grid");
 
-        HBox plansButtonRow = createButtonRow(removePlanButton, editPlanButton, createNewPlanButton);
-        HBox groupButtonRow = createButtonRow(removeGroupButton, editGroupButton, createNewGroupButton);
-        centerGrid.add(createSection("Your Plans", plansTreeView, plansButtonRow, groupButtonRow), 0, 0, 1, 2);
+        HBox buttonRow = createButtonRow(removeButton, editButton, addButton);
+        buttonRow.getStyleClass().add("button-row");
+        centerGrid.add(createSection("Your Plans", plansTreeView, buttonRow), 0, 0, 1, 2);
 
         centerGrid.add(createSection("Deadlines", deadlinesTreeView, "tasks-box"), 1, 0);
         centerGrid.add(createSection("Active Tasks", activeTasksTreeView, "tasks-box"), 1, 1);
@@ -101,15 +95,13 @@ public class HomeScreenView extends BaseView implements Viewable {
         return buttonRow;
     }
 
-    private TreeView<ListItemData> createTreeView() {
+    private TreeView<ListItemData> createTreeView(String styleClass) {
         TreeItem<ListItemData> root = new TreeItem<>(new ListItemData("root", "Root", Specimen.ROOT));
         root.setExpanded(true);
 
         TreeView<ListItemData> treeView = new TreeView<>(root);
         treeView.setShowRoot(false);
-
-        // Legg til CSS-klasse
-        treeView.getStyleClass().add("tree-view");
+        treeView.getStyleClass().add(styleClass);
 
         return treeView;
     }
@@ -263,28 +255,16 @@ public class HomeScreenView extends BaseView implements Viewable {
         return root;
     }
 
-    public Button getCreateNewPlanButton() {
-        return createNewPlanButton;
+    public Button getRemoveButton() {
+        return removeButton;
     }
 
-    public Button getEditPlanButton() {
-        return editPlanButton;
+    public Button getEditButton() {
+        return editButton;
     }
 
-    public Button getRemovePlanButton() {
-        return removePlanButton;
-    }
-
-    public Button getCreateNewGroupButton() {
-        return createNewGroupButton;
-    }
-
-    public Button getEditGroupButton() {
-        return editGroupButton;
-    }
-
-    public Button getRemoveGroupButton() {
-        return removeGroupButton;
+    public Button getAddButton() {
+        return addButton;
     }
 
     public TreeView<ListItemData> getPlansTreeView() {
@@ -301,5 +281,9 @@ public class HomeScreenView extends BaseView implements Viewable {
 
     public HomeScreenPopupConfigurator getPopup() {
         return popup;
+    }
+
+    public Node getRootNode() {
+        return root;
     }
 }
