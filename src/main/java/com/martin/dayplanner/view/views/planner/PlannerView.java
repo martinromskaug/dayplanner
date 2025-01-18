@@ -1,5 +1,6 @@
 package com.martin.dayplanner.view.views.planner;
 
+import com.martin.dayplanner.model.task.Task;
 import com.martin.dayplanner.model.task.TaskStatus;
 import com.martin.dayplanner.view.views.BaseView;
 import com.martin.dayplanner.view.views.ListItemData;
@@ -18,6 +19,7 @@ import javafx.scene.layout.HBox;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Comparator;
 
 public class PlannerView extends BaseView implements Viewable {
 
@@ -110,7 +112,8 @@ public class PlannerView extends BaseView implements Viewable {
 
     private List<ListItemData> getTaskItems(TaskStatus status) {
         return model.getTasksByStatus(status).stream()
-                .sorted((task1, task2) -> task2.getPriority().compareTo(task1.getPriority()))
+                .sorted(Comparator.comparing(Task::getPriority).reversed()
+                        .thenComparing(Task::getTaskName)) // Sort by priority first, then alphabetically
                 .map(task -> new ListItemData(task.getId(), task.getTaskName(), Specimen.TASK))
                 .collect(Collectors.toList());
     }

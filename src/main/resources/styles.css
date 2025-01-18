@@ -306,6 +306,7 @@
     /* Lys grå bakgrunn */
     -fx-background-radius: 5px;
     -fx-padding: 0;
+    -fx-pref-width: 150px; /* Ensure the progress bar has a preferred width */
 }
 
 /* Tooltip-stiler */

@@ -127,6 +127,11 @@ public class HomeScreenView extends BaseView implements Viewable {
                         if (depth == 1) {
                             getStyleClass().add("depth-" + depth); // Add depth-based style class only for depth 1
                         }
+                        if (item.getSpecimen() == Specimen.OTHER && getTreeItem().getGraphic() != null) {
+                            setGraphic(getTreeItem().getGraphic());
+                        } else {
+                            setGraphic(null);
+                        }
                     }
                 }
             };
@@ -150,11 +155,15 @@ public class HomeScreenView extends BaseView implements Viewable {
         root.setExpanded(true);
 
         List<PlannerGroup> plannerGroups = model.getPlannerGroups();
+        plannerGroups.sort(Comparator.comparing(PlannerGroup::getGroupName)); // Sort planner groups alphabetically
+
         for (PlannerGroup group : plannerGroups) {
             TreeItem<ListItemData> groupItem = new TreeItem<>(
                     new ListItemData(group.getId(), group.getGroupName(), Specimen.GROUP));
 
             List<Planner> planners = model.getPlannersForGroup(group.getId());
+            planners.sort(Comparator.comparing(Planner::getPlannerName)); // Sort planners alphabetically
+
             for (Planner planner : planners) {
                 TreeItem<ListItemData> plannerItem = new TreeItem<>(
                         new ListItemData(planner.getId(), planner.getPlannerName(), Specimen.PLANNER));
@@ -173,17 +182,14 @@ public class HomeScreenView extends BaseView implements Viewable {
 
         List<Planner> plannersWithDeadlines = model.getPlannersWithDeadline();
 
-        // Sorter planleggere etter dato og tid
+        // Sort planners by date and time
         plannersWithDeadlines.sort(Comparator
                 .comparing(Planner::getDueDate)
                 .thenComparing(Planner::getDueTime));
 
-        // Behold sorteringsrekkefølge ved å bruke LinkedHashMap
+        // Group planners by date
         Map<LocalDate, List<Planner>> plannersByDate = plannersWithDeadlines.stream()
-                .collect(Collectors.groupingBy(
-                        Planner::getDueDate,
-                        LinkedHashMap::new,
-                        Collectors.toList()));
+                .collect(Collectors.groupingBy(Planner::getDueDate, LinkedHashMap::new, Collectors.toList()));
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MMM.yyyy");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -192,39 +198,35 @@ public class HomeScreenView extends BaseView implements Viewable {
             LocalDate date = entry.getKey();
             List<Planner> planners = entry.getValue();
 
-            String dueDateAndDays = String.format("%s             %s", date.format(dateFormatter), daysUntil(date));
+            String dueDateAndDays = String.format("%s (%s)", date.format(dateFormatter), daysUntil(date));
 
             TreeItem<ListItemData> dateItem = new TreeItem<>(
                     new ListItemData(date.toString(), dueDateAndDays, Specimen.OTHER));
             dateItem.setExpanded(true);
 
             for (Planner planner : planners) {
-                String formattedPlanner = String.format("%s %s -%s",
+                String formattedPlanner = String.format("%s - %s (%s)",
                         planner.getDueTime() != null ? planner.getDueTime().format(timeFormatter) : "N/A",
                         planner.getPlannerName() != null ? planner.getPlannerName() : "No Name",
                         model.getParentGroupByPlannerId(planner.getId()) != null
                                 ? model.getParentGroupByPlannerId(planner.getId())
                                 : "No Group");
 
-                // Opprett TreeItem for planleggerens navn
                 TreeItem<ListItemData> plannerItem = new TreeItem<>(
                         new ListItemData(planner.getId(), formattedPlanner, Specimen.PLANNER));
 
-                // Beregn progresjon og formater prosent
-                double progress = planner.getProgress(); // Hent progresjon (0.0 til 1.0)
+                double progress = planner.getProgress();
                 String progressPercentage = String.format("%.0f%%", progress * 100);
 
-                // Opprett ProgressBar
                 ProgressBar progressBar = new ProgressBar(progress);
-                progressBar.setMaxWidth(Double.MAX_VALUE); // Sett progressbaren til å fylle tilgjengelig bredde
+                progressBar.setMaxWidth(Double.MAX_VALUE);
+                progressBar.setPrefWidth(150); // Ensure the progress bar has a preferred width
 
-                // Opprett en HBox for ProgressBar og prosentandel
                 Label progressLabel = new Label(progressPercentage);
                 HBox progressBox = new HBox(10, progressBar, progressLabel);
                 progressBox.setAlignment(Pos.CENTER_LEFT);
-                progressBox.setPadding(new Insets(5, 0, 0, 20)); // Innrykk for å indikere underordnet nivå
+                progressBox.setPadding(new Insets(5, 0, 0, 20));
 
-                // Opprett TreeItem for progressbaren
                 TreeItem<ListItemData> progressItem = new TreeItem<>(new ListItemData("", "", Specimen.OTHER));
                 progressItem.setGraphic(progressBox);
 
