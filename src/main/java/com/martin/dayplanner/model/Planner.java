@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class Planner implements ControllablePlanner, ViewablePlanner {
 
@@ -39,6 +40,7 @@ public class Planner implements ControllablePlanner, ViewablePlanner {
         return UUID.randomUUID().toString();
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -209,6 +211,22 @@ public class Planner implements ControllablePlanner, ViewablePlanner {
         return storageHandler.getAllTasks().stream()
                 .filter(task -> task.getPlannerId().equals(this.id) && task.getStatus() == status)
                 .toList();
+    }
+
+    public double getProgress() {
+        List<Task> tasksForPlanner = storageHandler.getAllTasks().stream()
+                .filter(task -> task.getPlannerId().equals(this.id))
+                .collect(Collectors.toList());
+
+        if (tasksForPlanner.isEmpty()) {
+            return 0.0;
+        }
+
+        long completedTasks = tasksForPlanner.stream()
+                .filter(task -> task.getStatus().equals(TaskStatus.COMPLETED))
+                .count();
+
+        return (double) completedTasks / tasksForPlanner.size();
     }
 
 }

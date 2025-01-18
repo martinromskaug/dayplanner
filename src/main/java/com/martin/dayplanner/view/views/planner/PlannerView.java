@@ -1,13 +1,16 @@
 package com.martin.dayplanner.view.views.planner;
 
+import com.martin.dayplanner.model.task.Task;
 import com.martin.dayplanner.model.task.TaskStatus;
 import com.martin.dayplanner.view.views.BaseView;
 import com.martin.dayplanner.view.views.ListItemData;
+import com.martin.dayplanner.view.views.Specimen;
 import com.martin.dayplanner.view.views.Viewable;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -16,6 +19,7 @@ import javafx.scene.layout.HBox;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Comparator;
 
 public class PlannerView extends BaseView implements Viewable {
 
@@ -43,9 +47,33 @@ public class PlannerView extends BaseView implements Viewable {
         pendingTasksListView = new ListView<>();
         completedTasksListView = new ListView<>();
 
+        setupListView(newTasksListView);
+        setupListView(pendingTasksListView);
+        setupListView(completedTasksListView);
+
         root = new BorderPane();
         updateTaskLists();
         setupLayout();
+    }
+
+    private void setupListView(ListView<ListItemData> listView) {
+        listView.setCellFactory(param -> {
+            ListCell<ListItemData> cell = new ListCell<>() {
+                @Override
+                protected void updateItem(ListItemData item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(item.getName());
+                        setWrapText(true);
+                        setPrefWidth(listView.getWidth() - 20); // Adjust width to avoid horizontal scroll
+                    }
+                }
+            };
+            return cell;
+        });
+        listView.setPrefWidth(0); // Disable horizontal scrolling
     }
 
     private void setupLayout() {
@@ -84,8 +112,9 @@ public class PlannerView extends BaseView implements Viewable {
 
     private List<ListItemData> getTaskItems(TaskStatus status) {
         return model.getTasksByStatus(status).stream()
-                .sorted((task1, task2) -> task2.getPriority().compareTo(task1.getPriority()))
-                .map(task -> new ListItemData(task.getId(), task.getTaskName()))
+                .sorted(Comparator.comparing(Task::getPriority).reversed()
+                        .thenComparing(Task::getTaskName)) // Sort by priority first, then alphabetically
+                .map(task -> new ListItemData(task.getId(), task.getTaskName(), Specimen.TASK))
                 .collect(Collectors.toList());
     }
 
@@ -102,8 +131,8 @@ public class PlannerView extends BaseView implements Viewable {
         return allTaskLists;
     }
 
-    public String getPlannerName() {
-        return model.getPlannerName();
+    public String getPlannerId() {
+        return model.getId();
     }
 
     public Button getEditTaskButton() {

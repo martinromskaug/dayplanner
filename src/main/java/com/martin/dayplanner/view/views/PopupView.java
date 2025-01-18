@@ -33,12 +33,12 @@ public class PopupView {
         stage.setTitle(title);
 
         layout = new GridPane();
-        layout.setPadding(new Insets(10));
+        layout.setPadding(new Insets(20));
         layout.setHgap(10);
         layout.setVgap(10);
 
         errorLabel = new Label();
-        errorLabel.setStyle("-fx-text-fill: red;");
+        errorLabel.getStyleClass().add("popup-error-label");
         layout.add(errorLabel, 0, 10, 2, 1);
     }
 

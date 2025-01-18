@@ -21,4 +21,6 @@ public interface ViewablePlanner {
     public LocalTime getTaskTimeById(String taskId);
 
     public TaskPriority getTaskPriorityById(String taskId);
+
+    public String getId();
 }
