@@ -89,9 +89,13 @@ public class PlannerView extends BaseView implements Viewable {
         taskGrid.setVgap(5);
         taskGrid.getStyleClass().add("center-grid");
 
-        taskGrid.add(createSection("Not Started", newTasksListView, "plans-box"), 0, 0);
-        taskGrid.add(createSection("Active Tasks", pendingTasksListView, "plans-box"), 1, 0);
-        taskGrid.add(createSection("Completed Tasks", completedTasksListView, "plans-box"), 2, 0);
+        taskGrid.add(
+                createSection("Not Started - " + newTasksListView.getItems().size(), newTasksListView, "plans-box"), 0,
+                0);
+        taskGrid.add(createSection("Active Tasks - " + pendingTasksListView.getItems().size(), pendingTasksListView,
+                "plans-box"), 1, 0);
+        taskGrid.add(createSection("Completed Tasks - " + completedTasksListView.getItems().size(),
+                completedTasksListView, "plans-box"), 2, 0);
 
         return taskGrid;
     }
@@ -108,6 +112,7 @@ public class PlannerView extends BaseView implements Viewable {
         newTasksListView.getItems().setAll(getTaskItems(TaskStatus.NOTSTARTED));
         pendingTasksListView.getItems().setAll(getTaskItems(TaskStatus.ACTIVE));
         completedTasksListView.getItems().setAll(getTaskItems(TaskStatus.COMPLETED));
+        setupLayout();
     }
 
     private List<ListItemData> getTaskItems(TaskStatus status) {
