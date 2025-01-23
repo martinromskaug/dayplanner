@@ -123,7 +123,7 @@ public class StorageHandler {
 
         Map<String, List<String>> plannerMap = relations.get(groupId);
         if (plannerMap != null) {
-            plannerMap.computeIfAbsent(plannerId, k -> new ArrayList<>()).add(taskToAdd.getId());
+            plannerMap.computeIfAbsent(plannerId, _ -> new ArrayList<>()).add(taskToAdd.getId());
             saveStorage();
         } else {
             throw new IllegalArgumentException("Planner not associated with any group: " + plannerId);

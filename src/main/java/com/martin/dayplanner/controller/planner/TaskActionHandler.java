@@ -67,7 +67,7 @@ public class TaskActionHandler {
     }
 
     public void setupListSelectionListener(ListView<ListItemData> listView) {
-        listView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+        listView.getSelectionModel().selectedItemProperty().addListener((_, _, newSelection) -> {
             boolean taskSelected = newSelection != null;
             view.getEditTaskButton().setVisible(taskSelected);
             view.getRemoveTaskButton().setVisible(taskSelected);

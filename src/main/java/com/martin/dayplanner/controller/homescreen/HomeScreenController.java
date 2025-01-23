@@ -27,13 +27,13 @@ public class HomeScreenController {
     }
 
     private void setupEventHandlers() {
-        view.getAddButton().setOnAction(e -> add());
-        view.getRemoveButton().setOnAction(e -> remove());
-        view.getEditButton().setOnAction(e -> edit());
+        view.getAddButton().setOnAction(_ -> add());
+        view.getRemoveButton().setOnAction(_ -> remove());
+        view.getEditButton().setOnAction(_ -> edit());
 
         // Lytt etter endringer i valgte elementer
         view.getPlansTreeView().getSelectionModel().selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
+                .addListener((_, _, newValue) -> {
                     updateButtonVisibility(newValue);
                 });
 
@@ -114,7 +114,7 @@ public class HomeScreenController {
             String plannerId = selectedItem.getValue().getId();
             PopupView popup = popupConfigurator.configureRemovePlanPopup(plannerId);
 
-            popup.setActions(values -> {
+            popup.setActions(_ -> {
                 model.removePlanner(plannerId);
                 view.updateHomeScreen();
             }, null);
@@ -130,7 +130,7 @@ public class HomeScreenController {
             String groupId = selectedItem.getValue().getId();
             PopupView popup = popupConfigurator.configureRemoveGroupPopup(groupId);
 
-            popup.setActions(values -> {
+            popup.setActions(_ -> {
                 model.removePlannerGroup(groupId);
                 view.updateHomeScreen();
             }, null);

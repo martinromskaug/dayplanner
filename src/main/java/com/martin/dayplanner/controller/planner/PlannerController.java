@@ -25,17 +25,17 @@ public class PlannerController {
 
     private void setupListeners() {
 
-        view.getAddTaskButton().setOnAction(e -> actionHandler.handleAddTask());
+        view.getAddTaskButton().setOnAction(_ -> actionHandler.handleAddTask());
 
         for (ListView<ListItemData> taskList : view.getTaskLists()) {
             actionHandler.setupListSelectionListener(taskList);
         }
-        view.getRemoveTaskButton().setOnAction(e -> actionHandler.handleRemoveTask());
-        view.getEditTaskButton().setOnAction(e -> actionHandler.handleEditTask());
+        view.getRemoveTaskButton().setOnAction(_ -> actionHandler.handleRemoveTask());
+        view.getEditTaskButton().setOnAction(_ -> actionHandler.handleEditTask());
 
         dragAndDropHandler.setupDragAndDropListeners();
 
-        view.getGoToMenuButton().setOnAction(e -> {
+        view.getGoToMenuButton().setOnAction(_ -> {
             model.goToMenu();
             appController.updateActiveView();
         });

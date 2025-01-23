@@ -112,7 +112,7 @@ public class HomeScreenView extends BaseView implements Viewable {
     }
 
     private void setupTreeView(TreeView<ListItemData> treeView) {
-        treeView.setCellFactory(param -> {
+        treeView.setCellFactory(_ -> {
             TreeCell<ListItemData> cell = new TreeCell<>() {
                 @Override
                 protected void updateItem(ListItemData item, boolean empty) {
