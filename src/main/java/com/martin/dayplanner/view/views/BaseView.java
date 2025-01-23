@@ -112,7 +112,7 @@ public abstract class BaseView {
 
     private void setupDynamicClock(Label dateLabel, Label yearLabel, Label clockLabel) {
         Timeline clockTimeline = new Timeline(
-                new KeyFrame(Duration.seconds(1), event -> updateDateTime(dateLabel, yearLabel, clockLabel)));
+                new KeyFrame(Duration.seconds(1), _ -> updateDateTime(dateLabel, yearLabel, clockLabel)));
         clockTimeline.setCycleCount(Animation.INDEFINITE);
         clockTimeline.play();
     }
