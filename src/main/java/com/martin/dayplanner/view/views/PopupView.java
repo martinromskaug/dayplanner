@@ -55,7 +55,7 @@ public class PopupView {
             textField.setText(previousValue);
         }
 
-        textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+        textField.focusedProperty().addListener((_, _, newVal) -> {
             if (!newVal && textField.getText().trim().isEmpty()) {
                 showErrors(Collections.singletonList(bundle.getString("error.name_required")));
             }
@@ -78,7 +78,7 @@ public class PopupView {
             comboBox.setValue(previousValue);
         }
 
-        comboBox.focusedProperty().addListener((obs, oldVal, newVal) -> {
+        comboBox.focusedProperty().addListener((_, _, newVal) -> {
             if (!newVal && comboBox.getValue() == null) {
                 showErrors(Collections.singletonList(bundle.getString("error.parent_group_required")));
             }
@@ -142,7 +142,7 @@ public class PopupView {
         Button confirmButton = new Button(bundle.getString("button.confirm"));
         Button cancelButton = new Button(bundle.getString("button.cancel"));
 
-        confirmButton.setOnAction(e -> {
+        confirmButton.setOnAction(_ -> {
             if (validateFields()) {
                 Map<PopupFieldKey, Object> values = getFieldValues();
                 onConfirm.accept(values);
@@ -150,7 +150,7 @@ public class PopupView {
             }
         });
 
-        cancelButton.setOnAction(e -> {
+        cancelButton.setOnAction(_ -> {
             if (onCancel != null) {
                 onCancel.run();
             }
