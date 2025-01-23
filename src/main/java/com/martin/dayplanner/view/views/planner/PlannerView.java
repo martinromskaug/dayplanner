@@ -57,7 +57,7 @@ public class PlannerView extends BaseView implements Viewable {
     }
 
     private void setupListView(ListView<ListItemData> listView) {
-        listView.setCellFactory(param -> {
+        listView.setCellFactory(_ -> {
             ListCell<ListItemData> cell = new ListCell<>() {
                 @Override
                 protected void updateItem(ListItemData item, boolean empty) {
