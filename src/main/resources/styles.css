@@ -266,6 +266,24 @@
     -fx-border-width: 0 0 0.5px 0; /* Thinner line */
 }
 
+/* Minimalistic style for TreeView triangles */
+.tree-view .tree-disclosure-node .arrow {
+    -fx-background-color: #b2bec3; /* Light grey */
+    -fx-padding: 0;
+    -fx-shape: "M 0 0 L 4 4 L 0 8 Z"; /* Triangle shape */
+    -fx-scale-x: 0.6; /* Smaller size */
+    -fx-scale-y: 0.6; /* Smaller size */
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+    -fx-effect: null; /* Remove any shadow or effect */
+}
+
+.tree-view .tree-disclosure-node .arrow:hover {
+    -fx-background-color: #b2bec3; /* Light grey on hover */
+}
+
 /* Stiler for fokusérbare TreeViews */
 .tree-view-focusable .tree-cell:hover {
     -fx-background-color: #f1f1f1;
