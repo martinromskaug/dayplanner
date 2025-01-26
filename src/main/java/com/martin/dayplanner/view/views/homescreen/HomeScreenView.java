@@ -119,25 +119,26 @@ public class HomeScreenView extends BaseView implements Viewable {
                     super.updateItem(item, empty);
                     if (empty || item == null) {
                         setText(null);
+                        setGraphic(null);
                     } else {
                         setText(item.getName());
                         setWrapText(true);
-                        setPrefWidth(treeView.getWidth() - 20); // Adjust width to avoid horizontal scroll
+                        setPrefWidth(treeView.getWidth() - 20);
                         int depth = getTreeItemLevel(getTreeItem());
                         if (depth == 1) {
-                            getStyleClass().add("depth-" + depth); // Add depth-based style class only for depth 1
+                            getStyleClass().add("depth-" + depth);
                         }
                         if (item.getSpecimen() == Specimen.OTHER && getTreeItem().getGraphic() != null) {
                             setGraphic(getTreeItem().getGraphic());
                         } else {
-                            setGraphic(null);
+                            setGraphic(getTreeItem().getGraphic());
                         }
                     }
                 }
             };
             return cell;
         });
-        treeView.setPrefWidth(0); // Disable horizontal scrolling
+        treeView.setPrefWidth(0);
     }
 
     private int getTreeItemLevel(TreeItem<?> item) {
@@ -155,14 +156,14 @@ public class HomeScreenView extends BaseView implements Viewable {
         root.setExpanded(true);
 
         List<PlannerGroup> plannerGroups = model.getPlannerGroups();
-        plannerGroups.sort(Comparator.comparing(PlannerGroup::getGroupName)); // Sort planner groups alphabetically
+        plannerGroups.sort(Comparator.comparing(PlannerGroup::getGroupName));
 
         for (PlannerGroup group : plannerGroups) {
             TreeItem<ListItemData> groupItem = new TreeItem<>(
                     new ListItemData(group.getId(), group.getGroupName(), Specimen.GROUP));
 
             List<Planner> planners = model.getPlannersForGroup(group.getId());
-            planners.sort(Comparator.comparing(Planner::getPlannerName)); // Sort planners alphabetically
+            planners.sort(Comparator.comparing(Planner::getPlannerName));
 
             for (Planner planner : planners) {
                 TreeItem<ListItemData> plannerItem = new TreeItem<>(
@@ -182,12 +183,10 @@ public class HomeScreenView extends BaseView implements Viewable {
 
         List<Planner> plannersWithDeadlines = model.getPlannersWithDeadline();
 
-        // Sort planners by date and time
         plannersWithDeadlines.sort(Comparator
                 .comparing(Planner::getDueDate)
                 .thenComparing(Planner::getDueTime));
 
-        // Group planners by date
         Map<LocalDate, List<Planner>> plannersByDate = plannersWithDeadlines.stream()
                 .collect(Collectors.groupingBy(Planner::getDueDate, LinkedHashMap::new, Collectors.toList()));
 
@@ -220,7 +219,7 @@ public class HomeScreenView extends BaseView implements Viewable {
 
                 ProgressBar progressBar = new ProgressBar(progress);
                 progressBar.setMaxWidth(Double.MAX_VALUE);
-                progressBar.setPrefWidth(150); // Ensure the progress bar has a preferred width
+                progressBar.setPrefWidth(150);
 
                 Label progressLabel = new Label(progressPercentage);
                 HBox progressBox = new HBox(10, progressBar, progressLabel);
@@ -268,10 +267,10 @@ public class HomeScreenView extends BaseView implements Viewable {
         for (Map.Entry<String, List<Task>> entry : tasksByPlanner.entrySet()) {
             String plannerId = entry.getKey();
             String plannerName = model.getPlannerNameById(plannerId);
-            PlannerGroup parentGroup = model.getParentGroupByPlannerId(plannerId); // Hent gruppenavn
+            PlannerGroup parentGroup = model.getParentGroupByPlannerId(plannerId);
             String groupName = parentGroup.getGroupName();
             String displayName = String.format("%s - %s", plannerName,
-                    groupName != null ? groupName : "No Group"); // Formatter med fallback for null
+                    groupName != null ? groupName : "No Group");
 
             List<Task> tasks = entry.getValue();
 
