@@ -31,7 +31,6 @@ public class HomeScreenController {
         view.getRemoveButton().setOnAction(_ -> remove());
         view.getEditButton().setOnAction(_ -> edit());
 
-        // Lytt etter endringer i valgte elementer
         view.getPlansTreeView().getSelectionModel().selectedItemProperty()
                 .addListener((_, _, newValue) -> {
                     updateButtonVisibility(newValue);
@@ -56,12 +55,10 @@ public class HomeScreenController {
 
     private void updateButtonVisibility(TreeItem<ListItemData> selectedItem) {
         if (selectedItem == null) {
-            // Ingen elementer er valgt
             view.getRemoveButton().setVisible(false);
             view.getEditButton().setVisible(false);
             view.getAddButton().setText("Add Group");
         } else {
-            // Element er valgt
             ListItemData data = selectedItem.getValue();
             if (data != null) {
                 if (data.getSpecimen() == Specimen.GROUP) {
